@@ -1,0 +1,12 @@
+{
+  "name": "compiler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "c": "gcc c/main.c -o main && ./main"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
