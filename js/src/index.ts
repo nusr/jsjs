@@ -1,1 +1,3 @@
-console.log('hello JavaScript');
+import Lox from './lox';
+
+new Lox();
