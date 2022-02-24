@@ -133,6 +133,24 @@ class Scanner {
           while (this.peek() !== '\n' && !this.isAtEnd()) {
             this.advance();
           }
+        } else if (this.match('*')) {
+          /* multiple line comments */
+          while (
+            !(
+              (this.peek() === '*' && this.peekNext() === '/') ||
+              this.isAtEnd()
+            )
+          ) {
+            this.advance();
+          }
+          if (this.peekNext() !== '/') {
+            defaultErrorHandler.error(
+              this.line,
+              'multiple line comment end error',
+            );
+          }
+          this.advance(); // skip *
+          this.advance(); // skip /
         } else {
           this.addToken(TokenType.SLASH);
         }
