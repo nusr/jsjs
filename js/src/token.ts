@@ -1,5 +1,5 @@
 import { TokenType } from './tokenType';
-export type LiteralType = null | string | number;
+export type LiteralType = null | string | number | boolean;
 class Token {
   readonly type: TokenType;
   readonly lexeme: string;
