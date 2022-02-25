@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import Lox from './lox';
+import Lox from './index';
 import path from 'path';
 import { defaultErrorHandler } from './error';
 
@@ -41,7 +41,7 @@ function runPrompt() {
   reader
     .on('line', (line) => {
       lox.run(line);
-      defaultErrorHandler.set(false);
+      defaultErrorHandler.reset();
       reader.prompt();
     })
     .on('close', () => {

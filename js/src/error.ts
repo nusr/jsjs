@@ -1,7 +1,10 @@
 function errorHandler() {
+  const errorList: string[] = [];
   let hadError = false;
   const report = (line: number, where: string, message: string) => {
-    console.log(`[line ${line}] Error ${where} : ${message} `);
+    const msg = `[line ${line}] Error ${where} : ${message} `;
+    errorList.push(msg);
+    console.log(msg);
     hadError = true;
   };
   const error = (line: number, message: string) => {
@@ -10,13 +13,14 @@ function errorHandler() {
   const get = () => {
     return hadError;
   };
-  const set = (value: boolean) => {
-    hadError = value;
+  const reset = () => {
+    console.log('error list:', errorList);
+    hadError = false;
   };
   return {
     error,
     get,
-    set,
+    reset,
   };
 }
 

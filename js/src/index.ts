@@ -1,3 +1,2 @@
-import Lox from './lox';
-
-new Lox();
+import { Lox } from './lox';
+export default Lox;
