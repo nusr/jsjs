@@ -31,14 +31,26 @@ class Interpreter implements ExpressionVisitor<LiteralType> {
         if (typeof left === 'number' && typeof right === 'number') {
           return Number(left) + Number(right);
         }
-        if (typeof left === 'string' && typeof right === 'string') {
+        if (typeof left === 'string' || typeof right === 'string') {
+          return String(left) + String(right);
+        }
+        if (
+          (typeof left === 'string' && typeof right === 'number') ||
+          (typeof left === 'number' && typeof right === 'string')
+        ) {
           return String(left) + String(right);
         }
         break;
       case TokenType.STAR:
         return Number(left) * Number(right);
-      case TokenType.SLASH:
-        return Number(left) / Number(right);
+      case TokenType.SLASH: {
+        const temp = Number(right);
+        if (temp === 0) {
+          throw new Error('slash is zero');
+        }
+        return Number(left) / temp;
+      }
+
       case TokenType.GREATER:
         return Number(left) > Number(right);
       case TokenType.GREATER_EQUAL:
