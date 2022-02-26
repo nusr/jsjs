@@ -1,5 +1,5 @@
+import { LiteralType } from './token';
 import {
-  ExpressionType,
   ExpressionVisitor,
   Expression,
   BinaryExpression,
@@ -16,58 +16,58 @@ import {
   VariableExpression,
 } from './expression';
 
-class ASTPrinter implements ExpressionVisitor<ExpressionType> {
-  visitAssignExpr = (expr: AssignExpression<ExpressionType>) => {
+class Interpreter implements ExpressionVisitor<LiteralType> {
+  visitAssignExpr = (expr: AssignExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.value);
   };
-  visitBinaryExpr = (expr: BinaryExpression<ExpressionType>) => {
+  visitBinaryExpr = (expr: BinaryExpression<LiteralType>) => {
     return this.parenthesize(expr.operator.lexeme, expr.left, expr.right);
   };
-  visitCallExpr = (expr: CallExpression<ExpressionType>) => {
+  visitCallExpr = (expr: CallExpression<LiteralType>) => {
     return this.parenthesize(
       expr.paren.lexeme,
       expr.callee,
       ...expr.argumentsList,
     );
   };
-  visitGetExpr = (expr: GetExpression<ExpressionType>) => {
+  visitGetExpr = (expr: GetExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.object);
   };
-  visitSetExpr = (expr: SetExpression<ExpressionType>) => {
+  visitSetExpr = (expr: SetExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.object, expr.value);
   };
-  visitLogicalExpr = (expr: LogicalExpression<ExpressionType>) => {
+  visitLogicalExpr = (expr: LogicalExpression<LiteralType>) => {
     return this.parenthesize(expr.operator.lexeme, expr.left, expr.right);
   };
-  visitSuperExpr = (expr: SuperExpression<ExpressionType>) => {
+  visitSuperExpr = (expr: SuperExpression<LiteralType>) => {
     return this.parenthesize(expr.keyword.lexeme, expr.value);
   };
-  visitThisExpr = (expr: ThisExpression<ExpressionType>) => {
+  visitThisExpr = (expr: ThisExpression<LiteralType>) => {
     return this.parenthesize(expr.keyword.lexeme);
   };
-  visitVariableExpr = (expr: VariableExpression<ExpressionType>) => {
+  visitVariableExpr = (expr: VariableExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme);
   };
-  visitGroupingExpr = (expr: GroupingExpression<ExpressionType>) => {
+  visitGroupingExpr = (expr: GroupingExpression<LiteralType>) => {
     return this.parenthesize('group', expr.expression);
   };
-  visitLiteralExpr = (expr: LiteralExpression<ExpressionType>) => {
+  visitLiteralExpr = (expr: LiteralExpression<LiteralType>) => {
     if (expr.value === null) {
       return 'nil';
     }
     return expr.value.toString();
   };
-  visitUnaryExpr = (expr: UnaryExpression<ExpressionType>) => {
+  visitUnaryExpr = (expr: UnaryExpression<LiteralType>) => {
     return this.parenthesize(expr.operator.lexeme, expr.right);
   };
-  print = (expr: Expression<ExpressionType>) => {
+  print = (expr: Expression<LiteralType>) => {
     return expr.accept(this);
   };
   private parenthesize(
     name: string,
-    ...exprs: Expression<ExpressionType>[]
-  ): ExpressionType {
-    const list: ExpressionType[] = [];
+    ...exprs: Expression<LiteralType>[]
+  ): LiteralType {
+    const list: LiteralType[] = [];
     for (let expr of exprs) {
       list.push(expr.accept(this));
     }
@@ -75,4 +75,4 @@ class ASTPrinter implements ExpressionVisitor<ExpressionType> {
   }
 }
 
-export default ASTPrinter;
+export default Interpreter;

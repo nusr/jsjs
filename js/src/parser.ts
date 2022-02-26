@@ -16,6 +16,7 @@ import {
   GroupingExpression,
   LiteralExpression,
   UnaryExpression,
+  ExpressionType,
 } from './expression';
 import { TokenType } from './tokenType';
 import Token from './token';
@@ -26,20 +27,20 @@ class Parser {
   constructor(tokens: Token[]) {
     this.tokens = tokens;
   }
-  public expression(): Expression {
+  public expression(): Expression<ExpressionType> {
     return this.equality();
   }
-  private equality(): Expression {
-    let expr: Expression = this.comparison();
+  private equality(): Expression<ExpressionType> {
+    let expr: Expression<ExpressionType> = this.comparison();
     while (this.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
       const operator: Token = this.previous();
-      const right: Expression = this.comparison();
+      const right: Expression<ExpressionType> = this.comparison();
       expr = new BinaryExpression(expr, operator, right);
     }
     return expr;
   }
-  private comparison(): Expression {
-    let term: Expression = this.term();
+  private comparison(): Expression<ExpressionType> {
+    let term: Expression<ExpressionType> = this.term();
     while (
       this.match(
         TokenType.GREATER,
@@ -49,30 +50,30 @@ class Parser {
       )
     ) {
       const operator: Token = this.previous();
-      const right: Expression = this.term();
+      const right: Expression<ExpressionType> = this.term();
       term = new BinaryExpression(term, operator, right);
     }
     return term;
   }
-  private term(): Expression {
-    let factor: Expression = this.factor();
+  private term(): Expression<ExpressionType> {
+    let factor: Expression<ExpressionType> = this.factor();
     while (this.match(TokenType.PLUS, TokenType.MINUS)) {
       const operator: Token = this.previous();
-      const right: Expression = this.factor();
+      const right: Expression<ExpressionType> = this.factor();
       factor = new BinaryExpression(factor, operator, right);
     }
     return factor;
   }
-  private factor(): Expression {
-    let unary: Expression = this.unary();
+  private factor(): Expression<ExpressionType> {
+    let unary: Expression<ExpressionType> = this.unary();
     while (this.match(TokenType.STAR, TokenType.SLASH)) {
       const operator: Token = this.previous();
-      const right: Expression = this.unary();
+      const right: Expression<ExpressionType> = this.unary();
       unary = new BinaryExpression(unary, operator, right);
     }
     return unary;
   }
-  private unary(): Expression {
+  private unary(): Expression<ExpressionType> {
     if (this.match(TokenType.MINUS, TokenType.BANG)) {
       const operator: Token = this.previous();
       const value = this.unary();
@@ -80,7 +81,7 @@ class Parser {
     }
     return this.primary();
   }
-  private primary(): Expression {
+  private primary(): Expression<ExpressionType> {
     if (this.match(TokenType.TRUE)) {
       return new LiteralExpression(true);
     }
@@ -94,7 +95,7 @@ class Parser {
       return new LiteralExpression(this.previous().literal);
     }
     if (this.match(TokenType.LEFT_PAREN)) {
-      const expr: Expression = this.expression();
+      const expr: Expression<ExpressionType> = this.expression();
       this.consume(
         TokenType.RIGHT_PAREN,
         `parser expected: '(',actual: ${JSON.stringify(this.peek())}`,

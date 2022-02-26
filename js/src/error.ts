@@ -14,7 +14,9 @@ function errorHandler() {
     return hadError;
   };
   const reset = () => {
-    console.log('error list:', errorList);
+    if (errorList.length > 0) {
+      console.log('error list:', errorList);
+    }
     hadError = false;
   };
   return {

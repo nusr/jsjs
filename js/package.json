@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "prebuild": "node ./scripts/pre.js",
+    "test": "node ./scripts/visitTest.js",
     "watch": "tsc -w",
     "start": "node ./bin/lox"
   },
