@@ -11,7 +11,7 @@ function init() {
   if (args.length > 3) {
     console.log('Usage: lox [filepath]]');
     process.exit(64);
-  } else if (args.length === 3) {
+  } else if (args.length === 3 && args[2]) {
     runFile(args[2]);
   } else {
     runPrompt();

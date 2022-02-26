@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { runFile } = require('../lib/node');
+const { runFile } = require('../lib/node.js');
 
 const getAllFiles = (dirPath, fileList = [], index = 0) => {
   files = fs.readdirSync(dirPath);

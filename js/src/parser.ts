@@ -113,8 +113,8 @@ class Parser {
     }
     throw new Error(message);
   }
-  private previous() {
-    return this.tokens[this.current - 1];
+  private previous(): Token {
+    return this.tokens[this.current - 1] as Token;
   }
   private match(...types: TokenType[]): boolean {
     for (let type of types) {
@@ -141,7 +141,7 @@ class Parser {
     return this.peek().type === TokenType.EOF;
   }
   private peek(): Token {
-    return this.tokens[this.current];
+    return this.tokens[this.current] as Token;
   }
 }
 
