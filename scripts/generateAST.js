@@ -38,6 +38,7 @@ function defineAST(fileName, list, imports) {
   });
 
   const text = `${imports};
+  
   export interface ${visitorName} {
     ${visitor}
   }

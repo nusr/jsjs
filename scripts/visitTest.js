@@ -13,7 +13,7 @@ const getAllFiles = (dirPath, fileList = [], index = 0) => {
   }
   return fileList;
 };
-const dirPath = path.join(__dirname, '../../test');
+const dirPath = path.join(__dirname, '../test');
 const fileList = getAllFiles(dirPath);
 // console.log(dirPath, fileList);
 for (const item of fileList) {
