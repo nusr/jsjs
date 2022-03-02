@@ -1,17 +1,15 @@
-import { Expression, VariableExpression, ExpressionType } from './expression';
 import Token from './token';
-
-export type StatementType = string;
+import { Expression, VariableExpression } from './expression';
 export interface StatementVisitor<T> {
-  visitBlockStatement(statement: BlockStatement<T>): T;
-  visitClassStatement(statement: ClassStatement<T>): T;
-  visitExpressionStatement(statement: ExpressionStatement<T>): T;
-  visitFunctionStatement(statement: FunctionStatement<T>): T;
-  visitIfStatement(statement: IfStatement<T>): T;
-  visitPrintStatement(statement: PrintStatement<T>): T;
-  visitReturnStatement(statement: ReturnStatement<T>): T;
-  visitVariableStatement(statement: VariableStatement<T>): T;
-  visitWhileStatement(statement: WhileStatement<T>): T;
+  visitBlockStatement: (statement: BlockStatement<T>) => T;
+  visitClassStatement: (statement: ClassStatement<T>) => T;
+  visitExpressionStatement: (statement: ExpressionStatement<T>) => T;
+  visitFunctionStatement: (statement: FunctionStatement<T>) => T;
+  visitIfStatement: (statement: IfStatement<T>) => T;
+  visitPrintStatement: (statement: PrintStatement<T>) => T;
+  visitReturnStatement: (statement: ReturnStatement<T>) => T;
+  visitVariableStatement: (statement: VariableStatement<T>) => T;
+  visitWhileStatement: (statement: WhileStatement<T>) => T;
 }
 export abstract class Statement<T> {
   abstract accept(visitor: StatementVisitor<T>): T;
@@ -27,13 +25,14 @@ export class BlockStatement<T> extends Statement<T> {
     return visitor.visitBlockStatement(this);
   }
 }
+
 export class ClassStatement<T> extends Statement<T> {
   readonly name: Token;
-  readonly superClass: VariableExpression<ExpressionType>;
+  readonly superClass: VariableExpression<T>;
   readonly methods: FunctionStatement<T>[];
   constructor(
     name: Token,
-    superClass: VariableExpression<ExpressionType>,
+    superClass: VariableExpression<T>,
     methods: FunctionStatement<T>[],
   ) {
     super();
@@ -47,8 +46,8 @@ export class ClassStatement<T> extends Statement<T> {
 }
 
 export class ExpressionStatement<T> extends Statement<T> {
-  readonly expression: Expression<ExpressionType>;
-  constructor(expression: Expression<ExpressionType>) {
+  readonly expression: Expression<T>;
+  constructor(expression: Expression<T>) {
     super();
     this.expression = expression;
   }
@@ -56,11 +55,12 @@ export class ExpressionStatement<T> extends Statement<T> {
     return visitor.visitExpressionStatement(this);
   }
 }
+
 export class FunctionStatement<T> extends Statement<T> {
   readonly name: Token;
   readonly body: Statement<T>;
   readonly params: Token[];
-  constructor(name: Token, params: Token[], body: Statement<T>) {
+  constructor(name: Token, body: Statement<T>, params: Token[]) {
     super();
     this.name = name;
     this.body = body;
@@ -70,12 +70,13 @@ export class FunctionStatement<T> extends Statement<T> {
     return visitor.visitFunctionStatement(this);
   }
 }
+
 export class IfStatement<T> extends Statement<T> {
-  readonly condition: Expression<ExpressionType>;
+  readonly condition: Expression<T>;
   readonly thenBranch: Statement<T>;
   readonly elseBranch: Statement<T>;
   constructor(
-    condition: Expression<ExpressionType>,
+    condition: Expression<T>,
     thenBranch: Statement<T>,
     elseBranch: Statement<T>,
   ) {
@@ -88,9 +89,10 @@ export class IfStatement<T> extends Statement<T> {
     return visitor.visitIfStatement(this);
   }
 }
+
 export class PrintStatement<T> extends Statement<T> {
-  readonly expression: Expression<ExpressionType>;
-  constructor(expression: Expression<ExpressionType>) {
+  readonly expression: Expression<T>;
+  constructor(expression: Expression<T>) {
     super();
     this.expression = expression;
   }
@@ -98,10 +100,11 @@ export class PrintStatement<T> extends Statement<T> {
     return visitor.visitPrintStatement(this);
   }
 }
+
 export class ReturnStatement<T> extends Statement<T> {
   readonly keyword: Token;
-  readonly value: Expression<ExpressionType>;
-  constructor(keyword: Token, value: VariableExpression<ExpressionType>) {
+  readonly value: Expression<T>;
+  constructor(keyword: Token, value: Expression<T>) {
     super();
     this.keyword = keyword;
     this.value = value;
@@ -113,8 +116,8 @@ export class ReturnStatement<T> extends Statement<T> {
 
 export class VariableStatement<T> extends Statement<T> {
   readonly name: Token;
-  readonly initializer: Expression<ExpressionType>;
-  constructor(name: Token, initializer: VariableExpression<ExpressionType>) {
+  readonly initializer: Expression<T>;
+  constructor(name: Token, initializer: Expression<T>) {
     super();
     this.name = name;
     this.initializer = initializer;
@@ -123,10 +126,11 @@ export class VariableStatement<T> extends Statement<T> {
     return visitor.visitVariableStatement(this);
   }
 }
+
 export class WhileStatement<T> extends Statement<T> {
-  readonly condition: Expression<ExpressionType>;
+  readonly condition: Expression<T>;
   readonly body: Statement<T>;
-  constructor(condition: Expression<ExpressionType>, body: Statement<T>) {
+  constructor(condition: Expression<T>, body: Statement<T>) {
     super();
     this.condition = condition;
     this.body = body;

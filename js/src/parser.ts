@@ -16,8 +16,8 @@ import {
   GroupingExpression,
   LiteralExpression,
   UnaryExpression,
-  ExpressionType,
 } from './expression';
+import { ExpressionType } from "./type";
 import { TokenType } from './tokenType';
 import Token from './token';
 

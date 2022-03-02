@@ -18,10 +18,12 @@ import {
 import { TokenType } from './tokenType';
 
 class Interpreter implements ExpressionVisitor<LiteralType> {
-  visitAssignExpr = (expr: AssignExpression<LiteralType>) => {
+  visitAssignExpression = (expr: AssignExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.value);
   };
-  visitBinaryExpr = (expr: BinaryExpression<LiteralType>): LiteralType => {
+  visitBinaryExpression = (
+    expr: BinaryExpression<LiteralType>,
+  ): LiteralType => {
     const left: LiteralType = this.evaluate(expr.left);
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
@@ -66,38 +68,42 @@ class Interpreter implements ExpressionVisitor<LiteralType> {
     }
     return null;
   };
-  visitCallExpr = (expr: CallExpression<LiteralType>) => {
+  visitCallExpression = (expr: CallExpression<LiteralType>) => {
     return this.parenthesize(
       expr.paren.lexeme,
       expr.callee,
-      ...expr.argumentsList,
+      ...expr.argumentList,
     );
   };
-  visitGetExpr = (expr: GetExpression<LiteralType>) => {
+  visitGetExpression = (expr: GetExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.object);
   };
-  visitSetExpr = (expr: SetExpression<LiteralType>) => {
+  visitSetExpression = (expr: SetExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.object, expr.value);
   };
-  visitLogicalExpr = (expr: LogicalExpression<LiteralType>) => {
+  visitLogicalExpression = (expr: LogicalExpression<LiteralType>) => {
     return this.parenthesize(expr.operator.lexeme, expr.left, expr.right);
   };
-  visitSuperExpr = (expr: SuperExpression<LiteralType>) => {
+  visitSuperExpression = (expr: SuperExpression<LiteralType>) => {
     return this.parenthesize(expr.keyword.lexeme, expr.value);
   };
-  visitThisExpr = (expr: ThisExpression<LiteralType>) => {
+  visitThisExpression = (expr: ThisExpression<LiteralType>) => {
     return this.parenthesize(expr.keyword.lexeme);
   };
-  visitVariableExpr = (expr: VariableExpression<LiteralType>) => {
+  visitVariableExpression = (expr: VariableExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme);
   };
-  visitGroupingExpr = (expr: GroupingExpression<LiteralType>): LiteralType => {
+  visitGroupingExpression = (
+    expr: GroupingExpression<LiteralType>,
+  ): LiteralType => {
     return this.evaluate(expr.expression);
   };
-  visitLiteralExpr = (expr: LiteralExpression<LiteralType>): LiteralType => {
+  visitLiteralExpression = (
+    expr: LiteralExpression<LiteralType>,
+  ): LiteralType => {
     return expr.value;
   };
-  visitUnaryExpr = (expr: UnaryExpression<LiteralType>): LiteralType => {
+  visitUnaryExpression = (expr: UnaryExpression<LiteralType>): LiteralType => {
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
       case TokenType.MINUS:
