@@ -14,7 +14,6 @@ export interface StatementVisitor<T> {
 export abstract class Statement<T> {
   abstract accept(visitor: StatementVisitor<T>): T;
 }
-
 export class BlockStatement<T> extends Statement<T> {
   readonly statements: Statement<T>[];
   constructor(statements: Statement<T>[]) {
@@ -25,7 +24,6 @@ export class BlockStatement<T> extends Statement<T> {
     return visitor.visitBlockStatement(this);
   }
 }
-
 export class ClassStatement<T> extends Statement<T> {
   readonly name: Token;
   readonly superClass: VariableExpression<T>;
@@ -44,7 +42,6 @@ export class ClassStatement<T> extends Statement<T> {
     return visitor.visitClassStatement(this);
   }
 }
-
 export class ExpressionStatement<T> extends Statement<T> {
   readonly expression: Expression<T>;
   constructor(expression: Expression<T>) {
@@ -55,7 +52,6 @@ export class ExpressionStatement<T> extends Statement<T> {
     return visitor.visitExpressionStatement(this);
   }
 }
-
 export class FunctionStatement<T> extends Statement<T> {
   readonly name: Token;
   readonly body: Statement<T>;
@@ -70,7 +66,6 @@ export class FunctionStatement<T> extends Statement<T> {
     return visitor.visitFunctionStatement(this);
   }
 }
-
 export class IfStatement<T> extends Statement<T> {
   readonly condition: Expression<T>;
   readonly thenBranch: Statement<T>;
@@ -89,7 +84,6 @@ export class IfStatement<T> extends Statement<T> {
     return visitor.visitIfStatement(this);
   }
 }
-
 export class PrintStatement<T> extends Statement<T> {
   readonly expression: Expression<T>;
   constructor(expression: Expression<T>) {
@@ -100,7 +94,6 @@ export class PrintStatement<T> extends Statement<T> {
     return visitor.visitPrintStatement(this);
   }
 }
-
 export class ReturnStatement<T> extends Statement<T> {
   readonly keyword: Token;
   readonly value: Expression<T>;
@@ -113,7 +106,6 @@ export class ReturnStatement<T> extends Statement<T> {
     return visitor.visitReturnStatement(this);
   }
 }
-
 export class VariableStatement<T> extends Statement<T> {
   readonly name: Token;
   readonly initializer: Expression<T>;
@@ -126,7 +118,6 @@ export class VariableStatement<T> extends Statement<T> {
     return visitor.visitVariableStatement(this);
   }
 }
-
 export class WhileStatement<T> extends Statement<T> {
   readonly condition: Expression<T>;
   readonly body: Statement<T>;

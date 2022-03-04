@@ -16,8 +16,61 @@ import {
   VariableExpression,
 } from './expression';
 import { TokenType } from './tokenType';
+import {
+  BlockStatement,
+  ClassStatement,
+  ExpressionStatement,
+  FunctionStatement,
+  IfStatement,
+  PrintStatement,
+  ReturnStatement,
+  Statement,
+  StatementVisitor,
+  VariableStatement,
+  WhileStatement,
+} from './statement';
 
-class Interpreter implements ExpressionVisitor<LiteralType> {
+class Interpreter
+  implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
+{
+  interpret(list: Statement<LiteralType>[]) {
+    for (const item of list) {
+      this.execute(item);
+    }
+  }
+  private execute(statement: Statement<LiteralType>) {
+    statement.accept(this);
+  }
+  visitExpressionStatement = (statement: ExpressionStatement<LiteralType>) => {
+    return this.evaluate(statement.expression);
+  };
+  visitBlockStatement = (statement: BlockStatement<LiteralType>) => {
+    return null;
+  };
+  visitClassStatement = (statement: ClassStatement<LiteralType>) => {
+    return null;
+  };
+  visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
+    return null;
+  };
+  visitIfStatement = (statement: IfStatement<LiteralType>) => {
+    return null;
+  };
+  visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
+    const result = this.execute(statement);
+    console.log(result);
+    return null;
+  };
+  visitReturnStatement = (statement: ReturnStatement<LiteralType>) => {
+    return null;
+  };
+  visitVariableStatement = (statement: VariableStatement<LiteralType>) => {
+    return null;
+  };
+  visitWhileStatement = (statement: WhileStatement<LiteralType>) => {
+    return null;
+  };
+
   visitAssignExpression = (expr: AssignExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.value);
   };

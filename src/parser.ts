@@ -1,15 +1,3 @@
-/**
- * 
-expression     → equality ;
-equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-term           → factor ( ( "-" | "+" ) factor )* ;
-factor         → unary ( ( "/" | "*" ) unary )* ;
-unary          → ( "!" | "-" ) unary
-               | primary ;
-primary        → NUMBER | STRING | "true" | "false" | "nil"
-               | "(" expression ")" ;
- */
 import {
   BinaryExpression,
   Expression,
@@ -17,15 +5,39 @@ import {
   LiteralExpression,
   UnaryExpression,
 } from './expression';
-import { ExpressionType } from "./type";
+import { ExpressionType } from './type';
 import { TokenType } from './tokenType';
 import Token from './token';
+import { ExpressionStatement, PrintStatement, Statement } from './statement';
 
 class Parser {
   private readonly tokens: Token[];
   private current = 0;
   constructor(tokens: Token[]) {
     this.tokens = tokens;
+  }
+  parse(): Statement<ExpressionType>[] {
+    const statements: Statement<ExpressionType>[] = [];
+    while (!this.isAtEnd()) {
+      statements.push(this.statement());
+    }
+    return statements;
+  }
+  private statement(): Statement<ExpressionType> {
+    if (this.match(TokenType.PRINT)) {
+      return this.printStatement();
+    }
+    return this.expressionStatement();
+  }
+  private printStatement(): Statement<ExpressionType> {
+    const expr = this.expression();
+    this.consume(TokenType.COMMA, 'expected ; after print');
+    return new PrintStatement<ExpressionType>(expr);
+  }
+  private expressionStatement(): Statement<ExpressionType> {
+    const expr = this.expression();
+    this.consume(TokenType.COMMA, 'expected ; after expression');
+    return new ExpressionStatement<ExpressionType>(expr);
   }
   public expression(): Expression<ExpressionType> {
     return this.equality();

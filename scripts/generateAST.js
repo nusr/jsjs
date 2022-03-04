@@ -16,36 +16,28 @@ function defineAST(fileName, list, imports) {
   const visitor = params
     .map((item) => {
       const { className } = item;
-      return `visit${className}${fileName}: (${realFileName}: ${className}${fileName}<T>) => T`;
+      return `  visit${className}${fileName}: (${realFileName}: ${className}${fileName}<T>) => T;`;
     })
     .join('\n');
   const visitorName = `${fileName}Visitor<T>`;
   const classList = params.map((item) => {
     const { className, names } = item;
     const temp = names.map((t) => t.split(':').shift());
-    return `
-    export class ${className}${fileName}<T> extends ${fileName}<T> {
-      ${names.map((v) => `readonly ${v};`).join('\n')}
-      constructor(${names.join(',')}) {
-        super();
-        ${temp.map((v) => `this.${v} = ${v};`).join('\n')}
-      }
-      accept(visitor: ${visitorName}): T {
-        return visitor.visit${className}${fileName}(this);
-      }
-    }
-    `;
+    return `export class ${className}${fileName}<T> extends ${fileName}<T> {
+${names.map((v) => `  readonly ${v};`).join('\n')}
+  constructor(${names.join(', ')}) {
+    super();
+${temp.map((v) => `    this.${v} = ${v};`).join('\n')}
+  }
+  accept(visitor: ${visitorName}): T {
+    return visitor.visit${className}${fileName}(this);
+  }
+}`;
   });
 
-  const text = `${imports};
-  
-  export interface ${visitorName} {
-    ${visitor}
-  }
-  export abstract class ${fileName}<T> {
-    abstract accept(visitor: ${visitorName}): T;
-  }
-  ${classList.join('\n')}
+  const text = `${imports};\nexport interface ${visitorName} {\n${visitor}\n}\nexport abstract class ${fileName}<T> {
+  abstract accept(visitor: ${visitorName}): T;
+}\n${classList.join('\n')}
   `;
   fs.writeFile(filePath, text, 'utf-8', (error) => {
     if (error) {

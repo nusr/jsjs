@@ -16,7 +16,6 @@ export interface ExpressionVisitor<T> {
 export abstract class Expression<T> {
   abstract accept(visitor: ExpressionVisitor<T>): T;
 }
-
 export class AssignExpression<T> extends Expression<T> {
   readonly name: Token;
   readonly value: Expression<T>;
@@ -29,7 +28,6 @@ export class AssignExpression<T> extends Expression<T> {
     return visitor.visitAssignExpression(this);
   }
 }
-
 export class BinaryExpression<T> extends Expression<T> {
   readonly left: Expression<T>;
   readonly operator: Token;
@@ -44,7 +42,6 @@ export class BinaryExpression<T> extends Expression<T> {
     return visitor.visitBinaryExpression(this);
   }
 }
-
 export class CallExpression<T> extends Expression<T> {
   readonly callee: Expression<T>;
   readonly paren: Token;
@@ -63,7 +60,6 @@ export class CallExpression<T> extends Expression<T> {
     return visitor.visitCallExpression(this);
   }
 }
-
 export class GetExpression<T> extends Expression<T> {
   readonly object: Expression<T>;
   readonly name: Token;
@@ -76,7 +72,6 @@ export class GetExpression<T> extends Expression<T> {
     return visitor.visitGetExpression(this);
   }
 }
-
 export class SetExpression<T> extends Expression<T> {
   readonly object: Expression<T>;
   readonly name: Token;
@@ -91,7 +86,6 @@ export class SetExpression<T> extends Expression<T> {
     return visitor.visitSetExpression(this);
   }
 }
-
 export class GroupingExpression<T> extends Expression<T> {
   readonly expression: Expression<T>;
   constructor(expression: Expression<T>) {
@@ -102,7 +96,6 @@ export class GroupingExpression<T> extends Expression<T> {
     return visitor.visitGroupingExpression(this);
   }
 }
-
 export class LiteralExpression<T> extends Expression<T> {
   readonly value: LiteralType;
   constructor(value: LiteralType) {
@@ -113,7 +106,6 @@ export class LiteralExpression<T> extends Expression<T> {
     return visitor.visitLiteralExpression(this);
   }
 }
-
 export class LogicalExpression<T> extends Expression<T> {
   readonly left: Expression<T>;
   readonly operator: Token;
@@ -128,7 +120,6 @@ export class LogicalExpression<T> extends Expression<T> {
     return visitor.visitLogicalExpression(this);
   }
 }
-
 export class SuperExpression<T> extends Expression<T> {
   readonly keyword: Token;
   readonly value: Expression<T>;
@@ -141,7 +132,6 @@ export class SuperExpression<T> extends Expression<T> {
     return visitor.visitSuperExpression(this);
   }
 }
-
 export class ThisExpression<T> extends Expression<T> {
   readonly keyword: Token;
   constructor(keyword: Token) {
@@ -152,7 +142,6 @@ export class ThisExpression<T> extends Expression<T> {
     return visitor.visitThisExpression(this);
   }
 }
-
 export class UnaryExpression<T> extends Expression<T> {
   readonly operator: Token;
   readonly right: Expression<T>;
@@ -165,7 +154,6 @@ export class UnaryExpression<T> extends Expression<T> {
     return visitor.visitUnaryExpression(this);
   }
 }
-
 export class VariableExpression<T> extends Expression<T> {
   readonly name: Token;
   constructor(name: Token) {
