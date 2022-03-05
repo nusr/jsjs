@@ -31,12 +31,16 @@ class Parser {
   }
   private printStatement(): Statement<ExpressionType> {
     const expr = this.expression();
-    this.consume(TokenType.SEMICOLON, 'expected ; after print');
+    if (!this.isAtEnd()) {
+      this.consume(TokenType.SEMICOLON, 'expected ; after print');
+    }
     return new PrintStatement<ExpressionType>(expr);
   }
   private expressionStatement(): Statement<ExpressionType> {
     const expr = this.expression();
-    this.consume(TokenType.SEMICOLON, 'expected ; after expression');
+    if (!this.isAtEnd()) {
+      this.consume(TokenType.SEMICOLON, 'expected ; after expression');
+    }
     return new ExpressionStatement<ExpressionType>(expr);
   }
   public expression(): Expression<ExpressionType> {

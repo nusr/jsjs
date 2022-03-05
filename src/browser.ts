@@ -1,7 +1,6 @@
 import Lox from '.';
 import eventEmitter from './EventEmitter';
 
-
 const lox = new Lox();
 const dom = document.querySelector<HTMLTextAreaElement>('#code');
 const button = document.querySelector<HTMLButtonElement>('#run');
@@ -14,6 +13,7 @@ eventEmitter.on('print', (data) => {
 });
 
 if (button) {
+  window.localStorage.setItem('debug', '*');
   button.addEventListener('click', () => {
     lox.run(dom?.value);
   });

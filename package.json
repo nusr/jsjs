@@ -14,7 +14,7 @@
     "watch": "tsc -w",
     "ast": "node ./scripts/generateAST.js",
     "type": "npm run prebuild && tsc",
-    "bin": "node ./bin/lox"
+    "bin": "npx tsc && node ./bin/lox"
   },
   "keywords": [],
   "author": "",

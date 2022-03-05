@@ -1,3 +1,4 @@
 #!/usr/bin/env node
 const { init } = require('../lib/node.js');
+process.env.DEBUG = '*';
 init();
