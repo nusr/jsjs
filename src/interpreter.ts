@@ -1,4 +1,4 @@
-import { LiteralType } from './token';
+import type { LiteralType } from './type';
 import {
   ExpressionVisitor,
   Expression,
@@ -33,16 +33,17 @@ import {
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
 {
-  interpret(list: Statement<LiteralType>[]) {
+  interpret = (list: Statement<LiteralType>[]): void => {
     for (const item of list) {
       this.execute(item);
     }
-  }
-  private execute(statement: Statement<LiteralType>) {
+  };
+  private execute = (statement: Statement<LiteralType>) => {
     statement.accept(this);
-  }
+  };
   visitExpressionStatement = (statement: ExpressionStatement<LiteralType>) => {
-    return this.evaluate(statement.expression);
+     this.evaluate(statement.expression);
+     return null;
   };
   visitBlockStatement = (statement: BlockStatement<LiteralType>) => {
     return null;
@@ -57,7 +58,7 @@ class Interpreter
     return null;
   };
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
-    const result = this.execute(statement);
+    const result = this.evaluate(statement.expression);
     console.log(result);
     return null;
   };

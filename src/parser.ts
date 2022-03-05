@@ -16,13 +16,13 @@ class Parser {
   constructor(tokens: Token[]) {
     this.tokens = tokens;
   }
-  parse(): Statement<ExpressionType>[] {
+  parse = (): Statement<ExpressionType>[] => {
     const statements: Statement<ExpressionType>[] = [];
     while (!this.isAtEnd()) {
       statements.push(this.statement());
     }
     return statements;
-  }
+  };
   private statement(): Statement<ExpressionType> {
     if (this.match(TokenType.PRINT)) {
       return this.printStatement();
@@ -31,12 +31,12 @@ class Parser {
   }
   private printStatement(): Statement<ExpressionType> {
     const expr = this.expression();
-    this.consume(TokenType.COMMA, 'expected ; after print');
+    this.consume(TokenType.SEMICOLON, 'expected ; after print');
     return new PrintStatement<ExpressionType>(expr);
   }
   private expressionStatement(): Statement<ExpressionType> {
     const expr = this.expression();
-    this.consume(TokenType.COMMA, 'expected ; after expression');
+    this.consume(TokenType.SEMICOLON, 'expected ; after expression');
     return new ExpressionStatement<ExpressionType>(expr);
   }
   public expression(): Expression<ExpressionType> {

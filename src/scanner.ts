@@ -1,6 +1,7 @@
-import Token, { LiteralType } from './token';
+import Token from './token';
 import { TokenType } from './tokenType';
 import { defaultErrorHandler } from './error';
+import type { LiteralType } from './type';
 const EMPTY_DATA = '\0';
 
 class Scanner {
@@ -31,14 +32,14 @@ class Scanner {
   constructor(text: string) {
     this.source = text;
   }
-  scanTokens() {
+  scanTokens = () => {
     while (!this.isAtEnd()) {
       this.start = this.current;
       this.scanToken();
     }
     this.tokens.push(new Token(TokenType.EOF, '', null, this.line));
     return this.tokens;
-  }
+  };
   private isAtEnd() {
     return this.current >= this.source.length;
   }

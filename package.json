@@ -13,7 +13,8 @@
     "test": "node ./scripts/visitTest.js",
     "watch": "tsc -w",
     "ast": "node ./scripts/generateAST.js",
-    "type": "npm run prebuild && tsc"
+    "type": "npm run prebuild && tsc",
+    "bin": "node ./bin/lox"
   },
   "keywords": [],
   "author": "",

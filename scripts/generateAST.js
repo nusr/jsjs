@@ -64,7 +64,7 @@ defineAST(
     `Unary # operator: Token, right: ${expressionName}`,
     `Variable # name: Token`,
   ],
-  "import Token, { LiteralType } from './token'",
+  "import Token from './token';\nimport type { LiteralType } from './type';",
 );
 
 const StatementName = 'Statement<T>';
