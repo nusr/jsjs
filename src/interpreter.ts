@@ -1,7 +1,6 @@
 import type { LiteralType } from './type';
-import {
-  ExpressionVisitor,
-  Expression,
+
+import type {
   BinaryExpression,
   GroupingExpression,
   LiteralExpression,
@@ -13,22 +12,27 @@ import {
   LogicalExpression,
   SuperExpression,
   ThisExpression,
+  Expression,
+  ExpressionVisitor,
   VariableExpression,
 } from './expression';
 import { TokenType } from './tokenType';
-import {
-  BlockStatement,
-  ClassStatement,
-  ExpressionStatement,
+
+import type {
   FunctionStatement,
   IfStatement,
   PrintStatement,
   ReturnStatement,
-  Statement,
   StatementVisitor,
-  VariableStatement,
+  ExpressionStatement,
+  Statement,
+  BlockStatement,
   WhileStatement,
+  ClassStatement,
+  VariableStatement,
 } from './statement';
+
+import eventEmitter from './EventEmitter';
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
@@ -42,33 +46,41 @@ class Interpreter
     statement.accept(this);
   };
   visitExpressionStatement = (statement: ExpressionStatement<LiteralType>) => {
-     this.evaluate(statement.expression);
-     return null;
+    this.evaluate(statement.expression);
+    return null;
   };
   visitBlockStatement = (statement: BlockStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
   visitClassStatement = (statement: ClassStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
   visitIfStatement = (statement: IfStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
-    const result = this.evaluate(statement.expression);
+    const result: LiteralType = this.evaluate(statement.expression);
     console.log(result);
+    eventEmitter.emit('print', { value: result })
     return null;
   };
   visitReturnStatement = (statement: ReturnStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
   visitVariableStatement = (statement: VariableStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
   visitWhileStatement = (statement: WhileStatement<LiteralType>) => {
+    console.log(statement);
     return null;
   };
 

@@ -5,9 +5,9 @@ import {
   LiteralExpression,
   UnaryExpression,
 } from './expression';
-import { ExpressionType } from './type';
+import type { ExpressionType } from './type';
 import { TokenType } from './tokenType';
-import Token from './token';
+import type Token from './token';
 import { ExpressionStatement, PrintStatement, Statement } from './statement';
 
 class Parser {

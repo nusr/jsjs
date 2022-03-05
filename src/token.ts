@@ -1,4 +1,4 @@
-import { TokenType } from './tokenType';
+import type { TokenType } from './tokenType';
 import type { LiteralType } from './type';
 class Token {
   readonly type: TokenType;

@@ -1,7 +1,7 @@
 import Scanner from './scanner';
 import Parser from './parser';
 import Interpreter from './interpreter';
-import { Statement } from './statement';
+import type { Statement } from './statement';
 import type { LiteralType } from './type';
 
 export class Lox {

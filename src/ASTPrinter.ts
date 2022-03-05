@@ -1,4 +1,4 @@
-import {
+import type {
   ExpressionVisitor,
   Expression,
   BinaryExpression,
@@ -14,7 +14,7 @@ import {
   ThisExpression,
   VariableExpression,
 } from './expression';
-import { ExpressionType } from './type';
+import type { ExpressionType } from './type';
 
 class ASTPrinter implements ExpressionVisitor<ExpressionType> {
   visitAssignExpression = (expr: AssignExpression<ExpressionType>) => {

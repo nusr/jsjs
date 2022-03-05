@@ -1,6 +1,8 @@
+import type { LiteralType } from './type';
+
 export type EventType = {
   print: {
-    value: any;
+    value: LiteralType;
   };
 };
 
@@ -83,5 +85,5 @@ export class EventEmitter<
   }
 }
 
-const eventEmitter = new EventEmitter();
+const eventEmitter = new EventEmitter<EventType>();
 export default eventEmitter;
