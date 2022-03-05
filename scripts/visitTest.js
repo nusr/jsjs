@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { runFile } = require('../lib/node.js');
+const Lox = require('../lib/index.js').default;
 
 const getAllFiles = (dirPath, fileList = [], index = 0) => {
   files = fs.readdirSync(dirPath);
@@ -15,7 +15,23 @@ const getAllFiles = (dirPath, fileList = [], index = 0) => {
 };
 const dirPath = path.join(__dirname, '../test');
 const fileList = getAllFiles(dirPath);
+const failList = [];
+const successList = [];
+const lox = new Lox();
+function runFile(filePath) {
+  const temp = path.resolve(process.cwd(), filePath);
+  const data = fs.readFileSync(temp, 'utf-8');
+  return lox.run(data);
+}
 // console.log(dirPath, fileList);
 for (const item of fileList) {
-  runFile(item);
+  try {
+    runFile(item);
+    successList.push(item);
+  } catch (error) {
+    failList.push(item);
+  }
 }
+console.log(
+  `total: ${fileList.length}, success: ${successList.length}, fail: ${failList.length}`,
+);

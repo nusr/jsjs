@@ -4,11 +4,17 @@ import {
   GroupingExpression,
   LiteralExpression,
   UnaryExpression,
+  VariableExpression,
 } from './expression';
 import type { ExpressionType } from './type';
 import { TokenType } from './tokenType';
 import type Token from './token';
-import { ExpressionStatement, PrintStatement, Statement } from './statement';
+import {
+  ExpressionStatement,
+  PrintStatement,
+  Statement,
+  VariableStatement,
+} from './statement';
 
 class Parser {
   private readonly tokens: Token[];
@@ -19,10 +25,28 @@ class Parser {
   parse = (): Statement<ExpressionType>[] => {
     const statements: Statement<ExpressionType>[] = [];
     while (!this.isAtEnd()) {
-      statements.push(this.statement());
+      statements.push(this.declaration());
     }
     return statements;
   };
+  private declaration(): Statement<ExpressionType> {
+    if (this.match(TokenType.VAR)) {
+      this.varStatement();
+    }
+    return this.statement();
+  }
+  private varStatement(): Statement<ExpressionType> {
+    const name: Token = this.consume(
+      TokenType.IDENTIFIER,
+      'expect identifier after var',
+    );
+    let initializer: Expression<ExpressionType> | null = null;
+    if (this.match(TokenType.EQUAL)) {
+      initializer = this.expression();
+    }
+    this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
+    return new VariableStatement(name, initializer);
+  }
   private statement(): Statement<ExpressionType> {
     if (this.match(TokenType.PRINT)) {
       return this.printStatement();
@@ -118,6 +142,9 @@ class Parser {
       );
       return new GroupingExpression(expr);
     }
+    if (this.match(TokenType.IDENTIFIER)) {
+      return new VariableExpression(this.previous());
+    }
     throw new Error(
       `parser can not handle token: ${JSON.stringify(this.peek())}`,
     );
@@ -125,7 +152,7 @@ class Parser {
   private consume(type: TokenType, message: string) {
     if (this.peek().type === type) {
       this.advance();
-      return;
+      return this.previous();
     }
     throw new Error(message);
   }

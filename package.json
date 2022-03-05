@@ -9,12 +9,16 @@
   "scripts": {
     "start": "node ./scripts/build.js NODE_ENV=development",
     "build": "node ./scripts/build.js NODE_ENV=production",
-    "prebuild": "node ./scripts/pre.js",
+    "prebuild": "npm run delete",
+    "delete": "node ./scripts/pre.js",
+    "pretest": "npm run type",
     "test": "node ./scripts/visitTest.js",
     "watch": "tsc -w",
     "ast": "node ./scripts/generateAST.js",
-    "type": "npm run prebuild && tsc",
-    "bin": "npx tsc && node ./bin/lox"
+    "type": "npx tsc",
+    "pretype": "npm run delete",
+    "prebin": "npm run tsc",
+    "bin": "node ./bin/lox"
   },
   "keywords": [],
   "author": "",

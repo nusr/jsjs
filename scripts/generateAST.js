@@ -79,7 +79,7 @@ defineAST(
     `If # condition: ${expressionName}, thenBranch: ${StatementName}, elseBranch: ${StatementName}`,
     `Print # expression: ${expressionName}`,
     `Return # keyword: Token, value: ${expressionName}`,
-    `Variable # name: Token, initializer: ${expressionName}`,
+    `Variable # name: Token, initializer: ${expressionName} | null`,
     `While # condition: ${expressionName}, body: ${StatementName}`,
   ],
   "import type Token from './token';\nimport type { Expression, VariableExpression } from './expression'",
