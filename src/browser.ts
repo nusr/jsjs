@@ -8,7 +8,12 @@ const result = document.querySelector<HTMLSpanElement>('#result');
 
 eventEmitter.on('print', (data) => {
   if (result) {
-    result.textContent = `result: ${data.value}, type: ${typeof data.value}`;
+    const time = new Date().toLocaleString();
+    result.innerHTML =
+      result.innerHTML +
+      `<div>time: ${time}, result: ${
+        data.value
+      }, type: ${typeof data.value}</div>`;
   }
 });
 

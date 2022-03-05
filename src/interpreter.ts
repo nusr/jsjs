@@ -15,7 +15,7 @@ import type {
   Expression,
   ExpressionVisitor,
   VariableExpression,
-} from './expression';
+} from './Expression';
 import { TokenType } from './tokenType';
 
 import type {
@@ -30,28 +30,50 @@ import type {
   WhileStatement,
   ClassStatement,
   VariableStatement,
-} from './statement';
+} from './Statement';
 
 import eventEmitter from './EventEmitter';
+import Environment from './Environment';
+import Debug from './debug';
+
+const debug = new Debug('interpreter').init();
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
 {
+  private environment = new Environment(null);
+
   interpret = (list: Statement<LiteralType>[]): void => {
     for (const item of list) {
       this.execute(item);
     }
   };
   private execute = (statement: Statement<LiteralType>) => {
-    statement.accept(this);
+    return statement.accept(this);
+  };
+  private evaluate = (expr: Expression<LiteralType>): LiteralType => {
+    return expr.accept(this);
   };
   visitExpressionStatement = (statement: ExpressionStatement<LiteralType>) => {
-    this.evaluate(statement.expression);
-    return null;
+    return this.evaluate(statement.expression);
   };
   visitBlockStatement = (statement: BlockStatement<LiteralType>) => {
-    console.log(statement);
+    this.executeBlock(statement.statements, new Environment(this.environment));
     return null;
+  };
+  private executeBlock = (
+    statements: Statement<LiteralType>[],
+    environment: Environment,
+  ): void => {
+    const previous = this.environment;
+    try {
+      this.environment = environment;
+      for (let statement of statements) {
+        this.execute(statement);
+      }
+    } finally {
+      this.environment = previous;
+    }
   };
   visitClassStatement = (statement: ClassStatement<LiteralType>) => {
     console.log(statement);
@@ -68,16 +90,20 @@ class Interpreter
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
     const result: LiteralType = this.evaluate(statement.expression);
     console.log(result);
-    eventEmitter.emit('print', { value: result })
-    return null;
+    eventEmitter.emit('print', { value: result });
+    return result;
   };
   visitReturnStatement = (statement: ReturnStatement<LiteralType>) => {
     console.log(statement);
     return null;
   };
   visitVariableStatement = (statement: VariableStatement<LiteralType>) => {
-    console.log(statement);
-    return null;
+    let value = null;
+    if (statement.initializer !== null) {
+      value = this.evaluate(statement.initializer);
+    }
+    this.environment.define(statement.name.lexeme, value);
+    return value;
   };
   visitWhileStatement = (statement: WhileStatement<LiteralType>) => {
     console.log(statement);
@@ -85,7 +111,9 @@ class Interpreter
   };
 
   visitAssignExpression = (expr: AssignExpression<LiteralType>) => {
-    return this.parenthesize(expr.name.lexeme, expr.value);
+    const temp: LiteralType = this.evaluate(expr.value);
+    this.environment.assign(expr.name, temp);
+    return temp;
   };
   visitBinaryExpression = (
     expr: BinaryExpression<LiteralType>,
@@ -108,6 +136,7 @@ class Interpreter
         ) {
           return String(left) + String(right);
         }
+        return null;
         break;
       case TokenType.STAR:
         return Number(left) * Number(right);
@@ -157,7 +186,7 @@ class Interpreter
     return this.parenthesize(expr.keyword.lexeme);
   };
   visitVariableExpression = (expr: VariableExpression<LiteralType>) => {
-    return this.parenthesize(expr.name.lexeme);
+    return this.environment.get(expr.name);
   };
   visitGroupingExpression = (
     expr: GroupingExpression<LiteralType>,
@@ -178,10 +207,6 @@ class Interpreter
         return !this.isTruthy(right);
     }
     return null;
-  };
-
-  evaluate = (expr: Expression<LiteralType>) => {
-    return expr.accept(this);
   };
 
   print = (expr: Expression<LiteralType>) => {

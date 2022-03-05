@@ -1,4 +1,4 @@
-import Token from './token';
+import Token from './Token';
 import { TokenType } from './tokenType';
 import { defaultErrorHandler } from './error';
 import type { LiteralType } from './type';

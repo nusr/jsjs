@@ -1,7 +1,7 @@
 import Scanner from './scanner';
-import Parser from './parser';
-import Interpreter from './interpreter';
-import type { Statement } from './statement';
+import Parser from './Parser';
+import Interpreter from './Interpreter';
+import type { Statement } from './Statement';
 import type { LiteralType } from './type';
 import Debug from './debug';
 

@@ -1,20 +1,22 @@
 import {
+  AssignExpression,
   BinaryExpression,
   Expression,
   GroupingExpression,
   LiteralExpression,
   UnaryExpression,
   VariableExpression,
-} from './expression';
+} from './Expression';
 import type { ExpressionType } from './type';
 import { TokenType } from './tokenType';
-import type Token from './token';
+import type Token from './Token';
 import {
+  BlockStatement,
   ExpressionStatement,
   PrintStatement,
   Statement,
   VariableStatement,
-} from './statement';
+} from './Statement';
 
 class Parser {
   private readonly tokens: Token[];
@@ -31,8 +33,9 @@ class Parser {
   };
   private declaration(): Statement<ExpressionType> {
     if (this.match(TokenType.VAR)) {
-      this.varStatement();
+      return this.varStatement();
     }
+
     return this.statement();
   }
   private varStatement(): Statement<ExpressionType> {
@@ -51,7 +54,18 @@ class Parser {
     if (this.match(TokenType.PRINT)) {
       return this.printStatement();
     }
+    if (this.match(TokenType.lEFT_BRACE)) {
+      return this.block();
+    }
     return this.expressionStatement();
+  }
+  private block(): Statement<ExpressionType> {
+    const statements: Statement<ExpressionType>[] = [];
+    while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+      statements.push(this.declaration());
+    }
+    this.consume(TokenType.RIGHT_BRACE, 'expect } after block');
+    return new BlockStatement<ExpressionType>(statements);
   }
   private printStatement(): Statement<ExpressionType> {
     const expr = this.expression();
@@ -68,7 +82,20 @@ class Parser {
     return new ExpressionStatement<ExpressionType>(expr);
   }
   public expression(): Expression<ExpressionType> {
-    return this.equality();
+    return this.assignment();
+  }
+  private assignment(): Expression<ExpressionType> {
+    const expr = this.equality();
+    if (this.match(TokenType.EQUAL)) {
+      const equal: Token = this.previous();
+      const value = this.assignment();
+      if (expr instanceof VariableExpression) {
+        const name = expr.name;
+        return new AssignExpression<ExpressionType>(name, value);
+      }
+      throw new Error(`invalid assign target: ${equal}`);
+    }
+    return expr;
   }
   private equality(): Expression<ExpressionType> {
     let expr: Expression<ExpressionType> = this.comparison();
@@ -134,6 +161,9 @@ class Parser {
     if (this.match(TokenType.NUMBER, TokenType.STRING)) {
       return new LiteralExpression(this.previous().literal);
     }
+    if (this.match(TokenType.IDENTIFIER)) {
+      return new VariableExpression(this.previous());
+    }
     if (this.match(TokenType.LEFT_PAREN)) {
       const expr: Expression<ExpressionType> = this.expression();
       this.consume(
@@ -142,9 +172,7 @@ class Parser {
       );
       return new GroupingExpression(expr);
     }
-    if (this.match(TokenType.IDENTIFIER)) {
-      return new VariableExpression(this.previous());
-    }
+
     throw new Error(
       `parser can not handle token: ${JSON.stringify(this.peek())}`,
     );
