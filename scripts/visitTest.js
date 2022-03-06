@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const Lox = require('../lib/index.js').default;
+const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
+const jsonData = require(jsonFilePath);
 
 const getAllFiles = (dirPath, fileList = [], index = 0) => {
   files = fs.readdirSync(dirPath);
@@ -23,7 +25,7 @@ function runFile(filePath) {
   const data = fs.readFileSync(temp, 'utf-8');
   return lox.run(data);
 }
-// console.log(dirPath, fileList);
+
 for (const item of fileList) {
   try {
     runFile(item);
@@ -34,4 +36,20 @@ for (const item of fileList) {
 }
 console.log(
   `total: ${fileList.length}, success: ${successList.length}, fail: ${failList.length}`,
+);
+jsonData.unshift({
+  time: new Date().toLocaleString('en'),
+  total: fileList.length,
+  success: successList.length,
+  fail: failList.length,
+});
+fs.writeFile(
+  jsonFilePath,
+  JSON.stringify(jsonData, null, 2),
+  'utf-8',
+  (error) => {
+    if (error) {
+      console.log(error);
+    }
+  },
 );
