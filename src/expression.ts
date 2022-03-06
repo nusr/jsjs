@@ -1,5 +1,5 @@
 import type Token from './Token';
-import type { LiteralType } from './type';
+import type { LiteralType } from './type';;
 export interface ExpressionVisitor<T> {
   visitAssignExpression: (expression: AssignExpression<T>) => T;
   visitBinaryExpression: (expression: BinaryExpression<T>) => T;
@@ -47,11 +47,7 @@ export class CallExpression<T> extends Expression<T> {
   readonly callee: Expression<T>;
   readonly paren: Token;
   readonly argumentList: Expression<T>[];
-  constructor(
-    callee: Expression<T>,
-    paren: Token,
-    argumentList: Expression<T>[],
-  ) {
+  constructor(callee: Expression<T>, paren: Token, argumentList: Expression<T>[]) {
     super();
     this.callee = callee;
     this.paren = paren;
@@ -165,3 +161,4 @@ export class VariableExpression<T> extends Expression<T> {
     return visitor.visitVariableExpression(this);
   }
 }
+  

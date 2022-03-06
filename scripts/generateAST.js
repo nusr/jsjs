@@ -76,7 +76,7 @@ defineAST(
     `Class # name: Token, superClass: VariableExpression<T>, methods: FunctionStatement<T>[]`,
     `Expression # expression: ${expressionName}`,
     `Function # name: Token, body: ${StatementName}, params: Token[]`,
-    `If # condition: ${expressionName}, thenBranch: ${StatementName}, elseBranch: ${StatementName}`,
+    `If # condition: ${expressionName}, thenBranch: ${StatementName}, elseBranch: ${StatementName} | null`,
     `Print # expression: ${expressionName}`,
     `Return # keyword: Token, value: ${expressionName}`,
     `Variable # name: Token, initializer: ${expressionName} | null`,

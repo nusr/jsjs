@@ -18,8 +18,16 @@ eventEmitter.on('print', (data) => {
 });
 
 if (button) {
+  const localKey = 'local_key';
   window.localStorage.setItem('debug', '*');
+  const temp = localStorage.getItem(localKey);
+  if (temp && dom) {
+    dom.value = temp;
+    lox.run(temp);
+  }
   button.addEventListener('click', () => {
-    lox.run(dom?.value);
+    const text = dom?.value || '';
+    lox.run(text);
+    localStorage.setItem(localKey, text);
   });
 }

@@ -34,9 +34,9 @@ import type {
 
 import eventEmitter from './EventEmitter';
 import Environment from './Environment';
-import Debug from './debug';
+// import Debug from './debug';
 
-const debug = new Debug('interpreter').init();
+// const debug = new Debug('interpreter').init();
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
@@ -84,14 +84,18 @@ class Interpreter
     return null;
   };
   visitIfStatement = (statement: IfStatement<LiteralType>) => {
-    console.log(statement);
+    if (this.isTruthy(this.evaluate(statement.condition))) {
+      this.execute(statement.thenBranch);
+    } else if (statement.elseBranch) {
+      this.execute(statement.elseBranch);
+    }
     return null;
   };
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
     const result: LiteralType = this.evaluate(statement.expression);
     console.log(result);
     eventEmitter.emit('print', { value: result });
-    return result;
+    return null;
   };
   visitReturnStatement = (statement: ReturnStatement<LiteralType>) => {
     console.log(statement);
@@ -103,10 +107,12 @@ class Interpreter
       value = this.evaluate(statement.initializer);
     }
     this.environment.define(statement.name.lexeme, value);
-    return value;
+    return null;
   };
   visitWhileStatement = (statement: WhileStatement<LiteralType>) => {
-    console.log(statement);
+    while (this.isTruthy(this.evaluate(statement.condition))) {
+      this.execute(statement.body);
+    }
     return null;
   };
 
@@ -137,7 +143,6 @@ class Interpreter
           return String(left) + String(right);
         }
         return null;
-        break;
       case TokenType.STAR:
         return Number(left) * Number(right);
       case TokenType.SLASH: {
@@ -177,7 +182,17 @@ class Interpreter
     return this.parenthesize(expr.name.lexeme, expr.object, expr.value);
   };
   visitLogicalExpression = (expr: LogicalExpression<LiteralType>) => {
-    return this.parenthesize(expr.operator.lexeme, expr.left, expr.right);
+    const left = this.evaluate(expr.left);
+    if (expr.operator.type === TokenType.OR) {
+      if (this.isTruthy(left)) {
+        return left;
+      }
+    } else {
+      if (!this.isTruthy(left)) {
+        return left;
+      }
+    }
+    return this.evaluate(expr.right);
   };
   visitSuperExpression = (expr: SuperExpression<LiteralType>) => {
     return this.parenthesize(expr.keyword.lexeme, expr.value);

@@ -4,6 +4,7 @@ import {
   Expression,
   GroupingExpression,
   LiteralExpression,
+  LogicalExpression,
   UnaryExpression,
   VariableExpression,
 } from './Expression';
@@ -13,9 +14,11 @@ import type Token from './Token';
 import {
   BlockStatement,
   ExpressionStatement,
+  IfStatement,
   PrintStatement,
   Statement,
   VariableStatement,
+  WhileStatement,
 } from './Statement';
 
 class Parser {
@@ -51,13 +54,37 @@ class Parser {
     return new VariableStatement(name, initializer);
   }
   private statement(): Statement<ExpressionType> {
+    if (this.match(TokenType.IF)) {
+      return this.ifStatement();
+    }
     if (this.match(TokenType.PRINT)) {
       return this.printStatement();
+    }
+    if (this.match(TokenType.WHILE)) {
+      return this.whileStatement();
     }
     if (this.match(TokenType.lEFT_BRACE)) {
       return this.block();
     }
     return this.expressionStatement();
+  }
+  private whileStatement(): Statement<ExpressionType> {
+    this.consume(TokenType.LEFT_PAREN, 'expect ( after while');
+    const expression = this.expression();
+    this.consume(TokenType.RIGHT_PAREN, 'expect ) after while');
+    const body = this.statement();
+    return new WhileStatement<ExpressionType>(expression, body);
+  }
+  private ifStatement(): Statement<ExpressionType> {
+    this.consume(TokenType.LEFT_PAREN, 'expect ( after if');
+    const expression = this.expression();
+    this.consume(TokenType.RIGHT_PAREN, 'expect ) after if');
+    const thenBranch: Statement<ExpressionType> = this.statement();
+    let elseBranch: Statement<ExpressionType> | null = null;
+    if (this.match(TokenType.ELSE)) {
+      elseBranch = this.statement();
+    }
+    return new IfStatement<ExpressionType>(expression, thenBranch, elseBranch);
   }
   private block(): Statement<ExpressionType> {
     const statements: Statement<ExpressionType>[] = [];
@@ -85,7 +112,7 @@ class Parser {
     return this.assignment();
   }
   private assignment(): Expression<ExpressionType> {
-    const expr = this.equality();
+    const expr = this.or();
     if (this.match(TokenType.EQUAL)) {
       const equal: Token = this.previous();
       const value = this.assignment();
@@ -97,6 +124,27 @@ class Parser {
     }
     return expr;
   }
+
+  private or(): Expression<ExpressionType> {
+    let expr = this.and();
+    while (this.match(TokenType.OR)) {
+      const operator = this.previous();
+      const right = this.and();
+      expr = new LogicalExpression<ExpressionType>(expr, operator, right);
+    }
+    return expr;
+  }
+
+  private and(): Expression<ExpressionType> {
+    let expr = this.equality();
+    while (this.match(TokenType.AND)) {
+      const operator = this.previous();
+      const right = this.equality();
+      expr = new LogicalExpression<ExpressionType>(expr, operator, right);
+    }
+    return expr;
+  }
+
   private equality(): Expression<ExpressionType> {
     let expr: Expression<ExpressionType> = this.comparison();
     while (this.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
