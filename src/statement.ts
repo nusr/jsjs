@@ -28,7 +28,11 @@ export class ClassStatement<T> extends Statement<T> {
   readonly name: Token;
   readonly superClass: VariableExpression<T>;
   readonly methods: FunctionStatement<T>[];
-  constructor(name: Token, superClass: VariableExpression<T>, methods: FunctionStatement<T>[]) {
+  constructor(
+    name: Token,
+    superClass: VariableExpression<T>,
+    methods: FunctionStatement<T>[],
+  ) {
     super();
     this.name = name;
     this.superClass = superClass;
@@ -66,7 +70,11 @@ export class IfStatement<T> extends Statement<T> {
   readonly condition: Expression<T>;
   readonly thenBranch: Statement<T>;
   readonly elseBranch: Statement<T> | null;
-  constructor(condition: Expression<T>, thenBranch: Statement<T>, elseBranch: Statement<T> | null) {
+  constructor(
+    condition: Expression<T>,
+    thenBranch: Statement<T>,
+    elseBranch: Statement<T> | null,
+  ) {
     super();
     this.condition = condition;
     this.thenBranch = thenBranch;
@@ -122,4 +130,3 @@ export class WhileStatement<T> extends Statement<T> {
     return visitor.visitWhileStatement(this);
   }
 }
-  

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const Lox = require('../lib/index.js').default;
+const Lox = require('../lib/lox.umd').Lox;
 const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
 const jsonData = require(jsonFilePath);
 

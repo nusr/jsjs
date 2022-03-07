@@ -21,6 +21,39 @@
     <div>
       <span id="result"></span>
     </div>
-    <script src="index.js"></script>
+    <script src="../lib/lox.umd.js"></script>
+    <script>
+      const { Lox, eventEmitter } = window.lox;
+      const lox = new Lox();
+      const dom = document.querySelector('#code');
+      const button = document.querySelector('#run');
+      const result = document.querySelector('#result');
+
+      eventEmitter.on('print', (data) => {
+        if (result) {
+          const time = new Date().toLocaleString();
+          result.innerHTML =
+            result.innerHTML +
+            `<div>time: ${time}, result: ${
+              data.value
+            }, type: ${typeof data.value}</div>`;
+        }
+      });
+
+      if (button) {
+        const localKey = 'local_key';
+        window.localStorage.setItem('debug', '*');
+        const temp = localStorage.getItem(localKey);
+        if (temp && dom) {
+          dom.value = temp;
+          lox.run(temp);
+        }
+        button.addEventListener('click', () => {
+          const text = dom?.value || '';
+          lox.run(text);
+          localStorage.setItem(localKey, text);
+        });
+      }
+    </script>
   </body>
 </html>

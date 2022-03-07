@@ -122,11 +122,11 @@ class Scanner {
         break;
       case '>':
         this.addToken(
-          this.match('=') ? TokenType.GREATER : TokenType.GREATER_EQUAL,
+          this.match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER,
         );
         break;
       case '<':
-        this.addToken(this.match('=') ? TokenType.LESS : TokenType.LESS_EQUAL);
+        this.addToken(this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
         break;
       case '/':
         // single line comment

@@ -1,4 +1,4 @@
 import { Lox } from './lox';
 import eventEmitter from './EventEmitter';
-export { eventEmitter };
-export default Lox;
+import { defaultErrorHandler } from './error';
+export { eventEmitter, Lox, defaultErrorHandler };
