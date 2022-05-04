@@ -34,14 +34,13 @@ import type {
 
 import eventEmitter from './EventEmitter';
 import Environment from './Environment';
-// import Debug from './debug';
-
-// const debug = new Debug('interpreter').init();
+import { RuntimeError } from './error';
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
 {
-  private environment = new Environment(null);
+  private readonly globals = new Environment(null);
+  private environment = this.globals;
 
   interpret = (list: Statement<LiteralType>[]): void => {
     for (const item of list) {
@@ -168,12 +167,18 @@ class Interpreter
     }
     return null;
   };
-  visitCallExpression = (expr: CallExpression<LiteralType>) => {
-    return this.parenthesize(
-      expr.paren.lexeme,
-      expr.callee,
-      ...expr.argumentList,
-    );
+  visitCallExpression = (expr: CallExpression<LiteralType>): LiteralType => {
+    const callee: LiteralType = this.evaluate(expr.callee);
+    const args: LiteralType[] = [];
+    for (let item of expr.argumentList) {
+      args.push(this.evaluate(item));
+    }
+    if (!(callee instanceof Function)) {
+      throw new RuntimeError(expr.paren, 'can only call functions');
+    }
+    // const func: LoxCallable = callee;
+    // return func.call(this, args);
+    return args[0] as LiteralType;
   };
   visitGetExpression = (expr: GetExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.object);

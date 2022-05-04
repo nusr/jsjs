@@ -1,3 +1,4 @@
+import type Token from './Token';
 function errorHandler() {
   const errorList: string[] = [];
   let hadError = false;
@@ -26,5 +27,11 @@ function errorHandler() {
   };
 }
 
+class RuntimeError extends Error {
+  constructor(token: Token, message: string) {
+    super(`runtime error: ${token.toString()},message: ${message}`);
+  }
+}
+
 const defaultErrorHandler = errorHandler();
-export { defaultErrorHandler, errorHandler };
+export { defaultErrorHandler, errorHandler, RuntimeError };

@@ -1,2 +1,3 @@
-const fs = require("fs");
-fs.rmdirSync('../lib', { recursive: true });
+const fs = require('fs');
+const path = require('path');
+fs.rmdirSync(path.join(__dirname, '../lib'), { recursive: true });

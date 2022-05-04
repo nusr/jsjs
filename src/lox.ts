@@ -1,4 +1,4 @@
-import Scanner from './scanner';
+import Scanner from './Scanner';
 import Parser from './Parser';
 import Interpreter from './Interpreter';
 import type { Statement } from './Statement';

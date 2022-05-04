@@ -1,6 +1,7 @@
 import {
   AssignExpression,
   BinaryExpression,
+  CallExpression,
   Expression,
   GroupingExpression,
   LiteralExpression,
@@ -14,6 +15,7 @@ import type Token from './Token';
 import {
   BlockStatement,
   ExpressionStatement,
+  FunctionStatement,
   IfStatement,
   PrintStatement,
   Statement,
@@ -39,6 +41,10 @@ class Parser {
       return this.varStatement();
     }
 
+    if (this.match(TokenType.FUN)) {
+      return this.funcStatement();
+    }
+
     return this.statement();
   }
   private varStatement(): Statement<ExpressionType> {
@@ -52,6 +58,23 @@ class Parser {
     }
     this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
     return new VariableStatement(name, initializer);
+  }
+  private funcStatement(): Statement<ExpressionType> {
+    const functionName: Token = this.consume(
+      TokenType.IDENTIFIER,
+      'expect identifier after func',
+    );
+    this.consume(TokenType.LEFT_PAREN, 'expect ( after function name');
+    const params: Token[] = [];
+    if (!this.check(TokenType.RIGHT_PAREN)) {
+      do {
+        params.push(this.consume(TokenType.IDENTIFIER, 'expect parameter name'));
+      }while(this.match(TokenType.COMMA))
+    }
+    this.consume(TokenType.RIGHT_PAREN, 'expect ) after function name');
+    this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
+    const block = this.block();
+    return new FunctionStatement(functionName, block, params);
   }
   private statement(): Statement<ExpressionType> {
     if (this.match(TokenType.IF)) {
@@ -194,8 +217,30 @@ class Parser {
       const value = this.unary();
       return new UnaryExpression(operator, value);
     }
-    return this.primary();
+    return this.call();
   }
+  private call(): Expression<ExpressionType> {
+    let expr: Expression<ExpressionType> = this.primary();
+    while (true) {
+      if (this.match(TokenType.LEFT_PAREN)) {
+        expr = this.finishCall(expr);
+      } else {
+        break;
+      }
+    }
+    return expr;
+  }
+  private finishCall(callee: Expression<ExpressionType>): Expression<ExpressionType> {
+    const params: Expression<ExpressionType>[] = [];
+    if(!this.check(TokenType.RIGHT_PAREN)) {
+      do {
+        params.push(this.expression());
+      } while(this.match(TokenType.COMMA))
+    }
+    const paren = this.consume(TokenType.RIGHT_PAREN, 'expect ) after arguments')
+    return new CallExpression(callee, paren, params)
+  }
+
   private primary(): Expression<ExpressionType> {
     if (this.match(TokenType.TRUE)) {
       return new LiteralExpression(true);
