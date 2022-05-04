@@ -12,3 +12,4 @@ c/bin
 c/obj
 c/clox.layout
 build
+C/clox.depend

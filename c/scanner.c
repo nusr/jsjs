@@ -2,6 +2,8 @@
 #include "scanner.h"
 #include "common.h"
 
+Scanner scanner;
+
 static bool isAtEnd()
 {
   return *scanner.current == '\0';
@@ -45,7 +47,7 @@ static char peek()
   {
     return '\0';
   }
-  return *scanner.current
+  return *scanner.current;
 }
 
 static char peekNext()
@@ -54,7 +56,7 @@ static char peekNext()
   {
     return '\0';
   }
-  return *scanner.current[1];
+  return scanner.current[1];
 }
 
 static bool isDigit(char c)
@@ -92,8 +94,7 @@ static Token number()
 
 void initScanner(const char *source)
 {
-  scanner.current = source;
-  scanner.start = source;
+  scanner.current = scanner.start = source;
   scanner.line = 1;
 }
 Token scanToken()
@@ -103,7 +104,7 @@ Token scanToken()
   {
     return makeToken(TOKEN_EOF);
   }
-  const c = advance();
+  char c = advance();
   if (isAlpha(c))
   {
     return makeToken(TOKEN_IDENTIFIER);
@@ -152,11 +153,11 @@ Token scanToken()
   case '*':
     return makeToken(TOKEN_STAR);
   case '!':
-    return makeToken(match('=') ? makeToken(TOKEN_BANG_EQUAL) : makeToken(TOKEN_BANG));
+    return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
   case '>':
-    return makeToken(match('>') ? makeToken(TOKEN_GREATER_EQUAL) : makeToken(TOKEN_GREATER));
+    return makeToken(match('>') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
   case '<':
-    return makeToken(match('<') ? makeToken(TOKEN_LESS_EQUAL) : makeToken(TOKEN_LESS));
+    return makeToken(match('<') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
   }
   return errorToken("Unexpected character.");
 }

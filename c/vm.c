@@ -11,6 +11,7 @@ void freeVM()
 InterpretResult interpret(const char *source)
 {
   compile(source);
+  return INTERPRET_OK;
 }
 void push(Value value)
 {
