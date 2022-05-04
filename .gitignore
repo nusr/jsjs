@@ -8,3 +8,7 @@ package-lock.json
 coverage
 dist
 lib
+c/bin
+c/obj
+c/clox.layout
+build
