@@ -44,6 +44,7 @@ typedef enum
   TOKEN_PRINT,
   TOKEN_ERROR,
   TOKEN_EOF,
+  TOKEN_ELSE,
 } TokenType;
 
 typedef struct
