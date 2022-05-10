@@ -8,6 +8,7 @@ package-lock.json
 coverage
 dist
 lib
-c/clox.layout
+CMakeFiles
+cmake_install.cmake
+CMakeCache.txt
 build
-C/clox.depend

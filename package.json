@@ -23,8 +23,7 @@
     "pretype": "npm run delete",
     "prebin": "npm run build",
     "bin": "node ./bin/lox",
-    "rollup": "rollup -c rollup.config.ts",
-    "c": "node ./scripts/windows.js"
+    "rollup": "rollup -c rollup.config.ts"
   },
   "keywords": [],
   "author": "",
