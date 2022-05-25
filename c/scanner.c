@@ -204,7 +204,8 @@ static TokenType makeTokenType()
 
 void initScanner(const char *source)
 {
-  scanner.current = scanner.start = source;
+  scanner.current = source;
+  scanner.start = source
   scanner.line = 1;
 }
 Token scanToken()
