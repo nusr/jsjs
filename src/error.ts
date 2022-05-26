@@ -1,4 +1,4 @@
-import type Token from './Token';
+import type Token from './token';
 function errorHandler() {
   const errorList: string[] = [];
   let hadError = false;

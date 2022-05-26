@@ -1,4 +1,4 @@
-import type Token from './Token';
+import type Token from './token';
 import type { LiteralType } from './type';;
 export interface ExpressionVisitor<T> {
   visitAssignExpression: (expression: AssignExpression<T>) => T;

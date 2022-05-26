@@ -13,7 +13,7 @@ import type {
   SuperExpression,
   ThisExpression,
   VariableExpression,
-} from './Expression';
+} from './expression';
 import type { ExpressionType } from './type';
 
 class ASTPrinter implements ExpressionVisitor<ExpressionType> {

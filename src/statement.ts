@@ -1,5 +1,5 @@
-import type Token from './Token';
-import type { Expression, VariableExpression } from './Expression';
+import type Token from './token';
+import type { Expression, VariableExpression } from './expression';
 export interface StatementVisitor<T> {
   visitBlockStatement: (statement: BlockStatement<T>) => T;
   visitClassStatement: (statement: ClassStatement<T>) => T;

@@ -10,40 +10,40 @@ import (
 type TokenType int
 
 const (
-	LEFT_PAREN  TokenType = iota // (
-	RIGHT_PAREN                  // )
-	lEFT_BRACE                   // {
-	RIGHT_BRACE                  // }
-	COMMA                        // ,
-	DOT                          // .
-	MINUS                        // -
-	PLUS                         // +
-	SEMICOLON                    // ;
-	SLASH                        // /
-	STAR                         // *
-	// one or two character tokens
-	BANG          // !
-	BANG_EQUAL    // !=
-	EQUAL         // =
-	EQUAL_EQUAL   // ==
-	GREATER       // >
-	GREATER_EQUAL // >=
-	LESS          // <
-	LESS_EQUAL    // <=
-	// Literals
-	IDENTIFIER
+	LEFT_PAREN    TokenType = iota // (
+	RIGHT_PAREN                    // )
+	lEFT_BRACE                     // {
+	RIGHT_BRACE                    // }
+	LEFT_SQUARE                    // [
+	RIGHT_SQUARE                   // ]
+	COMMA                          // ,
+	DOT                            // .
+	MINUS                          // -
+	PLUS                           // +
+	SEMICOLON                      // ;
+	COLON                          // :
+	SLASH                          // /
+	STAR                           // *
+	BANG                           // one or two character tokens !
+	BANG_EQUAL                     // !=
+	EQUAL                          // =
+	EQUAL_EQUAL                    // ==
+	GREATER                        // >
+	GREATER_EQUAL                  // >=
+	LESS                           // <
+	LESS_EQUAL                     // <=
+	IDENTIFIER                     // Literals
 	STRING
 	NUMBER
-	// keywords
-	AND
+	AND // keywords
 	CLASS
 	ELSE
 	FALSE
 	TRUE
-	FUN
+	FUNCTION
 	FOR
 	IF
-	NIL // null
+	NULL // null
 	OR
 	PRINT
 	RETURN
@@ -55,22 +55,22 @@ const (
 )
 
 var KEYWORD_MAP = map[string]TokenType{
-	"and":    AND,
-	"class":  CLASS,
-	"else":   ELSE,
-	"false":  FALSE,
-	"for":    FOR,
-	"fun":    FUN,
-	"if":     IF,
-	"nil":    NIL,
-	"or":     OR,
-	"print":  PRINT,
-	"return": RETURN,
-	"super":  SUPER,
-	"this":   THIS,
-	"true":   TRUE,
-	"var":    VAR,
-	"while":  WHILE,
+	"and":      AND,
+	"class":    CLASS,
+	"else":     ELSE,
+	"false":    FALSE,
+	"for":      FOR,
+	"function": FUNCTION,
+	"if":       IF,
+	"null":     NULL,
+	"or":       OR,
+	"print":    PRINT,
+	"return":   RETURN,
+	"super":    SUPER,
+	"this":     THIS,
+	"true":     TRUE,
+	"var":      VAR,
+	"while":    WHILE,
 }
 
 const EMPTY_DATA = 0
@@ -91,7 +91,7 @@ func literalTypeToString(text LiteralType) string {
 		return strconv.FormatInt(data, 10)
 	case float32:
 	case float64:
-		return strconv.FormatFloat(float64(data), 'f', 10, 64)
+		return strconv.FormatFloat(data, 'f', 10, 64)
 	default:
 		return ""
 	}
@@ -105,12 +105,12 @@ type Token struct {
 	line      int
 }
 
-func (token *Token) toString() string {
+func (token *Token) String() string {
 	return strconv.Itoa(int(token.tokenType)) + " " + token.lexeme + " " + literalTypeToString(token.literal)
 }
 
 type Scanner struct {
-	source  string
+	source  []rune
 	tokens  []*Token
 	start   int
 	current int
@@ -120,7 +120,7 @@ type Scanner struct {
 func NewScanner(source string) *Scanner {
 	var tokens []*Token
 	return &Scanner{
-		source:  source,
+		source:  []rune(source),
 		tokens:  tokens,
 		start:   0,
 		current: 0,
@@ -131,31 +131,29 @@ func NewScanner(source string) *Scanner {
 func (scanner *Scanner) isAtEnd() bool {
 	return scanner.current >= len(scanner.source)
 }
-func (scanner *Scanner) getChar(index int) byte {
-	r := []byte(scanner.source)
-	return r[index]
+func (scanner *Scanner) getChar(index int) rune {
+	return scanner.source[index]
 }
-func (scanner *Scanner) peek() byte {
+func (scanner *Scanner) peek() rune {
 	if scanner.isAtEnd() {
 		return EMPTY_DATA
 	}
 	return scanner.getChar(scanner.current)
 }
-func (scanner *Scanner) peekNext() byte {
+func (scanner *Scanner) peekNext() rune {
 	if scanner.current+1 < len(scanner.source) {
 		return scanner.getChar(scanner.current + 1)
 	}
 	return EMPTY_DATA
 }
-func (scanner *Scanner) advance() byte {
+func (scanner *Scanner) advance() rune {
 	c := scanner.getChar(scanner.current)
 	scanner.current++
 	return c
 }
 
 func (scanner *Scanner) getSubString(start int, end int) string {
-	r := []rune(scanner.source)
-	text := string(r[start:end])
+	text := string(scanner.source[start:end])
 	return text
 }
 
@@ -172,7 +170,7 @@ func (scanner *Scanner) addOneToken(tokenType TokenType, literal LiteralType) {
 func (scanner *Scanner) addToken(tokenType TokenType) {
 	scanner.addOneToken(tokenType, nil)
 }
-func (scanner *Scanner) match(char byte) bool {
+func (scanner *Scanner) match(char rune) bool {
 	if scanner.isAtEnd() {
 		return false
 	}
@@ -183,12 +181,12 @@ func (scanner *Scanner) match(char byte) bool {
 	return true
 }
 
-func (scanner *Scanner) isDigit(c byte) bool {
+func (scanner *Scanner) isDigit(c rune) bool {
 	return c >= '0' && c <= '9'
 }
 
-func (scanner *Scanner) isAlpha(c byte) bool {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+func (scanner *Scanner) isAlpha(c rune) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= '\u4e00' && c <= '\u9fa5')
 }
 
 func (scanner *Scanner) number() {
@@ -206,8 +204,8 @@ func (scanner *Scanner) number() {
 	scanner.addOneToken(NUMBER, val)
 }
 
-func (scanner *Scanner) string() {
-	for scanner.peek() != '"' && !scanner.isAtEnd() {
+func (scanner *Scanner) string(end rune) {
+	for scanner.peek() != end && !scanner.isAtEnd() {
 		if scanner.peek() == '\n' {
 			scanner.line++
 		}
@@ -245,6 +243,10 @@ func (scanner *Scanner) scanToken() {
 		scanner.addToken(lEFT_BRACE)
 	case '}':
 		scanner.addToken(RIGHT_BRACE)
+	case '[':
+		scanner.addToken(LEFT_SQUARE)
+	case ']':
+		scanner.addToken(RIGHT_SQUARE)
 	case ',':
 		scanner.addToken(COMMA)
 	case '.':
@@ -255,17 +257,19 @@ func (scanner *Scanner) scanToken() {
 		scanner.addToken(PLUS)
 	case ';':
 		scanner.addToken(SEMICOLON)
+	case ':':
+		scanner.addToken(COLON)
 	case '*':
 		scanner.addToken(STAR)
 	case '!':
 		if scanner.match('=') {
 			scanner.addToken(BANG_EQUAL)
 		} else {
-			scanner.addToken(EQUAL)
+			scanner.addToken(BANG)
 		}
 	case '=':
 		if scanner.match('=') {
-			scanner.addToken(BANG_EQUAL)
+			scanner.addToken(EQUAL_EQUAL)
 		} else {
 			scanner.addToken(EQUAL)
 		}
@@ -297,12 +301,13 @@ func (scanner *Scanner) scanToken() {
 		}
 	case ' ':
 	case '\r':
-	case 't':
+	case '\t':
 		break
 	case '\n':
 		scanner.line++
+	case '\'':
 	case '"':
-		scanner.string()
+		scanner.string(c)
 	default:
 		if scanner.isDigit(c) {
 			scanner.number()
@@ -315,31 +320,315 @@ func (scanner *Scanner) scanToken() {
 }
 
 func (scanner *Scanner) ScanTokens() []*Token {
-	var result []*Token
 	for !scanner.isAtEnd() {
 		scanner.start = scanner.current
 		scanner.scanToken()
 	}
-	result = append(result, &Token{
+	scanner.tokens = append(scanner.tokens, &Token{
 		tokenType: EOF,
 		lexeme:    "",
 		line:      scanner.line,
 		literal:   "",
 	})
-	scanner.tokens = result
 	return scanner.tokens
 }
 
-func interpret(source string) {
-	fmt.Println(source)
-	scanner := NewScanner(source)
-	list := scanner.ScanTokens()
-	for _, item := range list {
-		fmt.Println(item.toString())
+type ExpressionType string
+
+type VisitorType interface{}
+
+type Statement interface {
+	accept(visitor VisitorType) ExpressionType
+}
+
+type Expression interface {
+	accept(visitor VisitorType) ExpressionType
+}
+
+type Parser struct {
+	tokens  []*Token
+	current int
+}
+
+func NewParser(tokens []*Token) *Parser {
+	return &Parser{
+		current: 0,
+		tokens:  tokens,
+	}
+}
+func (parser *Parser) peek() *Token {
+	return parser.tokens[parser.current]
+}
+
+func (parser *Parser) advance() {
+	if parser.isAtEnd() {
+		return
+	}
+	parser.current++
+}
+
+func (parser *Parser) previous() *Token {
+	return parser.tokens[parser.current-1]
+}
+
+func (parser *Parser) consume(tokenType TokenType, message string) *Token {
+	if parser.peek().tokenType != tokenType {
+		panic(message)
+	}
+	parser.advance()
+	return parser.previous()
+}
+
+func (parser *Parser) check(tokenType TokenType) bool {
+	if parser.isAtEnd() {
+		return false
+	}
+	return parser.peek().tokenType == tokenType
+}
+
+func (parser *Parser) match(tokenTypes ...TokenType) bool {
+	for _, tokenType := range tokenTypes {
+		if parser.check(tokenType) {
+			parser.advance()
+			return true
+		}
+	}
+	return false
+}
+
+func (parser *Parser) varStatement() Statement {
+	name := parser.consume(IDENTIFIER, "expect identifier after var")
+	return VariableStatement{
+		name:        name,
+		initializer: nil,
+	}
+}
+func (parser *Parser) primary() Expression {
+	if parser.match(TRUE) {
+		return LiteralExpression{
+			value: true,
+		}
+	}
+	if parser.match(FALSE) {
+		return LiteralExpression{
+			value: false,
+		}
+	}
+	if parser.match(NULL) {
+		return LiteralExpression{
+			value: nil,
+		}
+	}
+	if parser.match(NUMBER, STRING) {
+		return LiteralExpression{
+			value: parser.previous().literal,
+		}
+	}
+	if parser.match(IDENTIFIER) {
+		expr := parser.expression()
+		parser.consume(RIGHT_PAREN, fmt.Sprintf("parser expected '(', actual:%s", parser.peek()))
+		return GroupingExpression{
+			expression: expr,
+		}
+	}
+	panic(fmt.Sprintf("parser can not handle token: %s", parser.peek()))
+}
+func (parser *Parser) unary() Expression {
+	if parser.match(MINUS, BANG) {
+		operator := parser.previous()
+		value := parser.unary()
+		return UnaryExpression{
+			operator: operator,
+			right:    value,
+		}
+	}
+	return parser.primary()
+
+}
+func (parser *Parser) factor() Expression {
+	unary := parser.unary()
+	for parser.match(STAR, SLASH) {
+		operator := parser.previous()
+		right := parser.unary()
+		unary = BinaryExpression{
+			left:     unary,
+			operator: operator,
+			right:    right,
+		}
+	}
+	return unary
+}
+
+func (parser *Parser) term() Expression {
+	factor := parser.factor()
+	for parser.match(PLUS, MINUS) {
+		operator := parser.previous()
+		right := parser.factor()
+		factor = BinaryExpression{
+			left:     factor,
+			operator: operator,
+			right:    right,
+		}
+	}
+	return factor
+}
+
+func (parser *Parser) comparison() Expression {
+	term := parser.term()
+	for parser.match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL) {
+		operator := parser.previous()
+		right := parser.term()
+		term = BinaryExpression{
+			left:     term,
+			operator: operator,
+			right:    right,
+		}
+	}
+	return term
+}
+
+func (parser *Parser) equality() Expression {
+	expr := parser.comparison()
+	for parser.match(BANG_EQUAL, EQUAL_EQUAL) {
+		operator := parser.previous()
+		right := parser.comparison()
+		expr = BinaryExpression{
+			left:     expr,
+			operator: operator,
+			right:    right,
+		}
+	}
+	return expr
+}
+
+func (parser *Parser) and() Expression {
+	expr := parser.equality()
+	for parser.match(AND) {
+		operator := parser.previous()
+		right := parser.and()
+		expr = LogicalExpression{
+			left:     expr,
+			operator: operator,
+			right:    right,
+		}
+	}
+	return expr
+}
+func (parser *Parser) or() Expression {
+	expr := parser.and()
+	for parser.match(OR) {
+		operator := parser.previous()
+		right := parser.and()
+		expr = LogicalExpression{
+			left:     expr,
+			operator: operator,
+			right:    right,
+		}
+	}
+	return expr
+}
+func (parser *Parser) assignment() Expression {
+	expr := parser.or()
+	if parser.match(EQUAL) {
+		equal := parser.previous()
+		value := parser.assignment()
+		if val, ok := value.(VariableExpression); ok {
+			name := val.name
+			return AssignExpression{
+				name:  name,
+				value: val,
+			}
+		}
+		panic(fmt.Sprintf("invalid assign target: %s", equal))
+	}
+	return expr
+}
+
+func (parser *Parser) expression() Expression {
+	return parser.assignment()
+}
+
+func (parser *Parser) ifStatement() Statement {
+	parser.consume(LEFT_PAREN, "expect ( after if")
+	expression := parser.expression()
+	parser.consume(RIGHT_BRACE, "expected ) after if")
+	thenBranch := parser.statement()
+	// elseBranch := interface{}
+	// if parser.match(ELSE) {
+	// 	elseBranch = parser.statement()
+	// }
+	return IfStatement{
+		condition:  expression,
+		thenBranch: thenBranch,
+		// elseBranch: elseBranch,
 	}
 }
 
-func repl() {
+func (parser *Parser) printStatement() Statement {
+	expr := parser.expression()
+	if !parser.isAtEnd() {
+		parser.consume(SEMICOLON, "expected ; after print")
+	}
+	return PrintStatement{
+		expression: expr,
+	}
+}
+
+func (parser *Parser) expressionStatement() Statement {
+	expr := parser.expression()
+	if !parser.isAtEnd() {
+		parser.consume(SEMICOLON, "expected ; after expression")
+	}
+	return ExpressionStatement{
+		expression: expr,
+	}
+}
+
+func (parser *Parser) statement() Statement {
+	if parser.match(IF) {
+		return parser.ifStatement()
+	}
+	if parser.match(PRINT) {
+		return parser.printStatement()
+	}
+	// if parser.match(WHILE) {
+	// 	return
+	// }
+	return parser.expressionStatement()
+}
+
+func (parser *Parser) declaration() Statement {
+	if parser.match(VAR) {
+		return parser.varStatement()
+	}
+	return parser.statement()
+}
+
+func (parser *Parser) Parse() []Statement {
+	var statements []Statement
+	for !parser.isAtEnd() {
+		statements = append(statements, parser.declaration())
+	}
+	return statements
+}
+
+func (parser *Parser) isAtEnd() bool {
+	return parser.peek().tokenType == EOF
+}
+func interpret(source string) {
+	scanner := NewScanner(source)
+	tokens := scanner.ScanTokens()
+	for _, token := range tokens {
+		fmt.Println(token)
+	}
+	// parser := NewParser(tokens)
+	// statements := parser.Parse()
+	// for _, statement := range statements {
+	// 	fmt.Println(statement)
+	// }
+}
+
+func reply() {
 	var line string
 	for {
 		fmt.Print("> ")
@@ -362,13 +651,13 @@ func funFile(fileName string) {
 }
 
 func main() {
-	len := len(os.Args)
-	if len == 1 {
-		repl()
-	} else if len == 2 {
+	argc := len(os.Args)
+	if argc == 1 {
+		reply()
+	} else if argc == 2 {
 		funFile(os.Args[1])
 	} else {
-		fmt.Println("Usage: glox [path]")
+		fmt.Println("Usage: lox [path]")
 		os.Exit(64)
 	}
 }

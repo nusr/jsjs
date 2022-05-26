@@ -8,10 +8,10 @@ import {
   LogicalExpression,
   UnaryExpression,
   VariableExpression,
-} from './Expression';
+} from './expression';
 import type { ExpressionType } from './type';
 import { TokenType } from './tokenType';
-import type Token from './Token';
+import type Token from './token';
 import {
   BlockStatement,
   ExpressionStatement,
@@ -21,7 +21,7 @@ import {
   Statement,
   VariableStatement,
   WhileStatement,
-} from './Statement';
+} from './statement';
 
 class Parser {
   private readonly tokens: Token[];

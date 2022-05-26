@@ -1,5 +1,5 @@
 import type { LiteralType } from './type';
-import type Token from './Token';
+import type Token from './token';
 class Environment {
   private readonly values = new Map<string, LiteralType>();
   private parent: Environment | null = null;

@@ -15,7 +15,7 @@ import type {
   Expression,
   ExpressionVisitor,
   VariableExpression,
-} from './Expression';
+} from './expression';
 import { TokenType } from './tokenType';
 
 import type {
@@ -30,10 +30,10 @@ import type {
   WhileStatement,
   ClassStatement,
   VariableStatement,
-} from './Statement';
+} from './statement';
 
-import eventEmitter from './EventEmitter';
-import Environment from './Environment';
+import eventEmitter from './eventEmitter';
+import Environment from './environment';
 import { RuntimeError } from './error';
 
 class Interpreter
