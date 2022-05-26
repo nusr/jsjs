@@ -103,7 +103,7 @@ func (scanner *Scanner) isDigit(c rune) bool {
 }
 
 func (scanner *Scanner) isAlpha(c rune) bool {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || c == '#' || (c >= '\u4e00' && c <= '\u9fa5')
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '\\' || c == '_' || c == '$' || c == '#' || (c >= '\u4e00' && c <= '\u9fa5')
 }
 
 func (scanner *Scanner) number() {
