@@ -36,7 +36,7 @@ func defineAST(fileName string, list []string) {
 		result = append(result, structName, method)
 	}
 	content := strings.Join(result, "\n")
-	os.WriteFile("../"+lowerFistLetter(fileName)+".go", []byte(content), 0644)
+	os.WriteFile(lowerFistLetter(fileName)+".go", []byte(content), 0644)
 }
 
 func init() {
