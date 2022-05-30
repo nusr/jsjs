@@ -57,11 +57,13 @@ func (parser *Parser) varStatement() Statement {
 	name := parser.consume(IDENTIFIER, "expect identifier after var")
 	if parser.match(EQUAL) {
 		initializer := parser.expression()
+		parser.consume(SEMICOLON, "expected ;")
 		return VariableStatement{
 			name:        name,
 			initializer: initializer,
 		}
 	} else {
+		parser.consume(SEMICOLON, "expected ;")
 		return VariableStatement{
 			name: name,
 		}
