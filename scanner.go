@@ -115,10 +115,15 @@ func (scanner *Scanner) number() {
 		for scanner.isDigit(scanner.peek()) {
 			scanner.advance()
 		}
+		text := scanner.getSubString(scanner.start, scanner.current)
+		val, _ := strconv.ParseFloat(text, 64)
+		scanner.addOneToken(FLOAT, val)
+	} else {
+		text := scanner.getSubString(scanner.start, scanner.current)
+		val, _ := strconv.ParseInt(text, 10, 64)
+		scanner.addOneToken(INTEGER, val)
 	}
-	text := scanner.getSubString(scanner.start, scanner.current)
-	val, _ := strconv.ParseFloat(text, 64)
-	scanner.addOneToken(NUMBER, val)
+
 }
 
 func (scanner *Scanner) string(end rune) {

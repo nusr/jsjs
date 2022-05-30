@@ -55,10 +55,18 @@ func (parser *Parser) match(tokenTypes ...TokenType) bool {
 
 func (parser *Parser) varStatement() Statement {
 	name := parser.consume(IDENTIFIER, "expect identifier after var")
-	return VariableStatement{
-		name:        name,
-		initializer: nil,
+	if parser.match(EQUAL) {
+		initializer := parser.expression()
+		return VariableStatement{
+			name:        name,
+			initializer: initializer,
+		}
+	} else {
+		return VariableStatement{
+			name: name,
+		}
 	}
+
 }
 func (parser *Parser) primary() Expression {
 	if parser.match(TRUE) {
@@ -76,7 +84,7 @@ func (parser *Parser) primary() Expression {
 			value: nil,
 		}
 	}
-	if parser.match(NUMBER, STRING) {
+	if parser.match(INTEGER, FLOAT, STRING) {
 		return LiteralExpression{
 			value: parser.previous().literal,
 		}
@@ -210,14 +218,18 @@ func (parser *Parser) ifStatement() Statement {
 	expression := parser.expression()
 	parser.consume(RIGHT_BRACE, "expected ) after if")
 	thenBranch := parser.statement()
-	// elseBranch := interface{}
-	// if parser.match(ELSE) {
-	// 	elseBranch = parser.statement()
-	// }
-	return IfStatement{
-		condition:  expression,
-		thenBranch: thenBranch,
-		// elseBranch: elseBranch,
+	if parser.match(ELSE) {
+		elseBranch := parser.statement()
+		return IfStatement{
+			condition:  expression,
+			thenBranch: thenBranch,
+			elseBranch: elseBranch,
+		}
+	} else {
+		return IfStatement{
+			condition:  expression,
+			thenBranch: thenBranch,
+		}
 	}
 }
 

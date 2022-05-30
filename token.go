@@ -31,7 +31,8 @@ const (
 	LESS_EQUAL                     // <=
 	IDENTIFIER                     // Literals
 	STRING
-	NUMBER
+	INTEGER
+	FLOAT
 	AND // keywords
 	CLASS
 	ELSE
@@ -61,19 +62,13 @@ func literalTypeToString(text LiteralType) string {
 		return ""
 	case string:
 		return data
-	case int32:
-		return strconv.FormatInt(int64(data), 10)
-	case int:
-		return strconv.Itoa(data)
 	case int64:
 		return strconv.FormatInt(data, 10)
-	case float32:
 	case float64:
 		return strconv.FormatFloat(data, 'f', 10, 64)
 	default:
-		return ""
+		return "literalTypeToString: not handle type"
 	}
-	return ""
 }
 
 type Token struct {

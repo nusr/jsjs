@@ -1,109 +1,109 @@
 package main
 
 type AssignExpression struct {
-     name *Token
-     value Expression
+	name  *Token
+	value Expression
 }
 
 func (assignExpression AssignExpression) accept(visitor VisitorType) ExpressionType {
-    return "AssignExpression"
+	return "AssignExpression"
 }
 
 type BinaryExpression struct {
-     left Expression
-     operator *Token
-     right Expression
+	left     Expression
+	operator *Token
+	right    Expression
 }
 
 func (binaryExpression BinaryExpression) accept(visitor VisitorType) ExpressionType {
-    return "BinaryExpression"
+	return "BinaryExpression"
 }
 
 type CallExpression struct {
-     callee Expression
-     paren *Token
-     argumentList []Expression
+	callee       Expression
+	paren        *Token
+	argumentList []Expression
 }
 
 func (callExpression CallExpression) accept(visitor VisitorType) ExpressionType {
-    return "CallExpression"
+	return "CallExpression"
 }
 
 type GetExpression struct {
-     object Expression
-     name *Token
+	object Expression
+	name   *Token
 }
 
 func (getExpression GetExpression) accept(visitor VisitorType) ExpressionType {
-    return "GetExpression"
+	return "GetExpression"
 }
 
 type SetExpression struct {
-     object Expression
-     name *Token
-     value Expression
+	object Expression
+	name   *Token
+	value  Expression
 }
 
 func (setExpression SetExpression) accept(visitor VisitorType) ExpressionType {
-    return "SetExpression"
+	return "SetExpression"
 }
 
 type GroupingExpression struct {
-     expression Expression
+	expression Expression
 }
 
 func (groupingExpression GroupingExpression) accept(visitor VisitorType) ExpressionType {
-    return "GroupingExpression"
+	return "GroupingExpression"
 }
 
 type LiteralExpression struct {
-     value LiteralType
+	value LiteralType
 }
 
 func (literalExpression LiteralExpression) accept(visitor VisitorType) ExpressionType {
-    return "LiteralExpression"
+	return "LiteralExpression"
 }
 
 type LogicalExpression struct {
-     left Expression
-     operator *Token
-     right Expression
+	left     Expression
+	operator *Token
+	right    Expression
 }
 
 func (logicalExpression LogicalExpression) accept(visitor VisitorType) ExpressionType {
-    return "LogicalExpression"
+	return "LogicalExpression"
 }
 
 type SuperExpression struct {
-     keyword *Token
-     value Expression
+	keyword *Token
+	value   Expression
 }
 
 func (superExpression SuperExpression) accept(visitor VisitorType) ExpressionType {
-    return "SuperExpression"
+	return "SuperExpression"
 }
 
 type ThisExpression struct {
-     keyword *Token
+	keyword *Token
 }
 
 func (thisExpression ThisExpression) accept(visitor VisitorType) ExpressionType {
-    return "ThisExpression"
+	return "ThisExpression"
 }
 
 type UnaryExpression struct {
-     operator *Token
-     right Expression
+	operator *Token
+	right    Expression
 }
 
 func (unaryExpression UnaryExpression) accept(visitor VisitorType) ExpressionType {
-    return "UnaryExpression"
+	return "UnaryExpression"
 }
 
 type VariableExpression struct {
-     name *Token
+	name *Token
 }
 
 func (variableExpression VariableExpression) accept(visitor VisitorType) ExpressionType {
-    return "VariableExpression"
+	return "VariableExpression"
 }

@@ -1,21 +1,22 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
 )
 
 func reply() {
-	var line string
-	for {
-		fmt.Print("> ")
-		_, err := fmt.Scanln(&line)
-		if err != nil {
-			fmt.Println(err)
+	input := bufio.NewScanner(os.Stdin)
+	fmt.Print("> ")
+	for input.Scan() {
+		line := input.Text()
+		if line == ".exit" {
 			break
 		}
 		interpret(line)
+		fmt.Print("> ")
 	}
 }
 

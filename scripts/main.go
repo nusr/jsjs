@@ -20,7 +20,10 @@ func defineAST(fileName string, list []string) {
 		temp := strings.Split(item, "#")
 		className := strings.TrimSpace(temp[0])
 		params := strings.Split(temp[1], ",")
+		name := className + fileName
+		receiver := lowerFistLetter(name)
 		var paramsList []string
+		// var visitList []string
 		for _, t := range params {
 			data := strings.Split(strings.TrimSpace(t), " ")
 			if strings.TrimSpace(data[1]) == "Token" {
@@ -28,18 +31,19 @@ func defineAST(fileName string, list []string) {
 			} else {
 				paramsList = append(paramsList, "    "+t)
 			}
+			// visitList = append(visitList, name+"."+data[0])
 		}
-		name := className + fileName
-		receiver := lowerFistLetter(name)
+
 		structName := fmt.Sprintf("type %s struct {\n%s\n}\n", name, strings.Join(paramsList, "\n"))
 		method := fmt.Sprintf("func (%s %s) accept(visitor VisitorType) ExpressionType {\n    return \"%s\"\n}\n", receiver, name, name)
+		// visit := fmt.Sprintf("func (%s %s) String() string {\n    return \"%s\" + %s\n}\n", receiver, name, name, strings.Join(visitList, "+"))
 		result = append(result, structName, method)
 	}
 	content := strings.Join(result, "\n")
-	os.WriteFile(lowerFistLetter(fileName)+".go", []byte(content), 0644)
+	os.WriteFile("../"+lowerFistLetter(fileName)+".go", []byte(content), 0644)
 }
 
-func init() {
+func main() {
 	const expressionName = "Expression"
 	const statementName = "Statement"
 	expressionList := []string{
