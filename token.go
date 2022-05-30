@@ -82,14 +82,12 @@ func (token *Token) String() string {
 	return strconv.Itoa(int(token.tokenType)) + " " + token.lexeme + " " + literalTypeToString(token.literal)
 }
 
-type ExpressionType string
-
 type VisitorType interface{}
 
 type Statement interface {
-	accept(visitor VisitorType) ExpressionType
+	accept(visitor VisitorType) LiteralType
 }
 
 type Expression interface {
-	accept(visitor VisitorType) ExpressionType
+	accept(visitor VisitorType) LiteralType
 }

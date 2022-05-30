@@ -35,7 +35,7 @@ func defineAST(fileName string, list []string) {
 		}
 
 		structName := fmt.Sprintf("type %s struct {\n%s\n}\n", name, strings.Join(paramsList, "\n"))
-		method := fmt.Sprintf("func (%s %s) accept(visitor VisitorType) ExpressionType {\n    return \"%s\"\n}\n", receiver, name, name)
+		method := fmt.Sprintf("func (%s %s) accept(visitor VisitorType) LiteralType {\n    return \"%s\"\n}\n", receiver, name, name)
 		// visit := fmt.Sprintf("func (%s %s) String() string {\n    return \"%s\" + %s\n}\n", receiver, name, name, strings.Join(visitList, "+"))
 		result = append(result, structName, method)
 	}

@@ -10,7 +10,6 @@ func interpret(source string) {
 	}
 	parser := NewParser(tokens)
 	statements := parser.Parse()
-	for _, statement := range statements {
-		fmt.Println(statement)
-	}
+	interpreter := NewInterpreter()
+	interpreter.Interpret(statements)
 }
