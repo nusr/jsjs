@@ -1,6 +1,9 @@
 package main
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type TokenType int
 
@@ -31,8 +34,7 @@ const (
 	LESS_EQUAL                     // <=
 	IDENTIFIER                     // Literals
 	STRING
-	INTEGER
-	FLOAT
+	NUMBER
 	AND // keywords
 	CLASS
 	ELSE
@@ -59,35 +61,23 @@ type LiteralType interface{}
 func literalTypeToString(text LiteralType) string {
 	switch data := text.(type) {
 	case nil:
-		return ""
+		return "null"
 	case string:
 		return data
-	case int64:
-		return strconv.FormatInt(data, 10)
 	case float64:
 		return strconv.FormatFloat(data, 'f', 10, 64)
 	default:
-		return "literalTypeToString: not handle type"
+		return ""
 	}
+	return ""
 }
 
 type Token struct {
 	tokenType TokenType
 	lexeme    string
-	literal   LiteralType
 	line      int
 }
 
 func (token *Token) String() string {
-	return strconv.Itoa(int(token.tokenType)) + " " + token.lexeme + " " + literalTypeToString(token.literal)
-}
-
-type VisitorType interface{}
-
-type Statement interface {
-	accept(visitor VisitorType) LiteralType
-}
-
-type Expression interface {
-	accept(visitor VisitorType) LiteralType
+	return fmt.Sprintf("tokenType: %s, lexeme: %s, line: %d", strconv.Itoa(int(token.tokenType)), token.lexeme, token.line)
 }

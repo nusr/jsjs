@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 const (
@@ -74,18 +73,21 @@ func (scanner *Scanner) getSubString(start int, end int) string {
 	return text
 }
 
-func (scanner *Scanner) addOneToken(tokenType TokenType, literal LiteralType) {
+func (scanner *Scanner) addOneToken(tokenType TokenType) {
 	text := scanner.getSubString(scanner.start, scanner.current)
+	scanner.appendToken(tokenType, text)
+}
+
+func (scanner *Scanner) appendToken(tokenType TokenType, text string) {
 	scanner.tokens = append(scanner.tokens, &Token{
 		tokenType: tokenType,
 		lexeme:    text,
-		literal:   literal,
 		line:      scanner.line,
 	})
 }
 
 func (scanner *Scanner) addToken(tokenType TokenType) {
-	scanner.addOneToken(tokenType, nil)
+	scanner.addOneToken(tokenType)
 }
 func (scanner *Scanner) match(char rune) bool {
 	if scanner.isAtEnd() {
@@ -115,14 +117,8 @@ func (scanner *Scanner) number() {
 		for scanner.isDigit(scanner.peek()) {
 			scanner.advance()
 		}
-		text := scanner.getSubString(scanner.start, scanner.current)
-		val, _ := strconv.ParseFloat(text, 64)
-		scanner.addOneToken(FLOAT, val)
-	} else {
-		text := scanner.getSubString(scanner.start, scanner.current)
-		val, _ := strconv.ParseInt(text, 10, 64)
-		scanner.addOneToken(INTEGER, val)
 	}
+	scanner.addToken(NUMBER)
 
 }
 
@@ -139,7 +135,7 @@ func (scanner *Scanner) string(end rune) {
 	}
 	scanner.advance() // skip "
 	text := scanner.getSubString(scanner.start+1, scanner.current-1)
-	scanner.addOneToken(STRING, text)
+	scanner.appendToken(STRING, text)
 }
 
 func (scanner *Scanner) identifier() {
@@ -262,11 +258,6 @@ func (scanner *Scanner) ScanTokens() []*Token {
 		scanner.start = scanner.current
 		scanner.scanToken()
 	}
-	scanner.tokens = append(scanner.tokens, &Token{
-		tokenType: EOF,
-		lexeme:    "",
-		line:      scanner.line,
-		literal:   "",
-	})
+	scanner.appendToken(EOF, "")
 	return scanner.tokens
 }

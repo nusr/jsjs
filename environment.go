@@ -15,7 +15,7 @@ func NewEnvironment(parent *Environment) *Environment {
 	}
 }
 
-func (environment *Environment) get(name Token) LiteralType {
+func (environment *Environment) get(name *Token) LiteralType {
 	if val, ok := environment.values[name.lexeme]; ok {
 		return val
 	}
@@ -28,7 +28,7 @@ func (environment *Environment) define(name string, value LiteralType) {
 	environment.values[name] = value
 }
 
-func (environment *Environment) assign(name Token, value LiteralType) {
+func (environment *Environment) assign(name *Token, value LiteralType) {
 	if _, ok := environment.values[name.lexeme]; ok {
 		environment.define(name.lexeme, value)
 		return

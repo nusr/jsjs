@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Parser struct {
 	tokens  []*Token
@@ -73,27 +76,41 @@ func (parser *Parser) varStatement() Statement {
 func (parser *Parser) primary() Expression {
 	if parser.match(TRUE) {
 		return LiteralExpression{
-			value: true,
+			tokenType: TRUE,
 		}
 	}
 	if parser.match(FALSE) {
 		return LiteralExpression{
-			value: false,
+			tokenType: FALSE,
 		}
 	}
 	if parser.match(NULL) {
 		return LiteralExpression{
-			value: nil,
+			tokenType: NULL,
 		}
 	}
-	if parser.match(INTEGER, FLOAT, STRING) {
+	if parser.match(NUMBER) {
+		text := parser.previous().lexeme
+		result, _ := strconv.ParseFloat(text, 64)
 		return LiteralExpression{
-			value: parser.previous().literal,
+			number:    result,
+			tokenType: NUMBER,
+		}
+	}
+	if parser.match(STRING) {
+		return LiteralExpression{
+			string:    parser.previous().lexeme,
+			tokenType: STRING,
 		}
 	}
 	if parser.match(IDENTIFIER) {
+		return VariableExpression{
+			name: parser.previous(),
+		}
+	}
+	if parser.match(LEFT_PAREN) {
 		expr := parser.expression()
-		parser.consume(RIGHT_PAREN, fmt.Sprintf("parser expected '(', actual:%s", parser.peek()))
+		parser.consume(RIGHT_PAREN, fmt.Sprintf("parser expected ')', actual:%s", parser.peek()))
 		return GroupingExpression{
 			expression: expr,
 		}

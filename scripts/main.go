@@ -16,6 +16,8 @@ func lowerFistLetter(text string) string {
 func defineAST(fileName string, list []string) {
 	var result []string
 	result = append(result, "package main\n")
+	var visitorList []string
+	realFileName := lowerFistLetter(fileName)
 	for _, item := range list {
 		temp := strings.Split(item, "#")
 		className := strings.TrimSpace(temp[0])
@@ -23,7 +25,6 @@ func defineAST(fileName string, list []string) {
 		name := className + fileName
 		receiver := lowerFistLetter(name)
 		var paramsList []string
-		// var visitList []string
 		for _, t := range params {
 			data := strings.Split(strings.TrimSpace(t), " ")
 			if strings.TrimSpace(data[1]) == "Token" {
@@ -31,16 +32,17 @@ func defineAST(fileName string, list []string) {
 			} else {
 				paramsList = append(paramsList, "    "+t)
 			}
-			// visitList = append(visitList, name+"."+data[0])
 		}
 
 		structName := fmt.Sprintf("type %s struct {\n%s\n}\n", name, strings.Join(paramsList, "\n"))
-		method := fmt.Sprintf("func (%s %s) accept(visitor VisitorType) LiteralType {\n    return \"%s\"\n}\n", receiver, name, name)
-		// visit := fmt.Sprintf("func (%s %s) String() string {\n    return \"%s\" + %s\n}\n", receiver, name, name, strings.Join(visitList, "+"))
+		method := fmt.Sprintf("func (%s %s) accept(visitor %sVisitor) LiteralType {\n    return visitor.visit%s(%s)\n}\n", receiver, name, fileName, name, receiver)
 		result = append(result, structName, method)
+		visitorList = append(visitorList, fmt.Sprintf("    visit%s(%s %s) LiteralType", name, realFileName, name))
 	}
+	visitor := fmt.Sprintf("type %sVisitor interface {\n%s\n}\n", fileName, strings.Join(visitorList, "\n"))
+	result = append(result, visitor, fmt.Sprintf("type %s interface{\n    accept(visitor %sVisitor) LiteralType\n}", fileName, fileName))
 	content := strings.Join(result, "\n")
-	os.WriteFile("../"+lowerFistLetter(fileName)+".go", []byte(content), 0644)
+	os.WriteFile("../"+realFileName+".go", []byte(content), 0644)
 }
 
 func main() {
@@ -53,7 +55,7 @@ func main() {
 		fmt.Sprintf("Get # object %s, name Token", expressionName),
 		fmt.Sprintf("Set # object %s, name Token, value %s", expressionName, expressionName),
 		fmt.Sprintf("Grouping # expression %s", expressionName),
-		"Literal # value LiteralType",
+		"Literal # number float64, string string, tokenType TokenType",
 		fmt.Sprintf("Logical # left %s, operator Token, right %s", expressionName, expressionName),
 		fmt.Sprintf("Super # keyword Token, value %s", expressionName),
 		"This # keyword Token",
