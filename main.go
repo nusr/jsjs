@@ -10,12 +10,13 @@ import (
 func reply() {
 	input := bufio.NewScanner(os.Stdin)
 	fmt.Print("> ")
+	environment := NewEnvironment(nil)
 	for input.Scan() {
 		line := input.Text()
 		if line == ".exit" {
 			break
 		}
-		interpret(line)
+		interpret(line, environment)
 		fmt.Print("> ")
 	}
 }
@@ -26,7 +27,8 @@ func funFile(fileName string) {
 		fmt.Printf("can not open file \"%s\", error: %v", fileName, err)
 		return
 	}
-	interpret(string(content))
+	environment := NewEnvironment(nil)
+	interpret(string(content), environment)
 }
 
 func main() {

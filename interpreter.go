@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"math"
-	"reflect"
 )
 
 const (
-	NAN_NUMBER = math.MaxFloat64
+	NAN_NUMBER = "NaN"
 )
 
 func convertBtoF(b bool) float64 {
@@ -54,8 +53,7 @@ type Interpreter struct {
 	globals     *Environment
 }
 
-func NewInterpreter() *Interpreter {
-	environment := NewEnvironment(nil)
+func NewInterpreter(environment *Environment) *Interpreter {
 	return &Interpreter{
 		environment: environment,
 		globals:     environment,
@@ -128,7 +126,7 @@ func (interpreter *Interpreter) visitIfStatement(statement IfStatement) LiteralT
 }
 func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) LiteralType {
 	result := interpreter.evaluate(statement.expression)
-	fmt.Printf("value: %v, type: %v\n", result, reflect.TypeOf(result))
+	fmt.Printf("%v\n", result)
 	return result
 }
 func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) LiteralType {

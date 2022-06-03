@@ -1,10 +1,10 @@
 package main
 
-func interpret(source string) {
+func interpret(source string, environment *Environment) {
 	scanner := NewScanner(source)
 	tokens := scanner.ScanTokens()
 	parser := NewParser(tokens)
 	statements := parser.Parse()
-	interpreter := NewInterpreter()
+	interpreter := NewInterpreter(environment)
 	interpreter.Interpret(statements)
 }

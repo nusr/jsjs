@@ -216,11 +216,10 @@ func (parser *Parser) assignment() Expression {
 	if parser.match(EQUAL) {
 		equal := parser.previous()
 		value := parser.assignment()
-		if val, ok := value.(VariableExpression); ok {
-			name := val.name
+		if val, ok := expr.(VariableExpression); ok {
 			return AssignExpression{
-				name:  name,
-				value: val,
+				name:  val.name,
+				value: value,
 			}
 		}
 		panic(fmt.Sprintf("invalid assign target: %s", equal))
