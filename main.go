@@ -33,7 +33,7 @@ func runFile(fileName string) {
 }
 
 func isTestEnv() bool {
-	return len(os.Args) == 2 && os.Args[1] == "test"
+	return len(os.Args) >= 2 && os.Args[1] == "test"
 }
 
 var total = 0
@@ -69,13 +69,18 @@ func readFiles(dirPath string) {
 func runTest() {
 	total = 0
 	fail = 0
-	readFiles("test")
+	startDir := "test"
+	if len(os.Args) == 3 {
+		startDir = os.Args[2]
+	}
+	readFiles(startDir)
 	fmt.Printf("total:%d,success: %d\n", total, total-fail)
 }
 
 func main() {
 	if isTestEnv() {
 		runTest()
+		return
 	}
 	argc := len(os.Args)
 	if argc == 1 {

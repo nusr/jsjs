@@ -111,9 +111,11 @@ func (interpreter *Interpreter) visitBlockStatement(statement BlockStatement) Li
 	return nil
 }
 func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) LiteralType {
+	// TODO
 	return nil
 }
 func (interpreter *Interpreter) visitFunctionStatement(statement FunctionStatement) LiteralType {
+	// TODO
 	return nil
 }
 
@@ -131,6 +133,7 @@ func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) Li
 	return result
 }
 func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) LiteralType {
+	// TODO
 	return nil
 }
 func (interpreter *Interpreter) visitWhileStatement(statement WhileStatement) LiteralType {
@@ -279,12 +282,15 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 }
 
 func (interpreter *Interpreter) visitCallExpression(expression CallExpression) LiteralType {
+	// TODO
 	return nil
 }
 func (interpreter *Interpreter) visitGetExpression(expression GetExpression) LiteralType {
+	// TODO
 	return nil
 }
 func (interpreter *Interpreter) visitSetExpression(expression SetExpression) LiteralType {
+	// TODO
 	return nil
 }
 func (interpreter *Interpreter) visitLogicalExpression(expression LogicalExpression) LiteralType {
@@ -303,6 +309,7 @@ func (interpreter *Interpreter) visitLogicalExpression(expression LogicalExpress
 }
 
 func (interpreter *Interpreter) visitSuperExpression(expression SuperExpression) LiteralType {
+	// TODO
 	return nil
 }
 
@@ -312,11 +319,14 @@ func (interpreter *Interpreter) visitGroupingExpression(expression GroupingExpre
 }
 
 func (interpreter *Interpreter) visitThisExpression(expression ThisExpression) LiteralType {
+	// TODO
 	return nil
 }
 func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression) LiteralType {
 	result := interpreter.evaluate(expression.right)
 	switch expression.operator.tokenType {
+	case PLUS:
+		return result
 	case MINUS:
 		{
 			if result == nil {

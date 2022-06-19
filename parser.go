@@ -234,7 +234,7 @@ func (parser *Parser) expression() Expression {
 func (parser *Parser) ifStatement() Statement {
 	parser.consume(LEFT_PAREN, "expect ( after if")
 	expression := parser.expression()
-	parser.consume(RIGHT_BRACE, "expected ) after if")
+	parser.consume(RIGHT_PAREN, "expected ) after if")
 	thenBranch := parser.statement()
 	if parser.match(ELSE) {
 		elseBranch := parser.statement()
