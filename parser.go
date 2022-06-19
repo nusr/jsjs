@@ -271,12 +271,26 @@ func (parser *Parser) expressionStatement() Statement {
 	}
 }
 
+func (parser *Parser) block() Statement {
+	var statements []Statement
+	for !parser.isAtEnd() && parser.peek().tokenType != RIGHT_BRACE {
+		statements = append(statements, parser.declaration())
+	}
+	parser.consume(RIGHT_BRACE, "expected } after block")
+	return BlockStatement{
+		statements: statements,
+	}
+}
+
 func (parser *Parser) statement() Statement {
 	if parser.match(IF) {
 		return parser.ifStatement()
 	}
 	if parser.match(PRINT) {
 		return parser.printStatement()
+	}
+	if parser.match(lEFT_BRACE) {
+		return parser.block()
 	}
 	// if parser.match(WHILE) {
 	// 	return

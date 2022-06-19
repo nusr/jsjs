@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"runtime/debug"
 )
 
 func reply() {
@@ -21,7 +22,7 @@ func reply() {
 	}
 }
 
-func funFile(fileName string) {
+func runFile(fileName string) {
 	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		fmt.Printf("can not open file \"%s\", error: %v", fileName, err)
@@ -31,12 +32,56 @@ func funFile(fileName string) {
 	interpret(string(content), environment)
 }
 
+func isTestEnv() bool {
+	return len(os.Args) == 2 && os.Args[1] == "test"
+}
+
+var total = 0
+var fail = 0
+
+func safeRunFile(filePath string) {
+	defer func() {
+		if err := recover(); err != nil {
+			fail++
+			fmt.Printf("safeRunFile filePath:%s, err: %s, stack: %s\n", filePath, err, debug.Stack())
+		}
+	}()
+	total++
+	runFile(filePath)
+}
+
+func readFiles(dirPath string) {
+	dirs, err := ioutil.ReadDir(dirPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, item := range dirs {
+		filePath := dirPath + "/" + item.Name()
+		if item.IsDir() {
+			readFiles(filePath)
+		} else {
+			safeRunFile(filePath)
+		}
+	}
+
+}
+func runTest() {
+	total = 0
+	fail = 0
+	readFiles("test")
+	fmt.Printf("total:%d,success: %d\n", total, total-fail)
+}
+
 func main() {
+	if isTestEnv() {
+		runTest()
+	}
 	argc := len(os.Args)
 	if argc == 1 {
 		reply()
 	} else if argc == 2 {
-		funFile(os.Args[1])
+		runFile(os.Args[1])
 	} else {
 		fmt.Println("Usage: lox [path]")
 		os.Exit(64)

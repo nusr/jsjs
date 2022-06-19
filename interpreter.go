@@ -107,6 +107,7 @@ func (interpreter *Interpreter) visitVariableStatement(statement VariableStateme
 	return nil
 }
 func (interpreter *Interpreter) visitBlockStatement(statement BlockStatement) LiteralType {
+	interpreter.executeBlock(statement.statements, NewEnvironment(interpreter.environment))
 	return nil
 }
 func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) LiteralType {
