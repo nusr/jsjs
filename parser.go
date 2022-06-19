@@ -282,6 +282,17 @@ func (parser *Parser) block() Statement {
 	}
 }
 
+func (parser *Parser) while() Statement {
+	parser.consume(LEFT_PAREN, "expect ( after while")
+	condition := parser.expression()
+	parser.consume(RIGHT_PAREN, "expected ) after while")
+	body := parser.statement()
+	return WhileStatement{
+		condition: condition,
+		body:      body,
+	}
+}
+
 func (parser *Parser) statement() Statement {
 	if parser.match(IF) {
 		return parser.ifStatement()
@@ -292,9 +303,9 @@ func (parser *Parser) statement() Statement {
 	if parser.match(lEFT_BRACE) {
 		return parser.block()
 	}
-	// if parser.match(WHILE) {
-	// 	return
-	// }
+	if parser.match(WHILE) {
+		return parser.while()
+	}
 	return parser.expressionStatement()
 }
 

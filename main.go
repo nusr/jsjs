@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime/debug"
+	"time"
 )
 
 func reply() {
@@ -66,6 +67,22 @@ func readFiles(dirPath string) {
 	}
 
 }
+
+func writeTestResult() {
+	fileName := "./scripts/go-test.log"
+	content, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	message := []byte(fmt.Sprintf("total: %d,success: %d, time: %v\n", total, total-fail, time.Now()))
+	message = append(message, content...)
+	err = ioutil.WriteFile(fileName, message, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func runTest() {
 	total = 0
 	fail = 0
@@ -75,6 +92,7 @@ func runTest() {
 	}
 	readFiles(startDir)
 	fmt.Printf("total:%d,success: %d\n", total, total-fail)
+	writeTestResult()
 }
 
 func main() {
