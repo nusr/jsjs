@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime/debug"
+	"sync"
 	"time"
 )
 
@@ -37,19 +38,7 @@ func isTestEnv() bool {
 	return len(os.Args) >= 2 && os.Args[1] == "test"
 }
 
-var total = 0
-var fail = 0
-
-func safeRunFile(filePath string) {
-	defer func() {
-		if err := recover(); err != nil {
-			fail++
-			fmt.Printf("safeRunFile filePath:%s, err: %s, stack: %s\n", filePath, err, debug.Stack())
-		}
-	}()
-	total++
-	runFile(filePath)
-}
+var filePaths []string
 
 func readFiles(dirPath string) {
 	dirs, err := ioutil.ReadDir(dirPath)
@@ -62,13 +51,13 @@ func readFiles(dirPath string) {
 		if item.IsDir() {
 			readFiles(filePath)
 		} else {
-			safeRunFile(filePath)
+			filePaths = append(filePaths, filePath)
 		}
 	}
 
 }
 
-func writeTestResult() {
+func writeTestResult(total int, fail int) {
 	fileName := "./scripts/go-test.log"
 	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
@@ -84,15 +73,31 @@ func writeTestResult() {
 }
 
 func runTest() {
-	total = 0
-	fail = 0
+	var fail = 0
+	filePaths = nil
 	startDir := "test"
 	if len(os.Args) == 3 {
 		startDir = os.Args[2]
 	}
 	readFiles(startDir)
+	wg := sync.WaitGroup{}
+	wg.Add(20)
+	for _, filePath := range filePaths {
+		go func(t string) {
+			defer func() {
+				if err := recover(); err != nil {
+					fail++
+					fmt.Printf("runTest filePath:%s, err: %s, stack: %s\n", t, err, debug.Stack())
+				}
+			}()
+			runFile(t)
+			wg.Done()
+		}(filePath)
+	}
+	wg.Wait()
+	total := len(filePaths)
 	fmt.Printf("total:%d,success: %d\n", total, total-fail)
-	writeTestResult()
+	writeTestResult(total, fail)
 }
 
 func main() {
