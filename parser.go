@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type Parser struct {
@@ -89,13 +88,13 @@ func (parser *Parser) primary() Expression {
 			tokenType: NULL,
 		}
 	}
-	if parser.match(NUMBER) {
-		text := parser.previous().lexeme
-		result, _ := strconv.ParseFloat(text, 64)
+	if parser.match(FLOAT64, INT64) {
+		token := parser.previous()
 		return LiteralExpression{
-			number:    result,
-			tokenType: NUMBER,
+			string:    token.lexeme,
+			tokenType: token.tokenType,
 		}
+
 	}
 	if parser.match(STRING) {
 		return LiteralExpression{

@@ -34,7 +34,8 @@ const (
 	LESS_EQUAL                     // <=
 	IDENTIFIER                     // Literals
 	STRING
-	NUMBER
+	FLOAT64
+	INT64
 	AND // keywords
 	CLASS
 	ELSE
@@ -67,6 +68,8 @@ func literalTypeToString(text LiteralType) string {
 		return data
 	case float64:
 		return strconv.FormatFloat(data, 'f', 10, 64)
+	case int64:
+		return strconv.FormatInt(data, 10)
 	default:
 		return ""
 	}

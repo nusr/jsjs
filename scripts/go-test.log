@@ -1,3 +1,5 @@
+total: 265,success: 72,expect-success: 64,expect-fail: 96,time: 2022-06-21 23:30:28.3321243 +0800 CST m=+0.151311901
+total: 265,success: 55,expect-success: 54,expect-fail: 20,time: 2022-06-21 23:29:48.121834 +0800 CST m=+0.148565601
 total: 265,success: 53,expect-success: 39,expect-fail: 23,time: 2022-06-21 23:09:37.2621997 +0800 CST m=+0.150387501
 total: 265,success: 53,expect-success: 39,expect-fail: 23,time: 2022-06-21 23:08:47.0377719 +0800 CST m=+0.156868201
 total: 265,success: 49,expect-success: 39,expect-fail: 21,time: 2022-06-21 23:07:26.960817 +0800 CST m=+0.129266801

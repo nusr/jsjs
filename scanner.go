@@ -118,8 +118,10 @@ func (scanner *Scanner) number() {
 		for scanner.isDigit(scanner.peek()) {
 			scanner.advance()
 		}
+		scanner.addToken(FLOAT64)
+	} else {
+		scanner.addToken(INT64)
 	}
-	scanner.addToken(NUMBER)
 
 }
 

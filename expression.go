@@ -57,7 +57,6 @@ func (groupingExpression GroupingExpression) accept(visitor ExpressionVisitor) L
 }
 
 type LiteralExpression struct {
-	number    float64
 	string    string
 	tokenType TokenType
 }

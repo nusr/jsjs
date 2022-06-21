@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -15,6 +16,15 @@ func convertBtoF(b bool) float64 {
 		return float64(1)
 	}
 	return float64(0)
+}
+
+func convertLtoI(left LiteralType, right LiteralType) (int64, int64, bool) {
+	leftInt, leftType := left.(int64)
+	rightInt, rightType := right.(int64)
+	if leftType && rightType {
+		return leftInt, rightInt, true
+	}
+	return 0, 0, false
 }
 
 func convertLtoF(left LiteralType, right LiteralType) (float64, float64, bool) {
@@ -44,6 +54,14 @@ func convertLtoF(left LiteralType, right LiteralType) (float64, float64, bool) {
 	}
 	if val, ok := right.(bool); ok {
 		b = convertBtoF(val)
+		count++
+	}
+	if val, ok := left.(int64); ok {
+		a = float64(val)
+		count++
+	}
+	if val, ok := right.(int64); ok {
+		b = float64(val)
 		count++
 	}
 	return a, b, count >= 2
@@ -131,7 +149,7 @@ func (interpreter *Interpreter) visitIfStatement(statement IfStatement) LiteralT
 func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) LiteralType {
 	result := interpreter.evaluate(statement.expression)
 	actual := literalTypeToString(result)
-	// fmt.Printf("%s\n", actual)
+	fmt.Printf("%s\n", actual)
 	if statement.comment != nil {
 		data := strings.Split(statement.comment.lexeme, ":")
 		if len(data) >= 2 {
@@ -140,7 +158,7 @@ func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) Li
 				globalExpect.addSuccess()
 			} else {
 				globalExpect.addFail()
-				panic(fmt.Sprintf("[expect error] expected: %s, actual: %s\n", expected, actual))
+				// panic(fmt.Sprintf("[expect error] expected: %s, actual: %s\n", expected, actual))
 			}
 		}
 	}
@@ -167,8 +185,16 @@ func (interpreter *Interpreter) visitLiteralExpression(expression LiteralExpress
 		return nil
 	case STRING:
 		return expression.string
-	case NUMBER:
-		return expression.number
+	case FLOAT64:
+		{
+			result, _ := strconv.ParseFloat(expression.string, 64)
+			return result
+		}
+	case INT64:
+		{
+			result, _ := strconv.ParseInt(expression.string, 10, 64)
+			return result
+		}
 	case TRUE:
 		return true
 	case FALSE:
@@ -244,6 +270,9 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			if stringType1 || stringType2 {
 				return literalTypeToString(left) + literalTypeToString(right)
 			}
+			if a, b, check := convertLtoI(left, right); check {
+				return a + b
+			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
 				panic(fmt.Sprintf("PLUS can not handle value left:%v,right:%v", left, right))
@@ -256,6 +285,9 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			_, stringType2 := right.(string)
 			if stringType1 || stringType2 {
 				return NAN_NUMBER
+			}
+			if a, b, check := convertLtoI(left, right); check {
+				return a - b
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
@@ -270,6 +302,9 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			if stringType1 || stringType2 {
 				return NAN_NUMBER
 			}
+			if a, b, check := convertLtoI(left, right); check {
+				return a * b
+			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
 				panic(fmt.Sprintf("STAR can not handle value left:%v,right:%v", left, right))
@@ -282,6 +317,9 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			_, stringType2 := right.(string)
 			if stringType1 || stringType2 {
 				return NAN_NUMBER
+			}
+			if a, b, check := convertLtoI(left, right); check {
+				return a / b
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
