@@ -18,7 +18,6 @@
     "delete": "node ./scripts/pre.js",
     "pretest": "npm run build",
     "test": "node ./scripts/visitTest.js",
-    "ast": "node ./scripts/generateAST.js",
     "type": "npx tsc",
     "pretype": "npm run delete",
     "prebin": "npm run build",

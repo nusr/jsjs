@@ -44,7 +44,7 @@ term           := factor ( ( "-" | "+" ) factor )* ;
 factor         := unary ( ( "/" | "*" ) unary )* ;
 unary          := ( "!" | "-" ) unary | call ;
 call           := primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
-primary        := "true" | "false" | "nil" | "this"
+primary        := "true" | "false" | "null" | "this"
                | NUMBER | STRING | IDENTIFIER | "(" expression ")"
                | "super" "." IDENTIFIER ;
 
