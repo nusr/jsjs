@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 const (
@@ -223,6 +224,10 @@ func (scanner *Scanner) scanToken() {
 		if scanner.match('/') {
 			for scanner.peek() != '\n' && !scanner.isAtEnd() {
 				scanner.advance()
+			}
+			text := scanner.getSubString(scanner.start, scanner.current)
+			if strings.Contains(text, "expect:") {
+				scanner.appendToken(LINE_COMMENT, text)
 			}
 		} else if scanner.match('*') {
 			for !((scanner.peek() == '*' && scanner.peekNext() == '/') || scanner.isAtEnd()) {

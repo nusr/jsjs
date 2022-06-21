@@ -55,14 +55,14 @@ func readFiles(dirPath string) {
 
 }
 
-func writeTestResult(total int, fail int) {
+func writeTestResult(text string) {
 	fileName := "./scripts/go-test.log"
 	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	message := []byte(fmt.Sprintf("total: %d,success: %d, time: %v\n", total, total-fail, time.Now()))
+	message := []byte(text)
 	message = append(message, content...)
 	err = ioutil.WriteFile(fileName, message, 0644)
 	if err != nil {
@@ -94,9 +94,10 @@ func runTest() {
 	}
 	// wg.Wait()
 	total := len(filePaths)
-	fmt.Printf("total:%d,success: %d\n", total, total-fail)
+	text := fmt.Sprintf("total: %d,success: %d,expect-success: %d,expect-fail: %d,time: %v\n", total, total-fail, globalExpect.success, globalExpect.fail, time.Now())
+	fmt.Println(text)
 	if len(os.Args) == 2 {
-		writeTestResult(total, fail)
+		writeTestResult(text)
 	}
 }
 

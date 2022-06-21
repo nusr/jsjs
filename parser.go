@@ -60,13 +60,13 @@ func (parser *Parser) varStatement() Statement {
 	name := parser.consume(IDENTIFIER, "expect identifier after var")
 	if parser.match(EQUAL) {
 		initializer := parser.expression()
-		parser.consume(SEMICOLON, "expected ;")
+		parser.match(SEMICOLON)
 		return VariableStatement{
 			name:        name,
 			initializer: initializer,
 		}
 	} else {
-		parser.consume(SEMICOLON, "expected ;")
+		parser.match(SEMICOLON)
 		return VariableStatement{
 			name: name,
 		}
@@ -115,7 +115,9 @@ func (parser *Parser) primary() Expression {
 			expression: expr,
 		}
 	}
-	panic(fmt.Sprintf("parser can not handle token: %s", parser.peek()))
+	parser.advance()
+	// panic(fmt.Sprintf("parser can not handle token: %s", parser.peek()))
+	return nil
 }
 func (parser *Parser) unary() Expression {
 	if parser.match(MINUS, BANG) {
@@ -254,17 +256,25 @@ func (parser *Parser) ifStatement() Statement {
 func (parser *Parser) printStatement() Statement {
 	expr := parser.expression()
 	if !parser.isAtEnd() {
-		parser.consume(SEMICOLON, "expected ; after print")
+		parser.match(SEMICOLON)
+	}
+	if parser.match(LINE_COMMENT) {
+		comment := parser.previous()
+		return PrintStatement{
+			expression: expr,
+			comment:    comment,
+		}
 	}
 	return PrintStatement{
 		expression: expr,
+		comment:    nil,
 	}
 }
 
 func (parser *Parser) expressionStatement() Statement {
 	expr := parser.expression()
 	if !parser.isAtEnd() {
-		parser.consume(SEMICOLON, "expected ; after expression")
+		parser.match(SEMICOLON)
 	}
 	return ExpressionStatement{
 		expression: expr,

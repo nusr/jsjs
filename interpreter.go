@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 const (
@@ -129,9 +130,23 @@ func (interpreter *Interpreter) visitIfStatement(statement IfStatement) LiteralT
 }
 func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) LiteralType {
 	result := interpreter.evaluate(statement.expression)
-	fmt.Printf("%s\n", literalTypeToString(result))
+	actual := literalTypeToString(result)
+	// fmt.Printf("%s\n", actual)
+	if statement.comment != nil {
+		data := strings.Split(statement.comment.lexeme, ":")
+		if len(data) >= 2 {
+			expected := strings.TrimSpace(data[1])
+			if expected == actual {
+				globalExpect.addSuccess()
+			} else {
+				globalExpect.addFail()
+				panic(fmt.Sprintf("[expect error] expected: %s, actual: %s\n", expected, actual))
+			}
+		}
+	}
 	return result
 }
+
 func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) LiteralType {
 	// TODO
 	return nil

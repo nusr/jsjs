@@ -54,6 +54,7 @@ const (
 	VAR // variable
 	WHILE
 	EOF // end
+	LINE_COMMENT
 )
 
 type LiteralType interface{}

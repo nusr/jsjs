@@ -48,6 +48,7 @@ func (ifStatement IfStatement) accept(visitor StatementVisitor) LiteralType {
 
 type PrintStatement struct {
 	expression Expression
+	comment    *Token
 }
 
 func (printStatement PrintStatement) accept(visitor StatementVisitor) LiteralType {
