@@ -129,7 +129,7 @@ func (interpreter *Interpreter) visitIfStatement(statement IfStatement) LiteralT
 }
 func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) LiteralType {
 	result := interpreter.evaluate(statement.expression)
-	fmt.Printf("%v\n", result)
+	fmt.Printf("%s\n", literalTypeToString(result))
 	return result
 }
 func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) LiteralType {

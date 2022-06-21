@@ -1,4 +1,4 @@
-and class else false for fun if nil or return super this true var while
+and class else false for fun if null or return super this true var while
 
 // expect: AND and null
 // expect: CLASS class null
@@ -7,7 +7,7 @@ and class else false for fun if nil or return super this true var while
 // expect: FOR for null
 // expect: FUN fun null
 // expect: IF if null
-// expect: NIL nil null
+// expect: NIL null null
 // expect: OR or null
 // expect: RETURN return null
 // expect: SUPER super null

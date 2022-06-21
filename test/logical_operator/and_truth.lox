@@ -1,6 +1,6 @@
-// False and nil are false.
+// False and null are false.
 print false && "bad"; // expect: false
-print nil && "bad"; // expect: nil
+print null && "bad"; // expect: null
 
 // Everything else is true.
 print true && "ok"; // expect: ok

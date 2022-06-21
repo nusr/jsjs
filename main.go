@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"runtime/debug"
-	"sync"
 	"time"
 )
 
@@ -80,24 +78,26 @@ func runTest() {
 		startDir = os.Args[2]
 	}
 	readFiles(startDir)
-	wg := sync.WaitGroup{}
-	wg.Add(20)
+	// wg := sync.WaitGroup{}
+	// wg.Add(20)
 	for _, filePath := range filePaths {
-		go func(t string) {
+		func(t string) {
 			defer func() {
 				if err := recover(); err != nil {
 					fail++
-					fmt.Printf("runTest filePath:%s, err: %s, stack: %s\n", t, err, debug.Stack())
+					fmt.Printf("runTest filePath:%s, err: %s\n", t, err)
 				}
 			}()
 			runFile(t)
-			wg.Done()
+			// wg.Done()
 		}(filePath)
 	}
-	wg.Wait()
+	// wg.Wait()
 	total := len(filePaths)
 	fmt.Printf("total:%d,success: %d\n", total, total-fail)
-	writeTestResult(total, fail)
+	if len(os.Args) == 2 {
+		writeTestResult(total, fail)
+	}
 }
 
 func main() {

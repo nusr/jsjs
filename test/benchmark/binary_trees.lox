@@ -8,13 +8,13 @@ class Tree {
       this.left = Tree(item2 - 1, depth);
       this.right = Tree(item2, depth);
     } else {
-      this.left = nil;
-      this.right = nil;
+      this.left = null;
+      this.right = null;
     }
   }
 
   check() {
-    if (this.left == nil) {
+    if (this.left == null) {
       return this.item;
     }
 

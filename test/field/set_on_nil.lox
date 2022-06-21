@@ -1,1 +1,1 @@
-nil.foo = "value"; // expect runtime error: Only instances have fields.
+null.foo = "value"; // expect runtime error: Only instances have fields.
