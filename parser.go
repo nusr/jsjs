@@ -291,6 +291,63 @@ func (parser *Parser) block() Statement {
 	}
 }
 
+func (parser *Parser) forStatement() Statement {
+	parser.consume(LEFT_PAREN, "expect (")
+
+	var initializer Statement
+	if parser.match(SEMICOLON) {
+		initializer = nil
+	} else if parser.match(VAR) {
+		initializer = parser.varStatement()
+	} else {
+		initializer = parser.expressionStatement()
+	}
+
+	var condition Expression
+	if !parser.check(SEMICOLON) {
+		condition = parser.expression()
+	}
+	parser.consume(SEMICOLON, "expect ;")
+
+	var increment Statement
+	if !parser.check(RIGHT_PAREN) {
+		increment = parser.expressionStatement()
+	}
+	parser.consume(RIGHT_PAREN, "expect )")
+
+	body := parser.statement()
+
+	if condition == nil {
+		condition = LiteralExpression{
+			tokenType: TRUE,
+		}
+	}
+
+	if increment != nil {
+		body = BlockStatement{
+			statements: []Statement{
+				body,
+				increment,
+			},
+		}
+	}
+
+	body = WhileStatement{
+		body:      body,
+		condition: condition,
+	}
+
+	if initializer != nil {
+		body = BlockStatement{
+			statements: []Statement{
+				initializer,
+				body,
+			},
+		}
+	}
+	return body
+}
+
 func (parser *Parser) while() Statement {
 	parser.consume(LEFT_PAREN, "expect ( after while")
 	condition := parser.expression()
@@ -311,6 +368,9 @@ func (parser *Parser) statement() Statement {
 	}
 	if parser.match(lEFT_BRACE) {
 		return parser.block()
+	}
+	if parser.match(FOR) {
+		return parser.forStatement()
 	}
 	if parser.match(WHILE) {
 		return parser.while()
