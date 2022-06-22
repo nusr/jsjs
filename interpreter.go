@@ -94,6 +94,21 @@ func (interpreter *Interpreter) evaluate(expression Expression) LiteralType {
 }
 
 func (interpreter *Interpreter) isTruthy(value LiteralType) bool {
+	if value == true {
+		return true
+	}
+	list := []interface{}{
+		nil,
+		"",
+		int64(0),
+		float64(0),
+		false,
+	}
+	for _, item := range list {
+		if item == value {
+			return false
+		}
+	}
 	text := literalTypeToString(value)
 	result := text != ""
 	return result

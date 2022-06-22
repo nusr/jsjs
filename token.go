@@ -70,10 +70,16 @@ func literalTypeToString(text LiteralType) string {
 		return strconv.FormatFloat(data, 'f', 10, 64)
 	case int64:
 		return strconv.FormatInt(data, 10)
+	case bool:
+		{
+			if data {
+				return "true"
+			}
+			return "false"
+		}
 	default:
 		return ""
 	}
-	return ""
 }
 
 type Token struct {
