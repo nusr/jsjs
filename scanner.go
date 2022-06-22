@@ -24,6 +24,7 @@ var KEYWORD_MAP = map[string]TokenType{
 	"true":     TRUE,
 	"var":      VAR,
 	"while":    WHILE,
+	"do":       DO,
 }
 
 type Scanner struct {

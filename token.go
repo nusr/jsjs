@@ -53,6 +53,7 @@ const (
 	SUPER
 	THIS
 	VAR // variable
+	DO  // do while
 	WHILE
 	EOF // end
 	LINE_COMMENT

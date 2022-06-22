@@ -347,7 +347,23 @@ func (parser *Parser) forStatement() Statement {
 	}
 	return body
 }
-
+func (parser *Parser) doWhile() Statement {
+	parser.consume(lEFT_BRACE, "expect {")
+	body := parser.block()
+	parser.consume(WHILE, "expect while")
+	parser.consume(LEFT_PAREN, "expect (")
+	condition := parser.expression()
+	parser.consume(RIGHT_PAREN, "expect )")
+	return BlockStatement{
+		statements: []Statement{
+			body,
+			WhileStatement{
+				body:      body,
+				condition: condition,
+			},
+		},
+	}
+}
 func (parser *Parser) while() Statement {
 	parser.consume(LEFT_PAREN, "expect ( after while")
 	condition := parser.expression()
@@ -368,6 +384,9 @@ func (parser *Parser) statement() Statement {
 	}
 	if parser.match(lEFT_BRACE) {
 		return parser.block()
+	}
+	if parser.match(DO) {
+		return parser.doWhile()
 	}
 	if parser.match(FOR) {
 		return parser.forStatement()
