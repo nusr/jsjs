@@ -119,7 +119,7 @@ func (parser *Parser) primary() Expression {
 	return nil
 }
 func (parser *Parser) unary() Expression {
-	if parser.match(MINUS, BANG) {
+	if parser.match(MINUS, PLUS, BANG, MINUS_MINUS, PLUS_PLUS) {
 		operator := parser.previous()
 		value := parser.unary()
 		return UnaryExpression{
@@ -375,9 +375,22 @@ func (parser *Parser) while() Statement {
 	}
 }
 
+func (parser *Parser) returnStatement() Statement {
+	token := parser.previous()
+	expr := parser.expression()
+	parser.match(SEMICOLON)
+	return ReturnStatement{
+		keyword: token,
+		value:   expr,
+	}
+}
+
 func (parser *Parser) statement() Statement {
 	if parser.match(IF) {
 		return parser.ifStatement()
+	}
+	if parser.match(RETURN) {
+		return parser.returnStatement()
 	}
 	if parser.match(PRINT) {
 		return parser.printStatement()

@@ -17,7 +17,9 @@ const (
 	COMMA                          // ,
 	DOT                            // .
 	MINUS                          // -
+	MINUS_MINUS                    // --i
 	PLUS                           // +
+	PLUS_PLUS                      // ++
 	SEMICOLON                      // ;
 	COLON                          // :
 	SLASH                          // /

@@ -174,9 +174,17 @@ func (scanner *Scanner) scanToken() {
 	case '.':
 		scanner.addToken(DOT)
 	case '-':
-		scanner.addToken(MINUS)
+		if scanner.match('+') {
+			scanner.addToken(MINUS_MINUS)
+		} else {
+			scanner.addToken(MINUS)
+		}
 	case '+':
-		scanner.addToken(PLUS)
+		if scanner.match('+') {
+			scanner.addToken(PLUS_PLUS)
+		} else {
+			scanner.addToken(PLUS)
+		}
 	case ';':
 		scanner.addToken(SEMICOLON)
 	case ':':

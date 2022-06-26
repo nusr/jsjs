@@ -181,8 +181,11 @@ func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) Li
 }
 
 func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) LiteralType {
-	// TODO
-	return nil
+	if statement.value == nil {
+		return nil
+	}
+	result := interpreter.evaluate(statement.value)
+	return result
 }
 func (interpreter *Interpreter) visitWhileStatement(statement WhileStatement) LiteralType {
 	for interpreter.isTruthy(interpreter.evaluate(statement.condition)) {
@@ -393,6 +396,15 @@ func (interpreter *Interpreter) visitThisExpression(expression ThisExpression) L
 func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression) LiteralType {
 	result := interpreter.evaluate(expression.right)
 	switch expression.operator.tokenType {
+	case PLUS_PLUS:
+		{
+			panic("Invalid left-hand side expression in prefix operation")
+		}
+
+	case MINUS_MINUS:
+		{
+			panic("Invalid left-hand side expression in prefix operation")
+		}
 	case PLUS:
 		return result
 	case MINUS:
