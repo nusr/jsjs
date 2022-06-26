@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -78,21 +79,21 @@ func runTest() {
 		startDir = os.Args[2]
 	}
 	readFiles(startDir)
-	// wg := sync.WaitGroup{}
-	// wg.Add(20)
+	wg := sync.WaitGroup{}
+	wg.Add(20)
 	for _, filePath := range filePaths {
-		func(t string) {
+		func() {
 			defer func() {
 				if err := recover(); err != nil {
 					fail++
 					fmt.Printf("runTest filePath:%s, err: %s\n", t, err)
 				}
 			}()
-			runFile(t)
-			// wg.Done()
-		}(filePath)
+			runFile(filePath)
+			wg.Done()
+		}()
 	}
-	// wg.Wait()
+	wg.Wait()
 	total := len(filePaths)
 	text := fmt.Sprintf("total: %d,success: %d,expect-success: %d,expect-fail: %d,time: %v\n", total, total-fail, globalExpect.success, globalExpect.fail, time.Now())
 	fmt.Println(text)
