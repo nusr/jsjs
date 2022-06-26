@@ -86,7 +86,7 @@ func runTest() {
 			defer func() {
 				if err := recover(); err != nil {
 					fail++
-					fmt.Printf("runTest filePath:%s, err: %s\n", t, err)
+					fmt.Printf("runTest filePath:%s, err: %s\n", filePath, err)
 				}
 			}()
 			runFile(filePath)
