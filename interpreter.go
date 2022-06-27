@@ -398,12 +398,45 @@ func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression)
 	switch expression.operator.tokenType {
 	case PLUS_PLUS:
 		{
-			panic("Invalid left-hand side expression in prefix operation")
+			if val, check := expression.right.(VariableExpression); check {
+				var temp LiteralType
+				if val, check := result.(int64); check {
+					temp = val + 1
+				} else {
+					a, _, check := convertLtoF(result, 0)
+					if check {
+						temp = a + 1
+					} else {
+						panic("error type")
+					}
+				}
+				interpreter.environment.assign(val.name, temp)
+				return temp
+			} else {
+				panic("Invalid left-hand side expression in prefix operation")
+			}
+
 		}
 
 	case MINUS_MINUS:
 		{
-			panic("Invalid left-hand side expression in prefix operation")
+			if val, check := expression.right.(VariableExpression); check {
+				var temp LiteralType
+				if val, check := result.(int64); check {
+					temp = val - 1
+				} else {
+					a, _, check := convertLtoF(result, 0)
+					if check {
+						temp = a - 1
+					} else {
+						panic("error type")
+					}
+				}
+				interpreter.environment.assign(val.name, temp)
+				return temp
+			} else {
+				panic("Invalid left-hand side expression in prefix operation")
+			}
 		}
 	case PLUS:
 		return result

@@ -174,7 +174,7 @@ func (scanner *Scanner) scanToken() {
 	case '.':
 		scanner.addToken(DOT)
 	case '-':
-		if scanner.match('+') {
+		if scanner.match('-') {
 			scanner.addToken(MINUS_MINUS)
 		} else {
 			scanner.addToken(MINUS)
