@@ -114,10 +114,34 @@ func (parser *Parser) primary() Expression {
 			expression: expr,
 		}
 	}
-	parser.advance()
-	// panic(fmt.Sprintf("parser can not handle token: %s", parser.peek()))
-	return nil
+	panic(fmt.Sprintf("parser can not handle token: %s", parser.peek()))
 }
+func (parser *Parser) finishCall(callee Expression) Expression {
+	var params []Expression
+	if !parser.check(RIGHT_PAREN) {
+		for ok := true; ok; ok = parser.match(COMMA) {
+			params = append(params, parser.expression())
+		}
+	}
+	paren := parser.consume(RIGHT_PAREN, "expect )")
+	return CallExpression{
+		callee:       callee,
+		argumentList: params,
+		paren:        paren,
+	}
+}
+func (parser *Parser) call() Expression {
+	expr := parser.primary()
+	for {
+		if parser.match(LEFT_PAREN) {
+			expr = parser.finishCall(expr)
+		} else {
+			break
+		}
+	}
+	return expr
+}
+
 func (parser *Parser) unary() Expression {
 	if parser.match(MINUS, PLUS, BANG, MINUS_MINUS, PLUS_PLUS) {
 		operator := parser.previous()
@@ -127,7 +151,7 @@ func (parser *Parser) unary() Expression {
 			right:    value,
 		}
 	}
-	return parser.primary()
+	return parser.call()
 
 }
 func (parser *Parser) factor() Expression {
@@ -280,7 +304,7 @@ func (parser *Parser) expressionStatement() Statement {
 	}
 }
 
-func (parser *Parser) block() Statement {
+func (parser *Parser) block() BlockStatement {
 	var statements []Statement
 	for !parser.isAtEnd() && parser.peek().tokenType != RIGHT_BRACE {
 		statements = append(statements, parser.declaration())
@@ -410,9 +434,31 @@ func (parser *Parser) statement() Statement {
 	return parser.expressionStatement()
 }
 
+func (parser *Parser) functionStatement() FunctionStatement {
+	name := parser.consume(IDENTIFIER, "expect name")
+	parser.consume(LEFT_PAREN, "expect (")
+	var parameters []*Token
+	if !parser.check(RIGHT_PAREN) {
+		for ok := true; ok; ok = parser.match(COMMA) {
+			parameters = append(parameters, parser.consume(IDENTIFIER, "expect parameter name"))
+
+		}
+	}
+	parser.consume(RIGHT_PAREN, "expect )")
+	parser.consume(lEFT_BRACE, "expect {")
+	body := parser.block()
+	return FunctionStatement{
+		name:   name,
+		params: parameters,
+		body:   body,
+	}
+}
 func (parser *Parser) declaration() Statement {
 	if parser.match(VAR) {
 		return parser.varStatement()
+	}
+	if parser.match(FUNCTION) {
+		return parser.functionStatement()
 	}
 	return parser.statement()
 }

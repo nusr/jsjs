@@ -28,8 +28,8 @@ func (expressionStatement ExpressionStatement) accept(visitor StatementVisitor) 
 
 type FunctionStatement struct {
 	name   *Token
-	body   Statement
-	params []Token
+	body   BlockStatement
+	params []*Token
 }
 
 func (functionStatement FunctionStatement) accept(visitor StatementVisitor) LiteralType {

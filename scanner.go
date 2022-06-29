@@ -10,21 +10,21 @@ const (
 )
 
 var KEYWORD_MAP = map[string]TokenType{
-	"class":    CLASS,
-	"else":     ELSE,
-	"false":    FALSE,
-	"for":      FOR,
-	"function": FUNCTION,
-	"if":       IF,
-	"null":     NULL,
-	"print":    PRINT,
-	"return":   RETURN,
-	"super":    SUPER,
-	"this":     THIS,
-	"true":     TRUE,
-	"var":      VAR,
-	"while":    WHILE,
-	"do":       DO,
+	"class":  CLASS,
+	"else":   ELSE,
+	"false":  FALSE,
+	"for":    FOR,
+	"func":   FUNCTION,
+	"if":     IF,
+	"null":   NULL,
+	"print":  PRINT,
+	"return": RETURN,
+	"super":  SUPER,
+	"this":   THIS,
+	"true":   TRUE,
+	"var":    VAR,
+	"while":  WHILE,
+	"do":     DO,
 }
 
 type Scanner struct {

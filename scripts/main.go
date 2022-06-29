@@ -24,17 +24,7 @@ func defineAST(fileName string, list []string) {
 		params := strings.Split(temp[1], ",")
 		name := className + fileName
 		receiver := lowerFistLetter(name)
-		var paramsList []string
-		for _, t := range params {
-			data := strings.Split(strings.TrimSpace(t), " ")
-			if strings.TrimSpace(data[1]) == "Token" {
-				paramsList = append(paramsList, "     "+data[0]+" *Token")
-			} else {
-				paramsList = append(paramsList, "    "+t)
-			}
-		}
-
-		structName := fmt.Sprintf("type %s struct {\n%s\n}\n", name, strings.Join(paramsList, "\n"))
+		structName := fmt.Sprintf("type %s struct {\n%s\n}\n", name, strings.Join(params, "\n"))
 		method := fmt.Sprintf("func (%s %s) accept(visitor %sVisitor) LiteralType {\n    return visitor.visit%s(%s)\n}\n", receiver, name, fileName, name, receiver)
 		result = append(result, structName, method)
 		visitorList = append(visitorList, fmt.Sprintf("    visit%s(%s %s) LiteralType", name, realFileName, name))
@@ -45,34 +35,38 @@ func defineAST(fileName string, list []string) {
 	os.WriteFile("../"+realFileName+".go", []byte(content), 0644)
 }
 
-func main() {
+func defineASTs() {
 	const expressionName = "Expression"
 	const statementName = "Statement"
 	expressionList := []string{
-		fmt.Sprintf("Assign # name Token, value %s", expressionName),
-		fmt.Sprintf("Binary # left %s, operator Token, right %s", expressionName, expressionName),
-		fmt.Sprintf("Call # callee %s, paren Token, argumentList []%s", expressionName, expressionName),
-		fmt.Sprintf("Get # object %s, name Token", expressionName),
-		fmt.Sprintf("Set # object %s, name Token, value %s", expressionName, expressionName),
+		fmt.Sprintf("Assign # name *Token, value %s", expressionName),
+		fmt.Sprintf("Binary # left %s, operator *Token, right %s", expressionName, expressionName),
+		fmt.Sprintf("Call # callee %s, paren *Token, argumentList []%s", expressionName, expressionName),
+		fmt.Sprintf("Get # object %s, name *Token", expressionName),
+		fmt.Sprintf("Set # object %s, name *Token, value %s", expressionName, expressionName),
 		fmt.Sprintf("Grouping # expression %s", expressionName),
 		"Literal # string string, tokenType TokenType",
-		fmt.Sprintf("Logical # left %s, operator Token, right %s", expressionName, expressionName),
-		fmt.Sprintf("Super # keyword Token, value %s", expressionName),
-		"This # keyword Token",
-		fmt.Sprintf("Unary # operator Token, right %s", expressionName),
-		"Variable # name Token",
+		fmt.Sprintf("Logical # left %s, operator *Token, right %s", expressionName, expressionName),
+		fmt.Sprintf("Super # keyword *Token, value %s", expressionName),
+		"This # keyword *Token",
+		fmt.Sprintf("Unary # operator *Token, right %s", expressionName),
+		"Variable # name *Token",
 	}
 	statementList := []string{
 		fmt.Sprintf("Block # statements []%s", statementName),
-		"Class # name Token, superClass VariableExpression, methods []FunctionStatement",
+		"Class # name *Token, superClass VariableExpression, methods []FunctionStatement",
 		fmt.Sprintf("Expression # expression %s", expressionName),
-		fmt.Sprintf("Function # name Token, body %s, params []Token", statementName),
+		"Function # name *Token, body BlockStatement, params []*Token",
 		fmt.Sprintf("If # condition %s, thenBranch %s, elseBranch %s", expressionName, statementName, statementName),
-		fmt.Sprintf("Print # expression %s, comment Token", expressionName),
-		fmt.Sprintf("Return # keyword Token, value %s", expressionName),
-		fmt.Sprintf("Variable # name Token, initializer %s", expressionName),
+		fmt.Sprintf("Print # expression %s, comment *Token", expressionName),
+		fmt.Sprintf("Return # keyword *Token, value %s", expressionName),
+		fmt.Sprintf("Variable # name *Token, initializer %s", expressionName),
 		fmt.Sprintf("While # condition %s, body %s", expressionName, statementName),
 	}
 	defineAST(expressionName, expressionList)
 	defineAST(statementName, statementList)
+}
+
+func main() {
+	defineASTs()
 }

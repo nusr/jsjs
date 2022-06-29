@@ -114,7 +114,7 @@ func (interpreter *Interpreter) isTruthy(value LiteralType) bool {
 	return result
 }
 
-func (interpreter *Interpreter) executeBlock(statements []Statement, environment *Environment) {
+func (interpreter *Interpreter) executeBlock(statement BlockStatement, environment *Environment) {
 	previous := interpreter.environment
 
 	defer func() {
@@ -123,7 +123,7 @@ func (interpreter *Interpreter) executeBlock(statements []Statement, environment
 		}
 	}()
 	interpreter.environment = environment
-	for _, statement := range statements {
+	for _, statement := range statement.statements {
 		interpreter.execute(statement)
 	}
 }
@@ -141,7 +141,7 @@ func (interpreter *Interpreter) visitVariableStatement(statement VariableStateme
 	return nil
 }
 func (interpreter *Interpreter) visitBlockStatement(statement BlockStatement) LiteralType {
-	interpreter.executeBlock(statement.statements, NewEnvironment(interpreter.environment))
+	interpreter.executeBlock(statement, NewEnvironment(interpreter.environment))
 	return nil
 }
 func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) LiteralType {
@@ -149,7 +149,7 @@ func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) Li
 	return nil
 }
 func (interpreter *Interpreter) visitFunctionStatement(statement FunctionStatement) LiteralType {
-	// TODO
+	interpreter.environment.define(statement.name.lexeme, NewCallable(statement))
 	return nil
 }
 
@@ -353,8 +353,15 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 }
 
 func (interpreter *Interpreter) visitCallExpression(expression CallExpression) LiteralType {
-	// TODO
-	return nil
+	callable := interpreter.evaluate(expression.callee)
+	var params []LiteralType
+	for _, item := range expression.argumentList {
+		params = append(params, interpreter.evaluate(item))
+	}
+	if val, ok := callable.(*Callable); ok {
+		return val.call(interpreter, params)
+	}
+	panic("can only call function and class")
 }
 func (interpreter *Interpreter) visitGetExpression(expression GetExpression) LiteralType {
 	// TODO
