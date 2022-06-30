@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -70,6 +71,16 @@ func writeTestResult(text string) {
 	}
 }
 
+func isBlackList(filePath string) bool {
+	blackList := []string{"inheritance", "function", "if/", "for/"}
+	for _, item := range blackList {
+		if strings.Contains(filePath, item) {
+			return true
+		}
+	}
+	return false
+}
+
 func runTest() {
 	var fail = 0
 	filePaths = nil
@@ -78,21 +89,24 @@ func runTest() {
 		startDir = os.Args[2]
 	}
 	readFiles(startDir)
-	// wg := sync.WaitGroup{}
-	// wg.Add(10)
+	//wg := sync.WaitGroup{}
+	//wg.Add(20)
 	for _, filePath := range filePaths {
+		if isBlackList(filePath) {
+			continue
+		}
 		func() {
 			defer func() {
-				if err := recover(); err != nil {
+				if err := recover(); err != any(nil) {
 					fail++
-					fmt.Printf("runTest filePath:%s, err: %s\n", filePath, err)
+					fmt.Printf("runTest filePath: %s\n", filePath)
 				}
 			}()
 			runFile(filePath)
-			// wg.Done()
+			//wg.Done()
 		}()
 	}
-	// wg.Wait()
+	//wg.Wait()
 	total := len(filePaths)
 	text := fmt.Sprintf("total: %d,success: %d,expect-success: %d,expect-fail: %d,time: %v\n", total, total-fail, globalExpect.success, globalExpect.fail, time.Now())
 	fmt.Println(text)

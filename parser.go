@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+const maxParameterCount = 255
+
 type Parser struct {
 	tokens  []*Token
 	current int
@@ -32,7 +34,7 @@ func (parser *Parser) previous() *Token {
 
 func (parser *Parser) consume(tokenType TokenType, message string) *Token {
 	if parser.peek().tokenType != tokenType {
-		panic(message)
+		panic(any(message))
 	}
 	parser.advance()
 	return parser.previous()
@@ -107,23 +109,28 @@ func (parser *Parser) primary() Expression {
 			name: parser.previous(),
 		}
 	}
-	if parser.match(LEFT_PAREN) {
+	if parser.match(LeftParen) {
 		expr := parser.expression()
-		parser.consume(RIGHT_PAREN, fmt.Sprintf("parser expected ')', actual:%s", parser.peek()))
+		parser.consume(RightParen, fmt.Sprintf("parser expected ')', actual:%s", parser.peek()))
 		return GroupingExpression{
 			expression: expr,
 		}
 	}
-	panic(fmt.Sprintf("parser can not handle token: %s", parser.peek()))
+	panic(any(fmt.Sprintf("parser can not handle token: %s", parser.peek())))
 }
 func (parser *Parser) finishCall(callee Expression) Expression {
 	var params []Expression
-	if !parser.check(RIGHT_PAREN) {
+	if !parser.check(RightParen) {
+		count := 0
 		for ok := true; ok; ok = parser.match(COMMA) {
 			params = append(params, parser.expression())
+			count++
+			if count > maxParameterCount {
+				panic(any("over max parameter count"))
+			}
 		}
 	}
-	paren := parser.consume(RIGHT_PAREN, "expect )")
+	paren := parser.consume(RightParen, "expect )")
 	return CallExpression{
 		callee:       callee,
 		argumentList: params,
@@ -133,7 +140,7 @@ func (parser *Parser) finishCall(callee Expression) Expression {
 func (parser *Parser) call() Expression {
 	expr := parser.primary()
 	for {
-		if parser.match(LEFT_PAREN) {
+		if parser.match(LeftParen) {
 			expr = parser.finishCall(expr)
 		} else {
 			break
@@ -143,7 +150,7 @@ func (parser *Parser) call() Expression {
 }
 
 func (parser *Parser) unary() Expression {
-	if parser.match(MINUS, PLUS, BANG, MINUS_MINUS, PLUS_PLUS) {
+	if parser.match(MINUS, PLUS, BANG, MinusMinus, PlusPlus) {
 		operator := parser.previous()
 		value := parser.unary()
 		return UnaryExpression{
@@ -184,7 +191,7 @@ func (parser *Parser) term() Expression {
 
 func (parser *Parser) comparison() Expression {
 	term := parser.term()
-	for parser.match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL) {
+	for parser.match(GREATER, GreaterEqual, LESS, LessEqual) {
 		operator := parser.previous()
 		right := parser.term()
 		term = BinaryExpression{
@@ -198,7 +205,7 @@ func (parser *Parser) comparison() Expression {
 
 func (parser *Parser) equality() Expression {
 	expr := parser.comparison()
-	for parser.match(BANG_EQUAL, EQUAL_EQUAL) {
+	for parser.match(BangEqual, EqualEqual) {
 		operator := parser.previous()
 		right := parser.comparison()
 		expr = BinaryExpression{
@@ -247,7 +254,7 @@ func (parser *Parser) assignment() Expression {
 				value: value,
 			}
 		}
-		panic(fmt.Sprintf("invalid assign target: %s", equal))
+		panic(any(fmt.Sprintf("invalid assign target: %s", equal)))
 	}
 	return expr
 }
@@ -257,9 +264,9 @@ func (parser *Parser) expression() Expression {
 }
 
 func (parser *Parser) ifStatement() Statement {
-	parser.consume(LEFT_PAREN, "expect ( after if")
+	parser.consume(LeftParen, "expect ( after if")
 	expression := parser.expression()
-	parser.consume(RIGHT_PAREN, "expected ) after if")
+	parser.consume(RightParen, "expected ) after if")
 	thenBranch := parser.statement()
 	if parser.match(ELSE) {
 		elseBranch := parser.statement()
@@ -281,7 +288,7 @@ func (parser *Parser) printStatement() Statement {
 	if !parser.isAtEnd() {
 		parser.match(SEMICOLON)
 	}
-	if parser.match(LINE_COMMENT) {
+	if parser.match(LineComment) {
 		comment := parser.previous()
 		return PrintStatement{
 			expression: expr,
@@ -306,17 +313,17 @@ func (parser *Parser) expressionStatement() Statement {
 
 func (parser *Parser) block() BlockStatement {
 	var statements []Statement
-	for !parser.isAtEnd() && parser.peek().tokenType != RIGHT_BRACE {
+	for !parser.isAtEnd() && parser.peek().tokenType != RightBrace {
 		statements = append(statements, parser.declaration())
 	}
-	parser.consume(RIGHT_BRACE, "expected } after block")
+	parser.consume(RightBrace, "expected } after block")
 	return BlockStatement{
 		statements: statements,
 	}
 }
 
 func (parser *Parser) forStatement() Statement {
-	parser.consume(LEFT_PAREN, "expect (")
+	parser.consume(LeftParen, "expect (")
 
 	var initializer Statement
 	if parser.match(SEMICOLON) {
@@ -334,10 +341,10 @@ func (parser *Parser) forStatement() Statement {
 	parser.consume(SEMICOLON, "expect ;")
 
 	var increment Statement
-	if !parser.check(RIGHT_PAREN) {
+	if !parser.check(RightParen) {
 		increment = parser.expressionStatement()
 	}
-	parser.consume(RIGHT_PAREN, "expect )")
+	parser.consume(RightParen, "expect )")
 
 	body := parser.statement()
 
@@ -372,12 +379,12 @@ func (parser *Parser) forStatement() Statement {
 	return body
 }
 func (parser *Parser) doWhile() Statement {
-	parser.consume(lEFT_BRACE, "expect {")
+	parser.consume(leftBrace, "expect {")
 	body := parser.block()
 	parser.consume(WHILE, "expect while")
-	parser.consume(LEFT_PAREN, "expect (")
+	parser.consume(LeftParen, "expect (")
 	condition := parser.expression()
-	parser.consume(RIGHT_PAREN, "expect )")
+	parser.consume(RightParen, "expect )")
 	return BlockStatement{
 		statements: []Statement{
 			body,
@@ -389,9 +396,9 @@ func (parser *Parser) doWhile() Statement {
 	}
 }
 func (parser *Parser) while() Statement {
-	parser.consume(LEFT_PAREN, "expect ( after while")
+	parser.consume(LeftParen, "expect ( after while")
 	condition := parser.expression()
-	parser.consume(RIGHT_PAREN, "expected ) after while")
+	parser.consume(RightParen, "expected ) after while")
 	body := parser.statement()
 	return WhileStatement{
 		condition: condition,
@@ -419,7 +426,7 @@ func (parser *Parser) statement() Statement {
 	if parser.match(PRINT) {
 		return parser.printStatement()
 	}
-	if parser.match(lEFT_BRACE) {
+	if parser.match(leftBrace) {
 		return parser.block()
 	}
 	if parser.match(DO) {
@@ -436,16 +443,20 @@ func (parser *Parser) statement() Statement {
 
 func (parser *Parser) functionStatement() FunctionStatement {
 	name := parser.consume(IDENTIFIER, "expect name")
-	parser.consume(LEFT_PAREN, "expect (")
+	parser.consume(LeftParen, "expect (")
 	var parameters []*Token
-	if !parser.check(RIGHT_PAREN) {
+	if !parser.check(RightParen) {
+		count := 0
 		for ok := true; ok; ok = parser.match(COMMA) {
 			parameters = append(parameters, parser.consume(IDENTIFIER, "expect parameter name"))
-
+			count++
+			if count > maxParameterCount {
+				panic(any("over max parameter count"))
+			}
 		}
 	}
-	parser.consume(RIGHT_PAREN, "expect )")
-	parser.consume(lEFT_BRACE, "expect {")
+	parser.consume(RightParen, "expect )")
+	parser.consume(leftBrace, "expect {")
 	body := parser.block()
 	return FunctionStatement{
 		name:   name,

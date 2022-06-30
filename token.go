@@ -8,33 +8,33 @@ import (
 type TokenType int
 
 const (
-	LEFT_PAREN    TokenType = iota // (
-	RIGHT_PAREN                    // )
-	lEFT_BRACE                     // {
-	RIGHT_BRACE                    // }
-	LEFT_SQUARE                    // [
-	RIGHT_SQUARE                   // ]
-	COMMA                          // ,
-	DOT                            // .
-	MINUS                          // -
-	MINUS_MINUS                    // --i
-	PLUS                           // +
-	PLUS_PLUS                      // ++
-	SEMICOLON                      // ;
-	COLON                          // :
-	SLASH                          // /
-	STAR                           // *
-	PERCENT                        // %
-	MARK                           // ?
-	BANG                           // one or two character tokens !
-	BANG_EQUAL                     // !=
-	EQUAL                          // =
-	EQUAL_EQUAL                    // ==
-	GREATER                        // >
-	GREATER_EQUAL                  // >=
-	LESS                           // <
-	LESS_EQUAL                     // <=
-	IDENTIFIER                     // Literals
+	LeftParen    TokenType = iota // (
+	RightParen                    // )
+	leftBrace                     // {
+	RightBrace                    // }
+	LeftSquare                    // [
+	RightSquare                   // ]
+	COMMA                         // ,
+	DOT                           // .
+	MINUS                         // -
+	MinusMinus                    // --i
+	PLUS                          // +
+	PlusPlus                      // ++
+	SEMICOLON                     // ;
+	COLON                         // :
+	SLASH                         // /
+	STAR                          // *
+	PERCENT                       // %
+	MARK                          // ?
+	BANG                          // one or two character tokens !
+	BangEqual                     // !=
+	EQUAL                         // =
+	EqualEqual                    // ==
+	GREATER                       // >
+	GreaterEqual                  // >=
+	LESS                          // <
+	LessEqual                     // <=
+	IDENTIFIER                    // Literals
 	STRING
 	FLOAT64
 	INT64
@@ -48,8 +48,8 @@ const (
 	IF
 	NULL // null
 	OR
-	BIT_AND
-	BIT_OR
+	BitAnd
+	BitOr
 	PRINT
 	RETURN
 	SUPER
@@ -58,12 +58,10 @@ const (
 	DO  // do while
 	WHILE
 	EOF // end
-	LINE_COMMENT
+	LineComment
 )
 
-type LiteralType interface{}
-
-func literalTypeToString(text LiteralType) string {
+func literalTypeToString(text any) string {
 	switch data := text.(type) {
 	case nil:
 		return "null"

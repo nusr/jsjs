@@ -6,15 +6,15 @@ import (
 )
 
 const (
-	EMPTY_DATA = 0
+	EmptyData = 0
 )
 
-var KEYWORD_MAP = map[string]TokenType{
+var KeywordMap = map[string]TokenType{
 	"class":  CLASS,
 	"else":   ELSE,
 	"false":  FALSE,
 	"for":    FOR,
-	"func":   FUNCTION,
+	"fun":    FUNCTION,
 	"if":     IF,
 	"null":   NULL,
 	"print":  PRINT,
@@ -54,7 +54,7 @@ func (scanner *Scanner) getChar(index int) rune {
 }
 func (scanner *Scanner) peek() rune {
 	if scanner.isAtEnd() {
-		return EMPTY_DATA
+		return EmptyData
 	}
 	return scanner.getChar(scanner.current)
 }
@@ -62,7 +62,7 @@ func (scanner *Scanner) peekNext() rune {
 	if scanner.current+1 < len(scanner.source) {
 		return scanner.getChar(scanner.current + 1)
 	}
-	return EMPTY_DATA
+	return EmptyData
 }
 func (scanner *Scanner) advance() rune {
 	c := scanner.getChar(scanner.current)
@@ -148,7 +148,7 @@ func (scanner *Scanner) identifier() {
 	}
 	text := scanner.getSubString(scanner.start, scanner.current)
 	tokenType := IDENTIFIER
-	if val, ok := KEYWORD_MAP[text]; ok {
+	if val, ok := KeywordMap[text]; ok {
 		tokenType = val
 	}
 	scanner.addToken(tokenType)
@@ -158,30 +158,30 @@ func (scanner *Scanner) scanToken() {
 	c := scanner.advance()
 	switch c {
 	case '(':
-		scanner.addToken(LEFT_PAREN)
+		scanner.addToken(LeftParen)
 	case ')':
-		scanner.addToken(RIGHT_PAREN)
+		scanner.addToken(RightParen)
 	case '{':
-		scanner.addToken(lEFT_BRACE)
+		scanner.addToken(leftBrace)
 	case '}':
-		scanner.addToken(RIGHT_BRACE)
+		scanner.addToken(RightBrace)
 	case '[':
-		scanner.addToken(LEFT_SQUARE)
+		scanner.addToken(LeftSquare)
 	case ']':
-		scanner.addToken(RIGHT_SQUARE)
+		scanner.addToken(RightSquare)
 	case ',':
 		scanner.addToken(COMMA)
 	case '.':
 		scanner.addToken(DOT)
 	case '-':
 		if scanner.match('-') {
-			scanner.addToken(MINUS_MINUS)
+			scanner.addToken(MinusMinus)
 		} else {
 			scanner.addToken(MINUS)
 		}
 	case '+':
 		if scanner.match('+') {
-			scanner.addToken(PLUS_PLUS)
+			scanner.addToken(PlusPlus)
 		} else {
 			scanner.addToken(PLUS)
 		}
@@ -197,37 +197,37 @@ func (scanner *Scanner) scanToken() {
 		if scanner.match('&') {
 			scanner.addToken(AND)
 		} else {
-			scanner.addToken(BIT_AND)
+			scanner.addToken(BitAnd)
 		}
 	case '|':
 		if scanner.match('|') {
 			scanner.addToken(OR)
 		} else {
-			scanner.addToken(BIT_OR)
+			scanner.addToken(BitOr)
 		}
 	case '*':
 		scanner.addToken(STAR)
 	case '!':
 		if scanner.match('=') {
-			scanner.addToken(BANG_EQUAL)
+			scanner.addToken(BangEqual)
 		} else {
 			scanner.addToken(BANG)
 		}
 	case '=':
 		if scanner.match('=') {
-			scanner.addToken(EQUAL_EQUAL)
+			scanner.addToken(EqualEqual)
 		} else {
 			scanner.addToken(EQUAL)
 		}
 	case '>':
 		if scanner.match('=') {
-			scanner.addToken(GREATER_EQUAL)
+			scanner.addToken(GreaterEqual)
 		} else {
 			scanner.addToken(GREATER)
 		}
 	case '<':
 		if scanner.match('=') {
-			scanner.addToken(LESS_EQUAL)
+			scanner.addToken(LessEqual)
 		} else {
 			scanner.addToken(LESS)
 		}
@@ -238,7 +238,7 @@ func (scanner *Scanner) scanToken() {
 			}
 			text := scanner.getSubString(scanner.start, scanner.current)
 			if strings.Contains(text, "expect:") {
-				scanner.appendToken(LINE_COMMENT, text)
+				scanner.appendToken(LineComment, text)
 			}
 		} else if scanner.match('*') {
 			for !((scanner.peek() == '*' && scanner.peekNext() == '/') || scanner.isAtEnd()) {

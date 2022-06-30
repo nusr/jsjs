@@ -8,8 +8,10 @@ import (
 )
 
 const (
-	NAN_NUMBER = "NaN"
+	nanNumber = "NaN"
 )
+
+const whileMaxIteration = 100000
 
 func convertBtoF(b bool) float64 {
 	if b {
@@ -18,7 +20,7 @@ func convertBtoF(b bool) float64 {
 	return float64(0)
 }
 
-func convertLtoI(left LiteralType, right LiteralType) (int64, int64, bool) {
+func convertLtoI(left any, right any) (int64, int64, bool) {
 	leftInt, leftType := left.(int64)
 	rightInt, rightType := right.(int64)
 	if leftType && rightType {
@@ -27,7 +29,7 @@ func convertLtoI(left LiteralType, right LiteralType) (int64, int64, bool) {
 	return 0, 0, false
 }
 
-func convertLtoF(left LiteralType, right LiteralType) (float64, float64, bool) {
+func convertLtoF(left any, right any) (float64, float64, bool) {
 	a := float64(0)
 	b := float64(0)
 	count := 0
@@ -85,15 +87,15 @@ func (interpreter *Interpreter) Interpret(list []Statement) {
 	}
 }
 
-func (interpreter *Interpreter) execute(statement Statement) LiteralType {
+func (interpreter *Interpreter) execute(statement Statement) any {
 	return statement.accept(interpreter)
 }
 
-func (interpreter *Interpreter) evaluate(expression Expression) LiteralType {
+func (interpreter *Interpreter) evaluate(expression Expression) any {
 	return expression.accept(interpreter)
 }
 
-func (interpreter *Interpreter) isTruthy(value LiteralType) bool {
+func (interpreter *Interpreter) isTruth(value any) bool {
 	if value == true {
 		return true
 	}
@@ -118,7 +120,7 @@ func (interpreter *Interpreter) executeBlock(statement BlockStatement, environme
 	previous := interpreter.environment
 
 	defer func() {
-		if err := recover(); err != nil {
+		if err := recover(); err != any(nil) {
 			interpreter.environment = previous
 		}
 	}()
@@ -128,10 +130,10 @@ func (interpreter *Interpreter) executeBlock(statement BlockStatement, environme
 	}
 }
 
-func (interpreter *Interpreter) visitExpressionStatement(statement ExpressionStatement) LiteralType {
+func (interpreter *Interpreter) visitExpressionStatement(statement ExpressionStatement) any {
 	return interpreter.evaluate(statement.expression)
 }
-func (interpreter *Interpreter) visitVariableStatement(statement VariableStatement) LiteralType {
+func (interpreter *Interpreter) visitVariableStatement(statement VariableStatement) any {
 	if statement.initializer != nil {
 		value := interpreter.evaluate(statement.initializer)
 		interpreter.environment.define(statement.name.lexeme, value)
@@ -140,31 +142,31 @@ func (interpreter *Interpreter) visitVariableStatement(statement VariableStateme
 	}
 	return nil
 }
-func (interpreter *Interpreter) visitBlockStatement(statement BlockStatement) LiteralType {
+func (interpreter *Interpreter) visitBlockStatement(statement BlockStatement) any {
 	interpreter.executeBlock(statement, NewEnvironment(interpreter.environment))
 	return nil
 }
-func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) LiteralType {
+func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) any {
 	// TODO
 	return nil
 }
-func (interpreter *Interpreter) visitFunctionStatement(statement FunctionStatement) LiteralType {
+func (interpreter *Interpreter) visitFunctionStatement(statement FunctionStatement) any {
 	interpreter.environment.define(statement.name.lexeme, NewCallable(statement))
 	return nil
 }
 
-func (interpreter *Interpreter) visitIfStatement(statement IfStatement) LiteralType {
-	if interpreter.isTruthy(interpreter.evaluate(statement.condition)) {
+func (interpreter *Interpreter) visitIfStatement(statement IfStatement) any {
+	if interpreter.isTruth(interpreter.evaluate(statement.condition)) {
 		interpreter.execute(statement.thenBranch)
 	} else if statement.elseBranch != nil {
 		interpreter.execute(statement.elseBranch)
 	}
 	return nil
 }
-func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) LiteralType {
+func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) any {
 	result := interpreter.evaluate(statement.expression)
 	actual := literalTypeToString(result)
-	fmt.Printf("%s\n", actual)
+	//fmt.Printf("%s\n", actual)
 	if statement.comment != nil {
 		data := strings.Split(statement.comment.lexeme, ":")
 		if len(data) >= 2 {
@@ -173,31 +175,35 @@ func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) Li
 				globalExpect.addSuccess()
 			} else {
 				globalExpect.addFail()
-				// panic(fmt.Sprintf("[expect error] expected: %s, actual: %s\n", expected, actual))
 			}
 		}
 	}
 	return result
 }
 
-func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) LiteralType {
+func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) any {
 	if statement.value == nil {
 		return nil
 	}
 	result := interpreter.evaluate(statement.value)
 	return result
 }
-func (interpreter *Interpreter) visitWhileStatement(statement WhileStatement) LiteralType {
-	for interpreter.isTruthy(interpreter.evaluate(statement.condition)) {
+func (interpreter *Interpreter) visitWhileStatement(statement WhileStatement) any {
+	count := 0
+	for interpreter.isTruth(interpreter.evaluate(statement.condition)) {
 		interpreter.execute(statement.body)
+		count++
+		if count > whileMaxIteration {
+			panic(any("over max iteration count"))
+		}
 	}
 	return nil
 }
 
-func (interpreter *Interpreter) visitVariableExpression(expression VariableExpression) LiteralType {
+func (interpreter *Interpreter) visitVariableExpression(expression VariableExpression) any {
 	return interpreter.environment.get(expression.name)
 }
-func (interpreter *Interpreter) visitLiteralExpression(expression LiteralExpression) LiteralType {
+func (interpreter *Interpreter) visitLiteralExpression(expression LiteralExpression) any {
 	switch expression.tokenType {
 	case NULL:
 		return nil
@@ -221,13 +227,13 @@ func (interpreter *Interpreter) visitLiteralExpression(expression LiteralExpress
 	return nil
 }
 
-func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpression) LiteralType {
+func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpression) any {
 	left := interpreter.evaluate(expression.left)
 	right := interpreter.evaluate(expression.right)
 	switch expression.operator.tokenType {
-	case EQUAL_EQUAL:
+	case EqualEqual:
 		return left == right
-	case BANG_EQUAL:
+	case BangEqual:
 		return left != right
 	case LESS:
 		{
@@ -238,11 +244,11 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("LESS can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("LESS can not handle value left:%v,right:%v", left, right)))
 			}
 			return a < b
 		}
-	case LESS_EQUAL:
+	case LessEqual:
 		{
 			_, stringType1 := left.(string)
 			_, stringType2 := right.(string)
@@ -251,7 +257,7 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("LESS_EQUAL can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("LESS_EQUAL can not handle value left:%v,right:%v", left, right)))
 			}
 			return a <= b
 		}
@@ -264,11 +270,11 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("GREATER can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("GREATER can not handle value left:%v,right:%v", left, right)))
 			}
 			return a > b
 		}
-	case GREATER_EQUAL:
+	case GreaterEqual:
 		{
 			_, stringType1 := left.(string)
 			_, stringType2 := right.(string)
@@ -277,7 +283,7 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("GREATER_EQUAL can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("GREATER_EQUAL can not handle value left:%v,right:%v", left, right)))
 			}
 			return a >= b
 		}
@@ -293,7 +299,7 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("PLUS can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("PLUS can not handle value left:%v,right:%v", left, right)))
 			}
 			return a + b
 		}
@@ -302,14 +308,14 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			_, stringType1 := left.(string)
 			_, stringType2 := right.(string)
 			if stringType1 || stringType2 {
-				return NAN_NUMBER
+				return nanNumber
 			}
 			if a, b, check := convertLtoI(left, right); check {
 				return a - b
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("MINUS can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("MINUS can not handle value left:%v,right:%v", left, right)))
 			}
 			return a - b
 		}
@@ -318,14 +324,14 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			_, stringType1 := left.(string)
 			_, stringType2 := right.(string)
 			if stringType1 || stringType2 {
-				return NAN_NUMBER
+				return nanNumber
 			}
 			if a, b, check := convertLtoI(left, right); check {
 				return a * b
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("STAR can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("STAR can not handle value left:%v,right:%v", left, right)))
 			}
 			return a * b
 		}
@@ -334,14 +340,14 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 			_, stringType1 := left.(string)
 			_, stringType2 := right.(string)
 			if stringType1 || stringType2 {
-				return NAN_NUMBER
+				return nanNumber
 			}
 			if a, b, check := convertLtoI(left, right); check {
 				return a / b
 			}
 			a, b, check := convertLtoF(left, right)
 			if !check {
-				panic(fmt.Sprintf("STAR can not handle value left:%v,right:%v", left, right))
+				panic(any(fmt.Sprintf("STAR can not handle value left:%v,right:%v", left, right)))
 			}
 			if b == 0 {
 				return math.MaxFloat64
@@ -352,28 +358,28 @@ func (interpreter *Interpreter) visitBinaryExpression(expression BinaryExpressio
 	return nil
 }
 
-func (interpreter *Interpreter) visitCallExpression(expression CallExpression) LiteralType {
+func (interpreter *Interpreter) visitCallExpression(expression CallExpression) any {
 	callable := interpreter.evaluate(expression.callee)
-	var params []LiteralType
+	var params []any
 	for _, item := range expression.argumentList {
 		params = append(params, interpreter.evaluate(item))
 	}
 	if val, ok := callable.(*Callable); ok {
 		return val.call(interpreter, params)
 	}
-	panic("can only call function and class")
+	panic(any("can only call function and class"))
 }
-func (interpreter *Interpreter) visitGetExpression(expression GetExpression) LiteralType {
+func (interpreter *Interpreter) visitGetExpression(expression GetExpression) any {
 	// TODO
 	return nil
 }
-func (interpreter *Interpreter) visitSetExpression(expression SetExpression) LiteralType {
+func (interpreter *Interpreter) visitSetExpression(expression SetExpression) any {
 	// TODO
 	return nil
 }
-func (interpreter *Interpreter) visitLogicalExpression(expression LogicalExpression) LiteralType {
+func (interpreter *Interpreter) visitLogicalExpression(expression LogicalExpression) any {
 	left := interpreter.evaluate(expression.left)
-	check := interpreter.isTruthy(left)
+	check := interpreter.isTruth(left)
 	if expression.operator.tokenType == AND {
 		if !check {
 			return left
@@ -386,27 +392,27 @@ func (interpreter *Interpreter) visitLogicalExpression(expression LogicalExpress
 	return interpreter.evaluate(expression.right)
 }
 
-func (interpreter *Interpreter) visitSuperExpression(expression SuperExpression) LiteralType {
+func (interpreter *Interpreter) visitSuperExpression(expression SuperExpression) any {
 	// TODO
 	return nil
 }
 
-func (interpreter *Interpreter) visitGroupingExpression(expression GroupingExpression) LiteralType {
+func (interpreter *Interpreter) visitGroupingExpression(expression GroupingExpression) any {
 	result := interpreter.evaluate(expression.expression)
 	return result
 }
 
-func (interpreter *Interpreter) visitThisExpression(expression ThisExpression) LiteralType {
+func (interpreter *Interpreter) visitThisExpression(expression ThisExpression) any {
 	// TODO
 	return nil
 }
-func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression) LiteralType {
+func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression) any {
 	result := interpreter.evaluate(expression.right)
 	switch expression.operator.tokenType {
-	case PLUS_PLUS:
+	case PlusPlus:
 		{
 			if val, check := expression.right.(VariableExpression); check {
-				var temp LiteralType
+				var temp any
 				if val, check := result.(int64); check {
 					temp = val + 1
 				} else {
@@ -414,21 +420,21 @@ func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression)
 					if check {
 						temp = a + 1
 					} else {
-						panic("error type")
+						panic(any("error type"))
 					}
 				}
 				interpreter.environment.assign(val.name, temp)
 				return temp
 			} else {
-				panic("Invalid left-hand side expression in prefix operation")
+				panic(any("Invalid left-hand side expression in prefix operation"))
 			}
 
 		}
 
-	case MINUS_MINUS:
+	case MinusMinus:
 		{
 			if val, check := expression.right.(VariableExpression); check {
-				var temp LiteralType
+				var temp any
 				if val, check := result.(int64); check {
 					temp = val - 1
 				} else {
@@ -436,14 +442,13 @@ func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression)
 					if check {
 						temp = a - 1
 					} else {
-						panic("error type")
+						panic(any("error type"))
 					}
 				}
 				interpreter.environment.assign(val.name, temp)
 				return temp
-			} else {
-				panic("Invalid left-hand side expression in prefix operation")
 			}
+			panic(any("Invalid left-hand side expression in prefix operation"))
 		}
 	case PLUS:
 		return result
@@ -458,15 +463,15 @@ func (interpreter *Interpreter) visitUnaryExpression(expression UnaryExpression)
 			if val, ok := result.(float64); ok {
 				return -val
 			}
-			return NAN_NUMBER
+			return nanNumber
 		}
 	case BANG:
-		return !interpreter.isTruthy(result)
+		return !interpreter.isTruth(result)
 	}
 	return nil
 }
 
-func (interpreter *Interpreter) visitAssignExpression(expression AssignExpression) LiteralType {
+func (interpreter *Interpreter) visitAssignExpression(expression AssignExpression) any {
 	temp := interpreter.evaluate(expression.value)
 	interpreter.environment.assign(expression.name, temp)
 	return temp

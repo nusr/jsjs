@@ -4,7 +4,7 @@ type BlockStatement struct {
 	statements []Statement
 }
 
-func (blockStatement BlockStatement) accept(visitor StatementVisitor) LiteralType {
+func (blockStatement BlockStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitBlockStatement(blockStatement)
 }
 
@@ -14,7 +14,7 @@ type ClassStatement struct {
 	methods    []FunctionStatement
 }
 
-func (classStatement ClassStatement) accept(visitor StatementVisitor) LiteralType {
+func (classStatement ClassStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitClassStatement(classStatement)
 }
 
@@ -22,7 +22,7 @@ type ExpressionStatement struct {
 	expression Expression
 }
 
-func (expressionStatement ExpressionStatement) accept(visitor StatementVisitor) LiteralType {
+func (expressionStatement ExpressionStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitExpressionStatement(expressionStatement)
 }
 
@@ -32,7 +32,7 @@ type FunctionStatement struct {
 	params []*Token
 }
 
-func (functionStatement FunctionStatement) accept(visitor StatementVisitor) LiteralType {
+func (functionStatement FunctionStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitFunctionStatement(functionStatement)
 }
 
@@ -42,7 +42,7 @@ type IfStatement struct {
 	elseBranch Statement
 }
 
-func (ifStatement IfStatement) accept(visitor StatementVisitor) LiteralType {
+func (ifStatement IfStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitIfStatement(ifStatement)
 }
 
@@ -51,7 +51,7 @@ type PrintStatement struct {
 	comment    *Token
 }
 
-func (printStatement PrintStatement) accept(visitor StatementVisitor) LiteralType {
+func (printStatement PrintStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitPrintStatement(printStatement)
 }
 
@@ -60,7 +60,7 @@ type ReturnStatement struct {
 	value   Expression
 }
 
-func (returnStatement ReturnStatement) accept(visitor StatementVisitor) LiteralType {
+func (returnStatement ReturnStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitReturnStatement(returnStatement)
 }
 
@@ -69,7 +69,7 @@ type VariableStatement struct {
 	initializer Expression
 }
 
-func (variableStatement VariableStatement) accept(visitor StatementVisitor) LiteralType {
+func (variableStatement VariableStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitVariableStatement(variableStatement)
 }
 
@@ -78,22 +78,22 @@ type WhileStatement struct {
 	body      Statement
 }
 
-func (whileStatement WhileStatement) accept(visitor StatementVisitor) LiteralType {
+func (whileStatement WhileStatement) accept(visitor StatementVisitor) any {
 	return visitor.visitWhileStatement(whileStatement)
 }
 
 type StatementVisitor interface {
-	visitBlockStatement(statement BlockStatement) LiteralType
-	visitClassStatement(statement ClassStatement) LiteralType
-	visitExpressionStatement(statement ExpressionStatement) LiteralType
-	visitFunctionStatement(statement FunctionStatement) LiteralType
-	visitIfStatement(statement IfStatement) LiteralType
-	visitPrintStatement(statement PrintStatement) LiteralType
-	visitReturnStatement(statement ReturnStatement) LiteralType
-	visitVariableStatement(statement VariableStatement) LiteralType
-	visitWhileStatement(statement WhileStatement) LiteralType
+	visitBlockStatement(statement BlockStatement) any
+	visitClassStatement(statement ClassStatement) any
+	visitExpressionStatement(statement ExpressionStatement) any
+	visitFunctionStatement(statement FunctionStatement) any
+	visitIfStatement(statement IfStatement) any
+	visitPrintStatement(statement PrintStatement) any
+	visitReturnStatement(statement ReturnStatement) any
+	visitVariableStatement(statement VariableStatement) any
+	visitWhileStatement(statement WhileStatement) any
 }
 
 type Statement interface {
-	accept(visitor StatementVisitor) LiteralType
+	accept(visitor StatementVisitor) any
 }
