@@ -78,6 +78,8 @@ func literalTypeToString(text any) string {
 			}
 			return "false"
 		}
+	case fmt.Stringer:
+		return data.String()
 	default:
 		return ""
 	}

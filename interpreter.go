@@ -178,7 +178,7 @@ func (interpreter *Interpreter) visitIfStatement(statement IfStatement) any {
 func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) any {
 	result := interpreter.evaluate(statement.expression)
 	actual := literalTypeToString(result)
-	fmt.Printf("%s\n", actual)
+	fmt.Println(actual)
 	if statement.comment != nil {
 		data := strings.Split(statement.comment.lexeme, ":")
 		if len(data) >= 2 {
@@ -221,18 +221,13 @@ func (interpreter *Interpreter) visitLiteralExpression(expression LiteralExpress
 		return expression.string
 	case FLOAT64:
 		{
-			result, err := strconv.ParseFloat(expression.string, 64)
-			if err != nil {
-				return float64(0)
-			}
+			result, _ := strconv.ParseFloat(expression.string, 64)
+
 			return result
 		}
 	case INT64:
 		{
-			result, err := strconv.ParseInt(expression.string, 10, 64)
-			if err != nil {
-				return int64(0)
-			}
+			result, _ := strconv.ParseInt(expression.string, 10, 64)
 			return result
 		}
 	case TRUE:
@@ -380,9 +375,9 @@ func (interpreter *Interpreter) visitCallExpression(expression CallExpression) a
 	for _, item := range expression.argumentList {
 		params = append(params, interpreter.evaluate(item))
 	}
-	if val, ok := callable.(*Callable); ok {
-		if len(val.declaration.params) != len(params) {
-			panic(any(fmt.Sprintf("expect %d size arguments, actual get %d\n", len(val.declaration.params), len(params))))
+	if val, ok := callable.(BaseCallable); ok {
+		if val.size() != len(params) {
+			panic(any(fmt.Sprintf("expect %d size arguments, actual get %d\n", val.size(), len(params))))
 		}
 		return val.call(interpreter, params)
 	}

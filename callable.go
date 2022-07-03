@@ -12,6 +12,10 @@ func NewCallable(declaration FunctionStatement) *Callable {
 	}
 }
 
+func (callable *Callable) size() int {
+	return len(callable.declaration.params)
+}
+
 func (callable *Callable) call(interpreter *Interpreter, params []any) any {
 	env := NewEnvironment(interpreter.globals)
 	for i, item := range callable.declaration.params {
