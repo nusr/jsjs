@@ -88,10 +88,16 @@ func (interpreter *Interpreter) Interpret(list []Statement) {
 }
 
 func (interpreter *Interpreter) execute(statement Statement) any {
+	if statement == nil {
+		return nil
+	}
 	return statement.accept(interpreter)
 }
 
 func (interpreter *Interpreter) evaluate(expression Expression) any {
+	if expression == nil {
+		return nil
+	}
 	return expression.accept(interpreter)
 }
 
@@ -116,18 +122,25 @@ func (interpreter *Interpreter) isTruth(value any) bool {
 	return result
 }
 
-func (interpreter *Interpreter) executeBlock(statement BlockStatement, environment *Environment) {
+func (interpreter *Interpreter) executeBlock(statement BlockStatement, environment *Environment) (result any) {
 	previous := interpreter.environment
 
 	defer func() {
 		if err := recover(); err != any(nil) {
 			interpreter.environment = previous
+			if val, ok := err.(ReturnValue); ok {
+				result = val.value
+			} else {
+				fmt.Printf("executeBlock err:%v\n", err)
+			}
 		}
 	}()
+
 	interpreter.environment = environment
 	for _, statement := range statement.statements {
 		interpreter.execute(statement)
 	}
+	return nil
 }
 
 func (interpreter *Interpreter) visitExpressionStatement(statement ExpressionStatement) any {
@@ -143,8 +156,7 @@ func (interpreter *Interpreter) visitVariableStatement(statement VariableStateme
 	return nil
 }
 func (interpreter *Interpreter) visitBlockStatement(statement BlockStatement) any {
-	interpreter.executeBlock(statement, NewEnvironment(interpreter.environment))
-	return nil
+	return interpreter.executeBlock(statement, NewEnvironment(interpreter.environment))
 }
 func (interpreter *Interpreter) visitClassStatement(statement ClassStatement) any {
 	// TODO
@@ -166,7 +178,7 @@ func (interpreter *Interpreter) visitIfStatement(statement IfStatement) any {
 func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) any {
 	result := interpreter.evaluate(statement.expression)
 	actual := literalTypeToString(result)
-	//fmt.Printf("%s\n", actual)
+	fmt.Printf("%s\n", actual)
 	if statement.comment != nil {
 		data := strings.Split(statement.comment.lexeme, ":")
 		if len(data) >= 2 {
@@ -182,11 +194,9 @@ func (interpreter *Interpreter) visitPrintStatement(statement PrintStatement) an
 }
 
 func (interpreter *Interpreter) visitReturnStatement(statement ReturnStatement) any {
-	if statement.value == nil {
-		return nil
-	}
-	result := interpreter.evaluate(statement.value)
-	return result
+
+	value := interpreter.evaluate(statement.value)
+	panic(any(NewReturnValue(value)))
 }
 func (interpreter *Interpreter) visitWhileStatement(statement WhileStatement) any {
 	count := 0
@@ -211,12 +221,18 @@ func (interpreter *Interpreter) visitLiteralExpression(expression LiteralExpress
 		return expression.string
 	case FLOAT64:
 		{
-			result, _ := strconv.ParseFloat(expression.string, 64)
+			result, err := strconv.ParseFloat(expression.string, 64)
+			if err != nil {
+				return float64(0)
+			}
 			return result
 		}
 	case INT64:
 		{
-			result, _ := strconv.ParseInt(expression.string, 10, 64)
+			result, err := strconv.ParseInt(expression.string, 10, 64)
+			if err != nil {
+				return int64(0)
+			}
 			return result
 		}
 	case TRUE:
@@ -365,6 +381,9 @@ func (interpreter *Interpreter) visitCallExpression(expression CallExpression) a
 		params = append(params, interpreter.evaluate(item))
 	}
 	if val, ok := callable.(*Callable); ok {
+		if len(val.declaration.params) != len(params) {
+			panic(any(fmt.Sprintf("expect %d size arguments, actual get %d\n", len(val.declaration.params), len(params))))
+		}
 		return val.call(interpreter, params)
 	}
 	panic(any("can only call function and class"))

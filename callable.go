@@ -17,8 +17,7 @@ func (callable *Callable) call(interpreter *Interpreter, params []any) any {
 	for i, item := range callable.declaration.params {
 		env.define(item.lexeme, params[i])
 	}
-	interpreter.executeBlock(callable.declaration.body, env)
-	return nil
+	return interpreter.executeBlock(callable.declaration.body, env)
 }
 
 func (callable *Callable) String() string {

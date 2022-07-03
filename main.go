@@ -21,6 +21,7 @@ func reply() {
 		interpret(line, environment)
 		fmt.Print("> ")
 	}
+	environment = nil
 }
 
 func runFile(fileName string) {
@@ -31,6 +32,18 @@ func runFile(fileName string) {
 	}
 	environment := NewEnvironment(nil)
 	interpret(string(content), environment)
+	environment = nil
+}
+
+func safeRunFile(filePath string) (count int) {
+	defer func() {
+		if err := recover(); err != any(nil) {
+			fmt.Printf("runTest filePath: %s, err: %v\n", filePath, err)
+			count = 1
+		}
+	}()
+	runFile(filePath)
+	return 0
 }
 
 func isTestEnv() bool {
@@ -72,9 +85,9 @@ func writeTestResult(text string) {
 }
 
 func isBlackList(filePath string) bool {
-	blackList := []string{"inheritance", "function", "if/", "for/"}
+	blackList := []string{}
 	for _, item := range blackList {
-		if strings.Contains(filePath, item) {
+		if item != "" && strings.Contains(filePath, item) {
 			return true
 		}
 	}
@@ -95,16 +108,7 @@ func runTest() {
 		if isBlackList(filePath) {
 			continue
 		}
-		func() {
-			defer func() {
-				if err := recover(); err != any(nil) {
-					fail++
-					fmt.Printf("runTest filePath: %s\n", filePath)
-				}
-			}()
-			runFile(filePath)
-			//wg.Done()
-		}()
+		fail = fail + safeRunFile(filePath)
 	}
 	//wg.Wait()
 	total := len(filePaths)
