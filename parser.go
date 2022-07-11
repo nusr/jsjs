@@ -57,7 +57,7 @@ func (parser *Parser) match(tokenTypes ...TokenType) bool {
 	return false
 }
 
-func (parser *Parser) varStatement() Statement {
+func (parser *Parser) varDeclaration() Statement {
 	name := parser.consume(IDENTIFIER, "expect identifier after var")
 	if parser.match(EQUAL) {
 		initializer := parser.expression()
@@ -329,7 +329,7 @@ func (parser *Parser) forStatement() Statement {
 	if parser.match(SEMICOLON) {
 		initializer = nil
 	} else if parser.match(VAR) {
-		initializer = parser.varStatement()
+		initializer = parser.varDeclaration()
 	} else {
 		initializer = parser.expressionStatement()
 	}
@@ -379,7 +379,7 @@ func (parser *Parser) forStatement() Statement {
 	return body
 }
 func (parser *Parser) doWhile() Statement {
-	parser.consume(leftBrace, "expect {")
+	parser.consume(LeftBrace, "expect {")
 	body := parser.block()
 	parser.consume(WHILE, "expect while")
 	parser.consume(LeftParen, "expect (")
@@ -426,7 +426,7 @@ func (parser *Parser) statement() Statement {
 	if parser.match(PRINT) {
 		return parser.printStatement()
 	}
-	if parser.match(leftBrace) {
+	if parser.match(LeftBrace) {
 		return parser.block()
 	}
 	if parser.match(DO) {
@@ -441,7 +441,7 @@ func (parser *Parser) statement() Statement {
 	return parser.expressionStatement()
 }
 
-func (parser *Parser) functionStatement() FunctionStatement {
+func (parser *Parser) functionDeclaration() FunctionStatement {
 	name := parser.consume(IDENTIFIER, "expect name")
 	parser.consume(LeftParen, "expect (")
 	var parameters []*Token
@@ -456,7 +456,7 @@ func (parser *Parser) functionStatement() FunctionStatement {
 		}
 	}
 	parser.consume(RightParen, "expect )")
-	parser.consume(leftBrace, "expect {")
+	parser.consume(LeftBrace, "expect {")
 	body := parser.block()
 	return FunctionStatement{
 		name:   name,
@@ -464,13 +464,31 @@ func (parser *Parser) functionStatement() FunctionStatement {
 		body:   body,
 	}
 }
+func (parser *Parser) classDeclaration() ClassStatement {
+	name := parser.consume(IDENTIFIER, "expect class name")
+	parser.consume(LeftBrace, "expect {")
+	var methods []FunctionStatement
+	for !parser.check(RightBrace) && !parser.isAtEnd() {
+		methods = append(methods, parser.functionDeclaration())
+	}
+
+	parser.consume(RightBrace, "expect }")
+	return ClassStatement{
+		methods: methods,
+		name:    name,
+	}
+}
 func (parser *Parser) declaration() Statement {
-	if parser.match(VAR) {
-		return parser.varStatement()
+	if parser.match(CLASS) {
+		return parser.classDeclaration()
 	}
 	if parser.match(FUNCTION) {
-		return parser.functionStatement()
+		return parser.functionDeclaration()
 	}
+	if parser.match(VAR) {
+		return parser.varDeclaration()
+	}
+
 	return parser.statement()
 }
 

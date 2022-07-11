@@ -162,7 +162,7 @@ func (scanner *Scanner) scanToken() {
 	case ')':
 		scanner.addToken(RightParen)
 	case '{':
-		scanner.addToken(leftBrace)
+		scanner.addToken(LeftBrace)
 	case '}':
 		scanner.addToken(RightBrace)
 	case '[':

@@ -8,9 +8,7 @@ type BaseCallable interface {
 	String() string
 }
 
-type GlobalClock struct {
-	value time.Time
-}
+type GlobalClock int64
 
 func (globalClock GlobalClock) size() int {
 	return 0

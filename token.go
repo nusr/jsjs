@@ -10,7 +10,7 @@ type TokenType int
 const (
 	LeftParen    TokenType = iota // (
 	RightParen                    // )
-	leftBrace                     // {
+	LeftBrace                     // {
 	RightBrace                    // }
 	LeftSquare                    // [
 	RightSquare                   // ]
