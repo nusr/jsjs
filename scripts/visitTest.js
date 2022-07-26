@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const Lox = require('../lib/lox.umd').Lox;
-const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
-const jsonData = require(jsonFilePath);
+const { Lox, globalExpect, Environment } = require('../lib/lox.umd');
 
 const getAllFiles = (dirPath, fileList = [], index = 0) => {
   files = fs.readdirSync(dirPath);
@@ -15,41 +13,44 @@ const getAllFiles = (dirPath, fileList = [], index = 0) => {
   }
   return fileList;
 };
-const dirPath = path.join(__dirname, '../test');
+const testDir = process.argv[2] || 'test';
+const dirPath = path.join(process.cwd(), testDir);
 const fileList = getAllFiles(dirPath);
 const failList = [];
-const successList = [];
-const lox = new Lox();
 function runFile(filePath) {
   const temp = path.resolve(process.cwd(), filePath);
   const data = fs.readFileSync(temp, 'utf-8');
-  return lox.run(data);
+  return new Lox().run(data, new Environment(null));
 }
 
 for (const item of fileList) {
   try {
     runFile(item);
-    successList.push(item);
   } catch (error) {
     failList.push(item);
   }
 }
-console.log(
-  `total: ${fileList.length}, success: ${successList.length}, fail: ${failList.length}`,
-);
-jsonData.unshift({
+const result = {
   time: new Date().toLocaleString('en'),
   total: fileList.length,
-  success: successList.length,
   fail: failList.length,
-});
-fs.writeFile(
-  jsonFilePath,
-  JSON.stringify(jsonData, null, 2),
-  'utf-8',
-  (error) => {
-    if (error) {
-      console.log(error);
-    }
-  },
-);
+  fail: failList.length,
+  expectTotal: globalExpect.total,
+  expectFail: globalExpect.total - globalExpect.success,
+};
+console.log(result);
+if (testDir === 'test') {
+  const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
+  const jsonData = require(jsonFilePath);
+  jsonData.unshift(result);
+  fs.writeFile(
+    jsonFilePath,
+    JSON.stringify(jsonData, null, 2),
+    'utf-8',
+    (error) => {
+      if (error) {
+        console.log(error);
+      }
+    },
+  );
+}

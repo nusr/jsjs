@@ -54,9 +54,9 @@ export class ExpressionStatement<T> extends Statement<T> {
 }
 export class FunctionStatement<T> extends Statement<T> {
   readonly name: Token;
-  readonly body: Statement<T>;
+  readonly body: BlockStatement<T>;
   readonly params: Token[];
-  constructor(name: Token, body: Statement<T>, params: Token[]) {
+  constructor(name: Token, body: BlockStatement<T>, params: Token[]) {
     super();
     this.name = name;
     this.body = body;
@@ -86,9 +86,11 @@ export class IfStatement<T> extends Statement<T> {
 }
 export class PrintStatement<T> extends Statement<T> {
   readonly expression: Expression<T>;
-  constructor(expression: Expression<T>) {
+  readonly comment: Token | null;
+  constructor(expression: Expression<T>, comment: Token | null) {
     super();
     this.expression = expression;
+    this.comment = comment;
   }
   accept(visitor: StatementVisitor<T>): T {
     return visitor.visitPrintStatement(this);

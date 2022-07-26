@@ -35,14 +35,20 @@ import type {
 import eventEmitter from './eventEmitter';
 import Environment from './environment';
 import { RuntimeError } from './error';
+import globalExpect from './expect';
+import { convertLiteralTypeToString } from './token';
+import { LoxCallable } from './loxCallable';
+import { ReturnValue } from './returnValue';
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
 {
-  private readonly globals = new Environment(null);
+  globals = new Environment(null);
   private environment = this.globals;
 
-  interpret = (list: Statement<LiteralType>[]): void => {
+  interpret = (list: Statement<LiteralType>[], env: Environment): void => {
+    this.globals = env;
+    this.environment = env;
     for (const item of list) {
       this.execute(item);
     }
@@ -57,29 +63,34 @@ class Interpreter
     return this.evaluate(statement.expression);
   };
   visitBlockStatement = (statement: BlockStatement<LiteralType>) => {
-    this.executeBlock(statement.statements, new Environment(this.environment));
-    return null;
+    return this.executeBlock(statement, new Environment(this.environment));
   };
-  private executeBlock = (
-    statements: Statement<LiteralType>[],
+  executeBlock = (
+    statement: BlockStatement<LiteralType>,
     environment: Environment,
-  ): void => {
+  ): LiteralType => {
     const previous = this.environment;
+    let result: LiteralType | null = null;
     try {
       this.environment = environment;
-      for (let statement of statements) {
-        this.execute(statement);
+      for (let item of statement.statements) {
+        this.execute(item);
+      }
+    } catch (error) {
+      if (error instanceof ReturnValue) {
+        result = error.value;
       }
     } finally {
       this.environment = previous;
     }
+    return result;
   };
   visitClassStatement = (statement: ClassStatement<LiteralType>) => {
     console.log(statement);
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
-    console.log(statement);
+    this.environment.define(statement.name, new LoxCallable(statement));
     return null;
   };
   visitIfStatement = (statement: IfStatement<LiteralType>) => {
@@ -94,10 +105,20 @@ class Interpreter
     const result: LiteralType = this.evaluate(statement.expression);
     console.log(result);
     eventEmitter.emit('print', { value: result });
+    if (statement.comment !== null) {
+      const expect = statement.comment.lexeme;
+      const actual = convertLiteralTypeToString(result);
+      if (expect === actual) {
+        globalExpect.addSuccess();
+      }
+    }
     return null;
   };
   visitReturnStatement = (statement: ReturnStatement<LiteralType>) => {
-    console.log(statement);
+    if (statement.value !== null) {
+      const result = this.evaluate(statement.value);
+      throw new ReturnValue(result);
+    }
     return null;
   };
   visitVariableStatement = (statement: VariableStatement<LiteralType>) => {
@@ -105,7 +126,7 @@ class Interpreter
     if (statement.initializer !== null) {
       value = this.evaluate(statement.initializer);
     }
-    this.environment.define(statement.name.lexeme, value);
+    this.environment.define(statement.name, value);
     return null;
   };
   visitWhileStatement = (statement: WhileStatement<LiteralType>) => {

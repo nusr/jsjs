@@ -22,4 +22,23 @@ class Token {
     return this.type + ' ' + this.lexeme + ' ' + this.literal;
   }
 }
+
+export function convertLiteralTypeToString(val: LiteralType): string {
+  if (val === null) {
+    return 'null';
+  }
+  if (typeof val === 'string') {
+    return val;
+  }
+  if (typeof val === 'boolean') {
+    return val.toString();
+  }
+  if (typeof val === 'number') {
+    return val.toString();
+  }
+  if (val && typeof val.toString === 'function') {
+    return val.toString();
+  }
+  return '';
+}
 export default Token;

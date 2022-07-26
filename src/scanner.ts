@@ -2,13 +2,13 @@ import Token from './token';
 import { TokenType } from './tokenType';
 import { defaultErrorHandler } from './error';
 import type { LiteralType } from './type';
+import globalExpect from './expect';
 const EMPTY_DATA = '\0';
 
 class Scanner {
   readonly source: string;
   readonly tokens: Token[] = [];
   static readonly keywordMap: Map<string, TokenType> = new Map([
-    ['and', TokenType.AND],
     ['class', TokenType.CLASS],
     ['else', TokenType.ELSE],
     ['false', TokenType.FALSE],
@@ -16,7 +16,6 @@ class Scanner {
     ['fun', TokenType.FUN],
     ['if', TokenType.IF],
     ['nil', TokenType.NIL],
-    ['or', TokenType.OR],
     ['print', TokenType.PRINT],
     ['return', TokenType.RETURN],
     ['super', TokenType.SUPER],
@@ -134,6 +133,16 @@ class Scanner {
           while (this.peek() !== '\n' && !this.isAtEnd()) {
             this.advance();
           }
+          const text = this.source.substring(this.start, this.current);
+          if (text.includes('expect:')) {
+            const t = text.split(':').pop() || '';
+            if (t.trim()) {
+              globalExpect.add();
+              this.tokens.push(
+                new Token(TokenType.LINE_COMMENT, t.trim(), null, this.line),
+              );
+            }
+          }
         } else if (this.match('*')) {
           /* multiple line comments */
           while (
@@ -154,6 +163,20 @@ class Scanner {
           this.advance(); // skip /
         } else {
           this.addToken(TokenType.SLASH);
+        }
+        break;
+      case '|':
+        if (this.match('|')) {
+          this.addToken(TokenType.OR);
+        } else {
+          this.addToken(TokenType.BIT_OR);
+        }
+        break;
+      case '&':
+        if (this.match('&')) {
+          this.addToken(TokenType.AND);
+        } else {
+          this.addToken(TokenType.BIT_AND);
         }
         break;
       case ' ':

@@ -15,8 +15,8 @@ class Environment {
     }
     throw new Error(`${name.lexeme} is not defined`);
   }
-  define(name: string, value: LiteralType) {
-    this.values.set(name, value);
+  define(name: Token, value: LiteralType) {
+    this.values.set(name.lexeme, value);
   }
   assign(name: Token, value: LiteralType) {
     if (this.values.has(name.lexeme)) {

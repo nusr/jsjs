@@ -1,14 +1,13 @@
 import Scanner from './scanner';
 import Parser from './parser';
 import Interpreter from './interpreter';
-import type { Statement } from './statement';
-import type { LiteralType } from './type';
 import Debug from './debug';
+import type Environment from './environment';
 
 const debug = new Debug('lox').init();
 
 export class Lox {
-  public run(text = '') {
+  public run(text: string, env: Environment) {
     const scanner = new Scanner(text);
     const tokens = scanner.scanTokens();
     debug(tokens);
@@ -16,6 +15,6 @@ export class Lox {
     const statements = parser.parse();
     debug(statements);
     const interpreter = new Interpreter();
-    interpreter.interpret(statements as Statement<LiteralType>[]);
+    interpreter.interpret(statements, env);
   }
 }

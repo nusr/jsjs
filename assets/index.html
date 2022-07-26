@@ -23,8 +23,7 @@
     </div>
     <script src="../lib/lox.umd.js"></script>
     <script>
-      const { Lox, eventEmitter } = window.lox;
-      const lox = new Lox();
+      const { Lox, eventEmitter, Environment } = window.lox;
       const dom = document.querySelector('#code');
       const button = document.querySelector('#run');
       const result = document.querySelector('#result');
@@ -46,11 +45,11 @@
         const temp = localStorage.getItem(localKey);
         if (temp && dom) {
           dom.value = temp;
-          lox.run(temp);
+          new Lox().run(temp, new Environment(null));
         }
         button.addEventListener('click', () => {
           const text = dom?.value || '';
-          lox.run(text);
+          new Lox().run(text, new Environment(null));
           localStorage.setItem(localKey, text);
         });
       }

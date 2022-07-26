@@ -68,8 +68,10 @@ class Parser {
     const params: Token[] = [];
     if (!this.check(TokenType.RIGHT_PAREN)) {
       do {
-        params.push(this.consume(TokenType.IDENTIFIER, 'expect parameter name'));
-      }while(this.match(TokenType.COMMA))
+        params.push(
+          this.consume(TokenType.IDENTIFIER, 'expect parameter name'),
+        );
+      } while (this.match(TokenType.COMMA));
     }
     this.consume(TokenType.RIGHT_PAREN, 'expect ) after function name');
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
@@ -109,7 +111,7 @@ class Parser {
     }
     return new IfStatement<ExpressionType>(expression, thenBranch, elseBranch);
   }
-  private block(): Statement<ExpressionType> {
+  private block(): BlockStatement<ExpressionType> {
     const statements: Statement<ExpressionType>[] = [];
     while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
       statements.push(this.declaration());
@@ -117,12 +119,16 @@ class Parser {
     this.consume(TokenType.RIGHT_BRACE, 'expect } after block');
     return new BlockStatement<ExpressionType>(statements);
   }
-  private printStatement(): Statement<ExpressionType> {
+  private printStatement(): PrintStatement<ExpressionType> {
     const expr = this.expression();
     if (!this.isAtEnd()) {
       this.consume(TokenType.SEMICOLON, 'expected ; after print');
     }
-    return new PrintStatement<ExpressionType>(expr);
+    let comment: Token | null = null;
+    if (this.match(TokenType.LINE_COMMENT)) {
+      comment = this.previous();
+    }
+    return new PrintStatement<ExpressionType>(expr, comment);
   }
   private expressionStatement(): Statement<ExpressionType> {
     const expr = this.expression();
@@ -230,15 +236,20 @@ class Parser {
     }
     return expr;
   }
-  private finishCall(callee: Expression<ExpressionType>): Expression<ExpressionType> {
+  private finishCall(
+    callee: Expression<ExpressionType>,
+  ): Expression<ExpressionType> {
     const params: Expression<ExpressionType>[] = [];
-    if(!this.check(TokenType.RIGHT_PAREN)) {
+    if (!this.check(TokenType.RIGHT_PAREN)) {
       do {
         params.push(this.expression());
-      } while(this.match(TokenType.COMMA))
+      } while (this.match(TokenType.COMMA));
     }
-    const paren = this.consume(TokenType.RIGHT_PAREN, 'expect ) after arguments')
-    return new CallExpression(callee, paren, params)
+    const paren = this.consume(
+      TokenType.RIGHT_PAREN,
+      'expect ) after arguments',
+    );
+    return new CallExpression(callee, paren, params);
   }
 
   private primary(): Expression<ExpressionType> {

@@ -26,7 +26,6 @@ export enum TokenType {
   STRING,
   NUMBER,
   // keywords
-  AND,
   CLASS,
   ELSE,
   FALSE,
@@ -35,7 +34,10 @@ export enum TokenType {
   FOR,
   IF,
   NIL, // null
+  AND,
   OR,
+  BIT_AND,
+  BIT_OR,
   PRINT,
   RETURN,
   SUPER,
@@ -43,4 +45,5 @@ export enum TokenType {
   VAR, // variable
   WHILE,
   EOF, // end
+  LINE_COMMENT,
 }

@@ -11,7 +11,7 @@
     "lib"
   ],
   "scripts": {
-    "start": "npm run build",
+    "start": "npm run build -- NODE_ENV='development'",
     "build": "node esbuild.js",
     "prebuild": "npm run delete",
     "delete": "node ./scripts/pre.js",

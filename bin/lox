@@ -4,7 +4,7 @@ const path = require('path');
 const readline = require('readline');
 const loxData = require('../lib/lox.umd');
 process.env.DEBUG = '*';
-const { Lox, defaultErrorHandler } = loxData;
+const { Lox, defaultErrorHandler, Environment } = loxData;
 
 const lox = new Lox();
 function init() {
@@ -27,7 +27,7 @@ function runFile(filePath) {
       defaultErrorHandler.error(0, error.stack || error.message);
       return;
     }
-    lox.run(data);
+    new Lox().run(data, new Environment(null));
     if (defaultErrorHandler.get()) {
       process.exit(65);
     }
@@ -40,9 +40,10 @@ function runPrompt() {
     prompt: 'Lox> ',
   });
   reader.prompt();
+  const env = new Environment(null);
   reader
     .on('line', (line) => {
-      lox.run(line);
+      new Lox().run(line, env);
       defaultErrorHandler.reset();
       reader.prompt();
     })

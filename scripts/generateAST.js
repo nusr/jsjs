@@ -64,7 +64,7 @@ defineAST(
     `Unary # operator: Token, right: ${expressionName}`,
     `Variable # name: Token`,
   ],
-  "import type Token from './Token';\nimport type { LiteralType } from './type';",
+  "import type Token from './token';\nimport type { LiteralType } from './type';",
 );
 
 const StatementName = 'Statement<T>';
@@ -75,12 +75,12 @@ defineAST(
     `Block # statements: ${StatementName}[]`,
     `Class # name: Token, superClass: VariableExpression<T>, methods: FunctionStatement<T>[]`,
     `Expression # expression: ${expressionName}`,
-    `Function # name: Token, body: ${StatementName}, params: Token[]`,
+    `Function # name: Token, body: BlockStatement<T>, params: Token[]`,
     `If # condition: ${expressionName}, thenBranch: ${StatementName}, elseBranch: ${StatementName} | null`,
-    `Print # expression: ${expressionName}`,
+    `Print # expression: ${expressionName}, comment: Token | null`,
     `Return # keyword: Token, value: ${expressionName}`,
     `Variable # name: Token, initializer: ${expressionName} | null`,
     `While # condition: ${expressionName}, body: ${StatementName}`,
   ],
-  "import type Token from './Token';\nimport type { Expression, VariableExpression } from './Expression'",
+  "import type Token from './token';\nimport type { Expression, VariableExpression } from './expression'",
 );
