@@ -37,25 +37,25 @@ function umdWrapper() {
 const licenseText = ''
 
 function buildESM(isMinify = false) {
-  let outfile = package.module;
+  let filePath = package.module;
   if (isMinify) {
-    outfile = outfile.replace('js', 'min.js');
+    filePath = filePath.replace('js', 'min.js');
   }
   return buildBrowserConfig({
-    outfile,
+    outfile: filePath,
     format: 'esm',
     minify: isMinify,
   });
 }
 
 function buildUMD(isMinify = false) {
-  let outfile = package.main;
+  let filePath = package.main;
   if (isMinify) {
-    outfile = outfile.replace('js', 'min.js');
+    filePath = filePath.replace('js', 'min.js');
   }
   const umd = umdWrapper();
   return buildBrowserConfig({
-    outfile,
+    outfile: filePath,
     minify: isMinify,
     format: 'iife',
     globalName,
