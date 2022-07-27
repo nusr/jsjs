@@ -37,27 +37,27 @@ function umdWrapper() {
 
 const licenseText = ''
 
-function buildESM(isMinify = false) {
-  let filePath = package.module;
-  if (isMinify) {
-    filePath = filePath.replace('js', 'min.js');
-  }
+/**
+ * build esm
+ * @param { string } filePath 
+ * @returns 
+ */
+function buildESM(filePath) {
   return buildBrowserConfig({
     outfile: filePath,
     format: 'esm',
-    minify: isMinify,
   });
 }
 
-function buildUMD(isMinify = false) {
-  let filePath = package.main;
-  if (isMinify) {
-    filePath = filePath.replace('js', 'min.js');
-  }
+/**
+ * build umd
+ * @param { string } filePath 
+ * @returns 
+ */
+function buildUMD(filePath) {
   const umd = umdWrapper();
   return buildBrowserConfig({
     outfile: filePath,
-    minify: isMinify,
     format: 'iife',
     globalName,
     banner: {
@@ -74,6 +74,7 @@ function buildUMD(isMinify = false) {
  * @returns {Promise<import('esbuild').BuildResult>}
  */
 function buildBrowserConfig(options) {
+  const minify = options.outfile.includes('min')
   return build({
     bundle: true,
     watch: isDev,
@@ -87,21 +88,22 @@ function buildBrowserConfig(options) {
       js: licenseText,
     },
     platform: 'browser',
-    minify: false,
     sourcemap: true,
+    minify: minify,
     ...options,
   });
 }
 
 async function main() {
   if (isDev) {
-    return buildUMD();
+    return buildUMD(package.main);
   }
   return await Promise.all([
-    buildESM(),
-    buildUMD(),
-    buildESM(true),
-    buildUMD(true),
+    buildUMD('assets/lox.umd.js'),
+    buildESM(package.module),
+    buildUMD(package.main),
+    buildESM(package.module.replace('js', 'min.js')),
+    buildUMD(package.main.replace('js', 'min.js')),
   ]);
 }
 

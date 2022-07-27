@@ -15,4 +15,5 @@ build
 MakeFile
 compiler.exe
 compiler
-x64
+assets/*.js
+assets/*.map
