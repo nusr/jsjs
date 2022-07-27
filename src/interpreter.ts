@@ -92,7 +92,7 @@ class Interpreter
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
-    this.environment.define(statement.name, new LoxCallable(statement));
+    this.environment.define(statement.name.lexeme, new LoxCallable(statement));
     return null;
   };
   visitIfStatement = (statement: IfStatement<LiteralType>) => {
@@ -105,7 +105,7 @@ class Interpreter
   };
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
     const result: LiteralType = this.evaluate(statement.expression);
-    // console.log(result);
+    console.log(result);
     eventEmitter.emit('print', { value: result });
     if (isTestEnv() && statement.comment !== null) {
       const expect = statement.comment.lexeme;
@@ -131,7 +131,7 @@ class Interpreter
     if (statement.initializer !== null) {
       value = this.evaluate(statement.initializer);
     }
-    this.environment.define(statement.name, value);
+    this.environment.define(statement.name.lexeme, value);
     return null;
   };
   visitWhileStatement = (statement: WhileStatement<LiteralType>) => {

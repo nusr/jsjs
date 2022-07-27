@@ -135,7 +135,10 @@ class Scanner {
           }
           if (isTestEnv()) {
             const text = this.source.substring(this.start, this.current);
-            if (text.includes('expect:')) {
+            if (
+              text.includes('expect:') &&
+              this.tokens.some((v) => v.type === TokenType.PRINT)
+            ) {
               const t = text.split(':').pop() || '';
               if (t.trim()) {
                 this.tokens.push(

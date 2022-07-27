@@ -24,7 +24,7 @@ function runFile(filePath) {
 
 function checkEqual(oldData, newData, excludeKeys) {
   for (const key of Object.keys(oldData)) {
-    if (excludeKeys.includes('time')) {
+    if (excludeKeys.includes(key)) {
       continue;
     }
     if (oldData[key] !== newData[key]) {
@@ -43,9 +43,7 @@ function init() {
     try {
       runFile(item);
     } catch (error) {
-      if (error && error.message.includes('visitPrintStatement')) {
-        console.log(item, error);
-      }
+      console.log(item, error);
       failList.push(item);
     }
   }
