@@ -4,5 +4,5 @@ print null && "bad"; // expect: null
 
 // Everything else is true.
 print true && "ok"; // expect: ok
-print 0 && "ok"; // expect: ok
-print "" && "ok"; // expect: ok
+print 0 && "ok"; // expect: 0
+print "" && "ok"; // expect: 

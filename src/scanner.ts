@@ -2,7 +2,7 @@ import Token from './token';
 import { TokenType } from './tokenType';
 import { defaultErrorHandler } from './error';
 import type { LiteralType } from './type';
-import globalExpect from './expect';
+import { isTestEnv } from './util';
 const EMPTY_DATA = '\0';
 
 class Scanner {
@@ -15,7 +15,7 @@ class Scanner {
     ['for', TokenType.FOR],
     ['fun', TokenType.FUN],
     ['if', TokenType.IF],
-    ['nil', TokenType.NIL],
+    ['null', TokenType.NIL],
     ['print', TokenType.PRINT],
     ['return', TokenType.RETURN],
     ['super', TokenType.SUPER],
@@ -133,14 +133,15 @@ class Scanner {
           while (this.peek() !== '\n' && !this.isAtEnd()) {
             this.advance();
           }
-          const text = this.source.substring(this.start, this.current);
-          if (text.includes('expect:')) {
-            const t = text.split(':').pop() || '';
-            if (t.trim()) {
-              globalExpect.add();
-              this.tokens.push(
-                new Token(TokenType.LINE_COMMENT, t.trim(), null, this.line),
-              );
+          if (isTestEnv()) {
+            const text = this.source.substring(this.start, this.current);
+            if (text.includes('expect:')) {
+              const t = text.split(':').pop() || '';
+              if (t.trim()) {
+                this.tokens.push(
+                  new Token(TokenType.LINE_COMMENT, t.trim(), null, this.line),
+                );
+              }
             }
           }
         } else if (this.match('*')) {

@@ -36,9 +36,11 @@ import eventEmitter from './eventEmitter';
 import Environment from './environment';
 import { RuntimeError } from './error';
 import globalExpect from './expect';
-import { convertLiteralTypeToString } from './token';
+import { convertLiteralTypeToString, isBaseCallable, isTestEnv } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
+
+const MAX_WHILE_COUNT = 200000;
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
@@ -103,13 +105,16 @@ class Interpreter
   };
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
     const result: LiteralType = this.evaluate(statement.expression);
-    console.log(result);
+    // console.log(result);
     eventEmitter.emit('print', { value: result });
-    if (statement.comment !== null) {
+    if (isTestEnv() && statement.comment !== null) {
       const expect = statement.comment.lexeme;
       const actual = convertLiteralTypeToString(result);
+      globalExpect.add();
       if (expect === actual) {
         globalExpect.addSuccess();
+      } else {
+        throw new Error(`visitPrintStatement expect: ${expect},actual: ${actual}, line: ${statement.comment.line}`)
       }
     }
     return null;
@@ -130,8 +135,13 @@ class Interpreter
     return null;
   };
   visitWhileStatement = (statement: WhileStatement<LiteralType>) => {
+    let count = 0;
     while (this.isTruthy(this.evaluate(statement.condition))) {
       this.execute(statement.body);
+      count++;
+      if (count > MAX_WHILE_COUNT) {
+        throw new Error('over max while count')
+      }
     }
     return null;
   };
@@ -190,16 +200,14 @@ class Interpreter
   };
   visitCallExpression = (expr: CallExpression<LiteralType>): LiteralType => {
     const callee: LiteralType = this.evaluate(expr.callee);
-    const args: LiteralType[] = [];
+    const argumentList: LiteralType[] = [];
     for (let item of expr.argumentList) {
-      args.push(this.evaluate(item));
+      argumentList.push(this.evaluate(item));
     }
-    if (!(callee instanceof Function)) {
+    if (!isBaseCallable(callee)) {
       throw new RuntimeError(expr.paren, 'can only call functions');
     }
-    // const func: LoxCallable = callee;
-    // return func.call(this, args);
-    return args[0] as LiteralType;
+    return callee.call(this, argumentList);
   };
   visitGetExpression = (expr: GetExpression<LiteralType>) => {
     return this.parenthesize(expr.name.lexeme, expr.object);

@@ -23,6 +23,8 @@ import {
   WhileStatement,
 } from './statement';
 
+import { isTestEnv } from './util';
+
 class Parser {
   private readonly tokens: Token[];
   private current = 0;
@@ -125,7 +127,7 @@ class Parser {
       this.consume(TokenType.SEMICOLON, 'expected ; after print');
     }
     let comment: Token | null = null;
-    if (this.match(TokenType.LINE_COMMENT)) {
+    if (isTestEnv() && this.match(TokenType.LINE_COMMENT)) {
       comment = this.previous();
     }
     return new PrintStatement<LiteralType>(expr, comment);
@@ -236,9 +238,7 @@ class Parser {
     }
     return expr;
   }
-  private finishCall(
-    callee: Expression<LiteralType>,
-  ): Expression<LiteralType> {
+  private finishCall(callee: Expression<LiteralType>): Expression<LiteralType> {
     const params: Expression<LiteralType>[] = [];
     if (!this.check(TokenType.RIGHT_PAREN)) {
       do {

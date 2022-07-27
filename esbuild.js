@@ -4,12 +4,13 @@ const package = require('./package.json');
 const envConfig = getEnv();
 const productionMode = 'production';
 const nodeEnv = envConfig.NODE_ENV || productionMode;
-const isDev = nodeEnv !== productionMode;
+const isDev = nodeEnv === 'development';
+console.log('NODE_ENV', nodeEnv)
 const globalName = '__export__';
 function getEnv() {
   const [, , ...rest] = process.argv;
   return rest.reduce((prev, current = '') => {
-    const [key = '', value = ''] = current.trim();
+    const [key = '', value = ''] = current.trim().split('=');
     const t = key.trim();
     if (t) {
       prev[t] = value.trim();
@@ -79,8 +80,8 @@ function buildBrowserConfig(options) {
     entryPoints: ['src/index.ts'],
     tsconfig: 'tsconfig.json',
     define: {
-      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-      'process.env.VERSION': JSON.stringify(package.version),
+      "process.env.NODE_ENV": JSON.stringify(nodeEnv),
+      "process.env.VERSION": JSON.stringify(package.version),
     },
     banner: {
       js: licenseText,

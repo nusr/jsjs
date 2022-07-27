@@ -11,11 +11,11 @@
     "lib"
   ],
   "scripts": {
-    "start": "npm run build -- NODE_ENV='development'",
+    "start": "npm run build -- NODE_ENV=development",
     "build": "node esbuild.js",
     "prebuild": "npm run delete",
     "delete": "node ./scripts/pre.js",
-    "pretest": "npm run build",
+    "pretest": "npm run build -- NODE_ENV=test",
     "test": "node ./scripts/visitTest.js",
     "type": "npx tsc",
     "pretype": "npm run delete",

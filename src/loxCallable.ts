@@ -1,13 +1,7 @@
-import type { LiteralType } from './type';
+import type { LiteralType, BaseCallable } from './type';
 import type Interpreter from './interpreter';
 import type { FunctionStatement } from './statement';
 import Environment from './environment';
-
-export interface BaseCallable {
-  size: () => number;
-  call: (interpreter: Interpreter, argumentList: LiteralType[]) => LiteralType;
-  toString: () => string;
-}
 
 class LoxCallable implements BaseCallable {
   declaration: FunctionStatement<LiteralType>;
@@ -25,7 +19,7 @@ class LoxCallable implements BaseCallable {
     return 0;
   }
   toString() {
-    return `<Fun ${this.declaration.name.lexeme}>`;
+    return `<fn ${this.declaration.name.lexeme}>`;
   }
 }
 
