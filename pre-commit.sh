@@ -1,1 +1,1 @@
-npm run type
+npm run build

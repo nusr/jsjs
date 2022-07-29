@@ -1,7 +1,7 @@
-const path = require('path');
-const fs = require('fs');
-const exp = require('constants');
-function defineAST(fileName, list, imports) {
+import path from 'path';
+import fs from 'fs';
+
+function defineAST(fileName: string, list: string[], imports: string) {
   const realFileName = fileName[0].toLowerCase() + fileName.slice(1);
   const filePath = path.join(process.cwd(), 'src', `${realFileName}.ts`);
   const params = list.map((item) => {

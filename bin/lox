@@ -1,17 +1,31 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-const loxData = require('../lib/lox.umd');
-process.env.DEBUG = '*';
-const { Lox, defaultErrorHandler, Environment } = loxData;
-
-const lox = new Lox();
+"use strict";
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var import_path = __toESM(require("path"));
+var import_fs = __toESM(require("fs"));
+var import_readline = __toESM(require("readline"));
+const { Lox, defaultErrorHandler, Environment } = require("../lib/lox.umd");
 function init() {
   const args = process.argv;
-  console.log(args);
   if (args.length > 3) {
-    console.log('Usage: lox [filepath]]');
+    console.log("Usage: lox [filepath]]");
     process.exit(64);
   } else if (args.length === 3 && args[2]) {
     runFile(args[2]);
@@ -19,10 +33,9 @@ function init() {
     runPrompt();
   }
 }
-
 function runFile(filePath) {
-  const temp = path.resolve(process.cwd(), filePath);
-  fs.readFile(temp, 'utf-8', (error, data) => {
+  const temp = import_path.default.resolve(process.cwd(), filePath);
+  import_fs.default.readFile(temp, "utf-8", (error, data) => {
     if (error) {
       defaultErrorHandler.error(0, error.stack || error.message);
       return;
@@ -34,22 +47,20 @@ function runFile(filePath) {
   });
 }
 function runPrompt() {
-  const reader = readline.createInterface({
+  const reader = import_readline.default.createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: 'Lox> ',
+    prompt: "Lox> "
   });
   reader.prompt();
   const env = new Environment(null);
-  reader
-    .on('line', (line) => {
-      new Lox().run(line, env);
-      defaultErrorHandler.reset();
-      reader.prompt();
-    })
-    .on('close', () => {
-      console.log('end Lox!');
-      process.exit(0);
-    });
+  reader.on("line", (line) => {
+    new Lox().run(line, env);
+    defaultErrorHandler.reset();
+    reader.prompt();
+  }).on("close", () => {
+    console.log("end Lox!");
+    process.exit(0);
+  });
 }
 init();

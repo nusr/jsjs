@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+import path from 'path';
+import fs from 'fs';
+import jsonData from './test.json'
 const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
-const jsonData = require(jsonFilePath);
 const { Lox, globalExpect, Environment } = require('../lib/lox.umd');
 
-const getAllFiles = (dirPath, fileList = [], index = 0) => {
-  files = fs.readdirSync(dirPath);
+const getAllFiles = (dirPath: string, fileList: string[] = [], index = 0) => {
+  const files = fs.readdirSync(dirPath);
   for (const file of files) {
     if (fs.statSync(dirPath + '/' + file).isDirectory()) {
       fileList = getAllFiles(dirPath + '/' + file, fileList, index + 1);
@@ -38,7 +38,7 @@ function init() {
   const testDir = process.argv[2] || 'test';
   const dirPath = path.join(process.cwd(), testDir);
   const fileList = getAllFiles(dirPath);
-  const failList = [];
+  const failList: string[] = [];
   for (const item of fileList) {
     try {
       runFile(item);
@@ -50,7 +50,6 @@ function init() {
   const result = {
     time: new Date().toLocaleString('en'),
     total: fileList.length,
-    fail: failList.length,
     fail: failList.length,
     expectTotal: globalExpect.total,
     expectFail: globalExpect.total - globalExpect.success,

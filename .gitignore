@@ -17,3 +17,7 @@ compiler.exe
 compiler
 assets
 !assets/index.html
+esbuild.js
+scripts/bin.js
+scripts/generateAST.js
+scripts/visitTest.js
