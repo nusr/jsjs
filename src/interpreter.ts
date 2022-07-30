@@ -40,7 +40,7 @@ import { convertLiteralTypeToString, isBaseCallable, isTestEnv } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
 
-const MAX_WHILE_COUNT = 200000;
+const MAX_WHILE_COUNT = 15000000;
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
@@ -92,7 +92,7 @@ class Interpreter
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
-    this.environment.define(statement.name.lexeme, new LoxCallable(statement));
+    this.environment.define(statement.name.lexeme, new LoxCallable(statement, this.environment));
     return null;
   };
   visitIfStatement = (statement: IfStatement<LiteralType>) => {

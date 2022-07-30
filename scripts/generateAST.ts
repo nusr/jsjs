@@ -78,7 +78,7 @@ defineAST(
     `Function # name: Token, body: BlockStatement<T>, params: Token[]`,
     `If # condition: ${expressionName}, thenBranch: ${StatementName}, elseBranch: ${StatementName} | null`,
     `Print # expression: ${expressionName}, comment: Token | null`,
-    `Return # keyword: Token, value: ${expressionName}`,
+    `Return # keyword: Token, value: ${expressionName} | null`,
     `Variable # name: Token, initializer: ${expressionName} | null`,
     `While # condition: ${expressionName}, body: ${StatementName}`,
   ],

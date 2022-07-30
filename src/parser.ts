@@ -11,13 +11,14 @@ import {
 } from './expression';
 import type { LiteralType } from './type';
 import { TokenType } from './tokenType';
-import type Token from './token';
+import Token from './token';
 import {
   BlockStatement,
   ExpressionStatement,
   FunctionStatement,
   IfStatement,
   PrintStatement,
+  ReturnStatement,
   Statement,
   VariableStatement,
   WhileStatement,
@@ -93,7 +94,19 @@ class Parser {
     if (this.match(TokenType.lEFT_BRACE)) {
       return this.block();
     }
+    if (this.match(TokenType.RETURN)) {
+      return this.returnStatement();
+    }
     return this.expressionStatement();
+  }
+  private returnStatement(): ReturnStatement<LiteralType> {
+    const keyword = this.previous();
+    let value: Expression<LiteralType> | null = null;
+    if (!this.check(TokenType.SEMICOLON)) {
+      value = this.expression();
+    }
+    this.consume(TokenType.SEMICOLON, 'expect ; after return');
+    return new ReturnStatement(keyword, value);
   }
   private whileStatement(): Statement<LiteralType> {
     this.consume(TokenType.LEFT_PAREN, 'expect ( after while');

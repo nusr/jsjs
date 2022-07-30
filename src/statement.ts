@@ -98,8 +98,8 @@ export class PrintStatement<T> extends Statement<T> {
 }
 export class ReturnStatement<T> extends Statement<T> {
   readonly keyword: Token;
-  readonly value: Expression<T>;
-  constructor(keyword: Token, value: Expression<T>) {
+  readonly value: Expression<T> | null;
+  constructor(keyword: Token, value: Expression<T> | null) {
     super();
     this.keyword = keyword;
     this.value = value;
