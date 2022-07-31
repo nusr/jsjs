@@ -11,7 +11,7 @@ import {
 } from './expression';
 import type { LiteralType } from './type';
 import { TokenType } from './tokenType';
-import Token from './token';
+import type Token from './token';
 import {
   BlockStatement,
   ExpressionStatement,
@@ -78,7 +78,7 @@ class Parser {
     }
     this.consume(TokenType.RIGHT_PAREN, 'expect ) after function name');
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
-    const block = this.block();
+    const block = this.blockStatement();
     return new FunctionStatement(functionName, block, params);
   }
   private statement(): Statement<LiteralType> {
@@ -91,13 +91,68 @@ class Parser {
     if (this.match(TokenType.WHILE)) {
       return this.whileStatement();
     }
+    if (this.match(TokenType.DO_WHILE)) {
+      return this.doWhileStatement();
+    }
+    if (this.match(TokenType.FOR)) {
+      return this.forStatement();
+    }
     if (this.match(TokenType.lEFT_BRACE)) {
-      return this.block();
+      return this.blockStatement();
     }
     if (this.match(TokenType.RETURN)) {
       return this.returnStatement();
     }
     return this.expressionStatement();
+  }
+  private forStatement(): BlockStatement<LiteralType> {
+    this.consume(TokenType.LEFT_PAREN, 'expect (');
+    var initializer: Statement<LiteralType> | null = null;
+    if (this.match(TokenType.VAR)) {
+      initializer = this.varStatement();
+    } else if (!this.check(TokenType.SEMICOLON)) {
+      initializer = this.expressionStatement();
+    } else {
+      this.consume(TokenType.SEMICOLON, 'expect ; after initializer');
+    }
+
+    let condition: Expression<LiteralType> = new LiteralExpression<LiteralType>(
+      true,
+    );
+    if (!this.check(TokenType.SEMICOLON)) {
+      condition = this.expression();
+    }
+    this.consume(TokenType.SEMICOLON, 'expect ; after for condition');
+    let end: Expression<LiteralType> | null = null;
+    if (!this.check(TokenType.RIGHT_PAREN)) {
+      end = this.expression();
+    }
+    this.consume(TokenType.RIGHT_PAREN, 'expect )');
+    const body = this.statement();
+    const list: Statement<LiteralType>[] = [body];
+    if (end !== null) {
+      list.push(new ExpressionStatement<LinkStyle>(end));
+    }
+    const whileBody = new BlockStatement(list);
+    const whileStatement = new WhileStatement(condition, whileBody);
+    const statements: Statement<LiteralType>[] = [];
+    if (initializer !== null) {
+      statements.push(initializer);
+    }
+    statements.push(whileStatement);
+    return new BlockStatement<LiteralType>(statements);
+  }
+  private doWhileStatement(): BlockStatement<LiteralType> {
+    this.consume(TokenType.lEFT_BRACE, 'expect {');
+    const body = this.blockStatement();
+    this.consume(TokenType.WHILE, 'expect while');
+    this.consume(TokenType.LEFT_PAREN, 'expect (');
+    const expr = this.expression();
+    this.consume(TokenType.RIGHT_PAREN, 'expect )');
+    const value = new WhileStatement(expr, body);
+    const statements: Statement<LiteralType>[] = [];
+    statements.push(body, value);
+    return new BlockStatement<LiteralType>(statements);
   }
   private returnStatement(): ReturnStatement<LiteralType> {
     const keyword = this.previous();
@@ -108,14 +163,14 @@ class Parser {
     this.consume(TokenType.SEMICOLON, 'expect ; after return');
     return new ReturnStatement(keyword, value);
   }
-  private whileStatement(): Statement<LiteralType> {
+  private whileStatement(): WhileStatement<LiteralType> {
     this.consume(TokenType.LEFT_PAREN, 'expect ( after while');
     const expression = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect ) after while');
     const body = this.statement();
     return new WhileStatement<LiteralType>(expression, body);
   }
-  private ifStatement(): Statement<LiteralType> {
+  private ifStatement(): IfStatement<LiteralType> {
     this.consume(TokenType.LEFT_PAREN, 'expect ( after if');
     const expression = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect ) after if');
@@ -126,7 +181,7 @@ class Parser {
     }
     return new IfStatement<LiteralType>(expression, thenBranch, elseBranch);
   }
-  private block(): BlockStatement<LiteralType> {
+  private blockStatement(): BlockStatement<LiteralType> {
     const statements: Statement<LiteralType>[] = [];
     while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
       statements.push(this.declaration());
@@ -145,7 +200,7 @@ class Parser {
     }
     return new PrintStatement<LiteralType>(expr, comment);
   }
-  private expressionStatement(): Statement<LiteralType> {
+  private expressionStatement(): ExpressionStatement<LiteralType> {
     const expr = this.expression();
     if (!this.isAtEnd()) {
       this.consume(TokenType.SEMICOLON, 'expected ; after expression');
