@@ -40,7 +40,7 @@ import { convertLiteralTypeToString, isBaseCallable, isTestEnv } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
 
-const MAX_WHILE_COUNT = 15000000;
+const MAX_WHILE_COUNT = 10000000;
 
 class Interpreter
   implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
@@ -105,7 +105,7 @@ class Interpreter
   };
   visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
     const result: LiteralType = this.evaluate(statement.expression);
-    console.log(result);
+    // console.log(result);
     eventEmitter.emit('print', { value: result });
     if (isTestEnv() && statement.comment !== null) {
       const expect = statement.comment.lexeme;

@@ -1,6 +1,15 @@
 import path from 'path';
 import fs from 'fs';
-import jsonData from './test.json'
+import jsonData from './test.json';
+
+type ResultItem = {
+  time: string;
+  total: number;
+  fail: number;
+  expectTotal: number;
+  expectFail: number;
+};
+
 const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
 const { Lox, globalExpect, Environment } = require('../lib/lox.umd');
 
@@ -23,6 +32,9 @@ function runFile(filePath) {
 }
 
 function checkEqual(oldData, newData, excludeKeys) {
+  if (!oldData) {
+    return false;
+  }
   for (const key of Object.keys(oldData)) {
     if (excludeKeys.includes(key)) {
       continue;
@@ -38,19 +50,26 @@ function init() {
   const testDir = process.argv[2] || 'test';
   const dirPath = path.join(process.cwd(), testDir);
   const fileList = getAllFiles(dirPath);
-  const failList: string[] = [];
+  let total = 0;
+  let fail = 0;
+  const blackList = ['benchmark'];
   for (const item of fileList) {
+    if (blackList.some((v) => item.includes(v))) {
+      console.log('skip file path: ', item);
+      continue;
+    }
     try {
       runFile(item);
     } catch (error) {
       console.log(item, error);
-      failList.push(item);
+      fail++;
     }
+    total++;
   }
-  const result = {
+  const result: ResultItem = {
     time: new Date().toLocaleString('en'),
-    total: fileList.length,
-    fail: failList.length,
+    total,
+    fail,
     expectTotal: globalExpect.total,
     expectFail: globalExpect.total - globalExpect.success,
   };

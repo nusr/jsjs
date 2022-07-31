@@ -14,7 +14,7 @@ class LoxCallable implements BaseCallable {
     this.closure = closure;
   }
   call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
-    const env = new Environment(this.closure);
+    const env = new Environment(interpreter.globals);
     for (let i = 0; i < this.declaration.params.length; i++) {
       env.define(this.declaration.params[i]?.lexeme!, argumentList[i]);
     }
