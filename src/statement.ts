@@ -1,134 +1,135 @@
 import type Token from './token';
 import type { Expression, VariableExpression } from './expression';
-export interface StatementVisitor<T> {
-  visitBlockStatement: (statement: BlockStatement<T>) => T;
-  visitClassStatement: (statement: ClassStatement<T>) => T;
-  visitExpressionStatement: (statement: ExpressionStatement<T>) => T;
-  visitFunctionStatement: (statement: FunctionStatement<T>) => T;
-  visitIfStatement: (statement: IfStatement<T>) => T;
-  visitPrintStatement: (statement: PrintStatement<T>) => T;
-  visitReturnStatement: (statement: ReturnStatement<T>) => T;
-  visitVariableStatement: (statement: VariableStatement<T>) => T;
-  visitWhileStatement: (statement: WhileStatement<T>) => T;
+import type { LiteralType } from './type';
+export interface StatementVisitor {
+  visitBlockStatement: (statement: BlockStatement) => LiteralType;
+  visitClassStatement: (statement: ClassStatement) => LiteralType;
+  visitExpressionStatement: (statement: ExpressionStatement) => LiteralType;
+  visitFunctionStatement: (statement: FunctionStatement) => LiteralType;
+  visitIfStatement: (statement: IfStatement) => LiteralType;
+  visitPrintStatement: (statement: PrintStatement) => LiteralType;
+  visitReturnStatement: (statement: ReturnStatement) => LiteralType;
+  visitVariableStatement: (statement: VariableStatement) => LiteralType;
+  visitWhileStatement: (statement: WhileStatement) => LiteralType;
 }
-export abstract class Statement<T> {
-  abstract accept(visitor: StatementVisitor<T>): T;
+export abstract class Statement {
+  abstract accept(visitor: StatementVisitor): LiteralType;
 }
-export class BlockStatement<T> extends Statement<T> {
-  readonly statements: Statement<T>[];
-  constructor(statements: Statement<T>[]) {
+export class BlockStatement extends Statement {
+  readonly statements: Statement[];
+  constructor(statements: Statement[]) {
     super();
     this.statements = statements;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitBlockStatement(this);
   }
 }
-export class ClassStatement<T> extends Statement<T> {
+export class ClassStatement extends Statement {
   readonly name: Token;
-  readonly superClass: VariableExpression<T>;
-  readonly methods: FunctionStatement<T>[];
+  readonly superClass: VariableExpression;
+  readonly methods: FunctionStatement[];
   constructor(
     name: Token,
-    superClass: VariableExpression<T>,
-    methods: FunctionStatement<T>[],
+    superClass: VariableExpression,
+    methods: FunctionStatement[],
   ) {
     super();
     this.name = name;
     this.superClass = superClass;
     this.methods = methods;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitClassStatement(this);
   }
 }
-export class ExpressionStatement<T> extends Statement<T> {
-  readonly expression: Expression<T>;
-  constructor(expression: Expression<T>) {
+export class ExpressionStatement extends Statement {
+  readonly expression: Expression;
+  constructor(expression: Expression) {
     super();
     this.expression = expression;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitExpressionStatement(this);
   }
 }
-export class FunctionStatement<T> extends Statement<T> {
+export class FunctionStatement extends Statement {
   readonly name: Token;
-  readonly body: BlockStatement<T>;
+  readonly body: BlockStatement;
   readonly params: Token[];
-  constructor(name: Token, body: BlockStatement<T>, params: Token[]) {
+  constructor(name: Token, body: BlockStatement, params: Token[]) {
     super();
     this.name = name;
     this.body = body;
     this.params = params;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitFunctionStatement(this);
   }
 }
-export class IfStatement<T> extends Statement<T> {
-  readonly condition: Expression<T>;
-  readonly thenBranch: Statement<T>;
-  readonly elseBranch: Statement<T> | null;
+export class IfStatement extends Statement {
+  readonly condition: Expression;
+  readonly thenBranch: Statement;
+  readonly elseBranch: Statement | null;
   constructor(
-    condition: Expression<T>,
-    thenBranch: Statement<T>,
-    elseBranch: Statement<T> | null,
+    condition: Expression,
+    thenBranch: Statement,
+    elseBranch: Statement | null,
   ) {
     super();
     this.condition = condition;
     this.thenBranch = thenBranch;
     this.elseBranch = elseBranch;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitIfStatement(this);
   }
 }
-export class PrintStatement<T> extends Statement<T> {
-  readonly expression: Expression<T>;
+export class PrintStatement extends Statement {
+  readonly expression: Expression;
   readonly comment: Token | null;
-  constructor(expression: Expression<T>, comment: Token | null) {
+  constructor(expression: Expression, comment: Token | null) {
     super();
     this.expression = expression;
     this.comment = comment;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitPrintStatement(this);
   }
 }
-export class ReturnStatement<T> extends Statement<T> {
+export class ReturnStatement extends Statement {
   readonly keyword: Token;
-  readonly value: Expression<T> | null;
-  constructor(keyword: Token, value: Expression<T> | null) {
+  readonly value: Expression | null;
+  constructor(keyword: Token, value: Expression | null) {
     super();
     this.keyword = keyword;
     this.value = value;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitReturnStatement(this);
   }
 }
-export class VariableStatement<T> extends Statement<T> {
+export class VariableStatement extends Statement {
   readonly name: Token;
-  readonly initializer: Expression<T> | null;
-  constructor(name: Token, initializer: Expression<T> | null) {
+  readonly initializer: Expression | null;
+  constructor(name: Token, initializer: Expression | null) {
     super();
     this.name = name;
     this.initializer = initializer;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitVariableStatement(this);
   }
 }
-export class WhileStatement<T> extends Statement<T> {
-  readonly condition: Expression<T>;
-  readonly body: Statement<T>;
-  constructor(condition: Expression<T>, body: Statement<T>) {
+export class WhileStatement extends Statement {
+  readonly condition: Expression;
+  readonly body: Statement;
+  constructor(condition: Expression, body: Statement) {
     super();
     this.condition = condition;
     this.body = body;
   }
-  accept(visitor: StatementVisitor<T>): T {
+  accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitWhileStatement(this);
   }
 }

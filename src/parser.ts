@@ -32,14 +32,14 @@ class Parser {
   constructor(tokens: Token[]) {
     this.tokens = tokens;
   }
-  parse = (): Statement<LiteralType>[] => {
-    const statements: Statement<LiteralType>[] = [];
+  parse = (): Statement[] => {
+    const statements: Statement[] = [];
     while (!this.isAtEnd()) {
       statements.push(this.declaration());
     }
     return statements;
   };
-  private declaration(): Statement<LiteralType> {
+  private declaration(): Statement {
     if (this.match(TokenType.VAR)) {
       return this.varStatement();
     }
@@ -50,19 +50,19 @@ class Parser {
 
     return this.statement();
   }
-  private varStatement(): Statement<LiteralType> {
+  private varStatement(): Statement {
     const name: Token = this.consume(
       TokenType.IDENTIFIER,
       'expect identifier after var',
     );
-    let initializer: Expression<LiteralType> | null = null;
+    let initializer: Expression | null = null;
     if (this.match(TokenType.EQUAL)) {
       initializer = this.expression();
     }
     this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
     return new VariableStatement(name, initializer);
   }
-  private funcStatement(): Statement<LiteralType> {
+  private funcStatement(): Statement {
     const functionName: Token = this.consume(
       TokenType.IDENTIFIER,
       'expect identifier after func',
@@ -81,7 +81,7 @@ class Parser {
     const block = this.blockStatement();
     return new FunctionStatement(functionName, block, params);
   }
-  private statement(): Statement<LiteralType> {
+  private statement(): Statement {
     if (this.match(TokenType.IF)) {
       return this.ifStatement();
     }
@@ -105,9 +105,9 @@ class Parser {
     }
     return this.expressionStatement();
   }
-  private forStatement(): BlockStatement<LiteralType> {
+  private forStatement(): BlockStatement {
     this.consume(TokenType.LEFT_PAREN, 'expect (');
-    var initializer: Statement<LiteralType> | null = null;
+    var initializer: Statement | null = null;
     if (this.match(TokenType.VAR)) {
       initializer = this.varStatement();
     } else if (!this.check(TokenType.SEMICOLON)) {
@@ -116,33 +116,31 @@ class Parser {
       this.consume(TokenType.SEMICOLON, 'expect ; after initializer');
     }
 
-    let condition: Expression<LiteralType> = new LiteralExpression<LiteralType>(
-      true,
-    );
+    let condition: Expression = new LiteralExpression(true);
     if (!this.check(TokenType.SEMICOLON)) {
       condition = this.expression();
     }
     this.consume(TokenType.SEMICOLON, 'expect ; after for condition');
-    let end: Expression<LiteralType> | null = null;
+    let end: Expression | null = null;
     if (!this.check(TokenType.RIGHT_PAREN)) {
       end = this.expression();
     }
     this.consume(TokenType.RIGHT_PAREN, 'expect )');
     const body = this.statement();
-    const list: Statement<LiteralType>[] = [body];
+    const list: Statement[] = [body];
     if (end !== null) {
-      list.push(new ExpressionStatement<LiteralType>(end));
+      list.push(new ExpressionStatement(end));
     }
     const whileBody = new BlockStatement(list);
     const whileStatement = new WhileStatement(condition, whileBody);
-    const statements: Statement<LiteralType>[] = [];
+    const statements: Statement[] = [];
     if (initializer !== null) {
       statements.push(initializer);
     }
     statements.push(whileStatement);
-    return new BlockStatement<LiteralType>(statements);
+    return new BlockStatement(statements);
   }
-  private doWhileStatement(): BlockStatement<LiteralType> {
+  private doWhileStatement(): BlockStatement {
     this.consume(TokenType.lEFT_BRACE, 'expect {');
     const body = this.blockStatement();
     this.consume(TokenType.WHILE, 'expect while');
@@ -150,46 +148,46 @@ class Parser {
     const expr = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect )');
     const value = new WhileStatement(expr, body);
-    const statements: Statement<LiteralType>[] = [];
+    const statements: Statement[] = [];
     statements.push(body, value);
-    return new BlockStatement<LiteralType>(statements);
+    return new BlockStatement(statements);
   }
-  private returnStatement(): ReturnStatement<LiteralType> {
+  private returnStatement(): ReturnStatement {
     const keyword = this.previous();
-    let value: Expression<LiteralType> | null = null;
+    let value: Expression | null = null;
     if (!this.check(TokenType.SEMICOLON)) {
       value = this.expression();
     }
     this.consume(TokenType.SEMICOLON, 'expect ; after return');
     return new ReturnStatement(keyword, value);
   }
-  private whileStatement(): WhileStatement<LiteralType> {
+  private whileStatement(): WhileStatement {
     this.consume(TokenType.LEFT_PAREN, 'expect ( after while');
     const expression = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect ) after while');
     const body = this.statement();
-    return new WhileStatement<LiteralType>(expression, body);
+    return new WhileStatement(expression, body);
   }
-  private ifStatement(): IfStatement<LiteralType> {
+  private ifStatement(): IfStatement {
     this.consume(TokenType.LEFT_PAREN, 'expect ( after if');
     const expression = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect ) after if');
-    const thenBranch: Statement<LiteralType> = this.statement();
-    let elseBranch: Statement<LiteralType> | null = null;
+    const thenBranch: Statement = this.statement();
+    let elseBranch: Statement | null = null;
     if (this.match(TokenType.ELSE)) {
       elseBranch = this.statement();
     }
-    return new IfStatement<LiteralType>(expression, thenBranch, elseBranch);
+    return new IfStatement(expression, thenBranch, elseBranch);
   }
-  private blockStatement(): BlockStatement<LiteralType> {
-    const statements: Statement<LiteralType>[] = [];
+  private blockStatement(): BlockStatement {
+    const statements: Statement[] = [];
     while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
       statements.push(this.declaration());
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect } after block');
-    return new BlockStatement<LiteralType>(statements);
+    return new BlockStatement(statements);
   }
-  private printStatement(): PrintStatement<LiteralType> {
+  private printStatement(): PrintStatement {
     const expr = this.expression();
     if (!this.isAtEnd()) {
       this.consume(TokenType.SEMICOLON, 'expected ; after print');
@@ -198,63 +196,63 @@ class Parser {
     if (isTestEnv() && this.match(TokenType.LINE_COMMENT)) {
       comment = this.previous();
     }
-    return new PrintStatement<LiteralType>(expr, comment);
+    return new PrintStatement(expr, comment);
   }
-  private expressionStatement(): ExpressionStatement<LiteralType> {
+  private expressionStatement(): ExpressionStatement {
     const expr = this.expression();
     if (!this.isAtEnd()) {
       this.consume(TokenType.SEMICOLON, 'expected ; after expression');
     }
-    return new ExpressionStatement<LiteralType>(expr);
+    return new ExpressionStatement(expr);
   }
-  public expression(): Expression<LiteralType> {
+  public expression(): Expression {
     return this.assignment();
   }
-  private assignment(): Expression<LiteralType> {
+  private assignment(): Expression {
     const expr = this.or();
     if (this.match(TokenType.EQUAL)) {
       const equal: Token = this.previous();
       const value = this.assignment();
       if (expr instanceof VariableExpression) {
         const name = expr.name;
-        return new AssignExpression<LiteralType>(name, value);
+        return new AssignExpression(name, value);
       }
       throw new Error(`invalid assign target: ${equal}`);
     }
     return expr;
   }
 
-  private or(): Expression<LiteralType> {
+  private or(): Expression {
     let expr = this.and();
     while (this.match(TokenType.OR)) {
       const operator = this.previous();
       const right = this.and();
-      expr = new LogicalExpression<LiteralType>(expr, operator, right);
+      expr = new LogicalExpression(expr, operator, right);
     }
     return expr;
   }
 
-  private and(): Expression<LiteralType> {
+  private and(): Expression {
     let expr = this.equality();
     while (this.match(TokenType.AND)) {
       const operator = this.previous();
       const right = this.equality();
-      expr = new LogicalExpression<LiteralType>(expr, operator, right);
+      expr = new LogicalExpression(expr, operator, right);
     }
     return expr;
   }
 
-  private equality(): Expression<LiteralType> {
-    let expr: Expression<LiteralType> = this.comparison();
+  private equality(): Expression {
+    let expr: Expression = this.comparison();
     while (this.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
       const operator: Token = this.previous();
-      const right: Expression<LiteralType> = this.comparison();
+      const right: Expression = this.comparison();
       expr = new BinaryExpression(expr, operator, right);
     }
     return expr;
   }
-  private comparison(): Expression<LiteralType> {
-    let term: Expression<LiteralType> = this.term();
+  private comparison(): Expression {
+    let term: Expression = this.term();
     while (
       this.match(
         TokenType.GREATER,
@@ -264,30 +262,30 @@ class Parser {
       )
     ) {
       const operator: Token = this.previous();
-      const right: Expression<LiteralType> = this.term();
+      const right: Expression = this.term();
       term = new BinaryExpression(term, operator, right);
     }
     return term;
   }
-  private term(): Expression<LiteralType> {
-    let factor: Expression<LiteralType> = this.factor();
+  private term(): Expression {
+    let factor: Expression = this.factor();
     while (this.match(TokenType.PLUS, TokenType.MINUS)) {
       const operator: Token = this.previous();
-      const right: Expression<LiteralType> = this.factor();
+      const right: Expression = this.factor();
       factor = new BinaryExpression(factor, operator, right);
     }
     return factor;
   }
-  private factor(): Expression<LiteralType> {
-    let unary: Expression<LiteralType> = this.unary();
+  private factor(): Expression {
+    let unary: Expression = this.unary();
     while (this.match(TokenType.STAR, TokenType.SLASH)) {
       const operator: Token = this.previous();
-      const right: Expression<LiteralType> = this.unary();
+      const right: Expression = this.unary();
       unary = new BinaryExpression(unary, operator, right);
     }
     return unary;
   }
-  private unary(): Expression<LiteralType> {
+  private unary(): Expression {
     if (
       this.match(
         TokenType.PLUS_PLUS,
@@ -302,8 +300,8 @@ class Parser {
     }
     return this.call();
   }
-  private call(): Expression<LiteralType> {
-    let expr: Expression<LiteralType> = this.primary();
+  private call(): Expression {
+    let expr: Expression = this.primary();
     while (true) {
       if (this.match(TokenType.LEFT_PAREN)) {
         expr = this.finishCall(expr);
@@ -313,8 +311,8 @@ class Parser {
     }
     return expr;
   }
-  private finishCall(callee: Expression<LiteralType>): Expression<LiteralType> {
-    const params: Expression<LiteralType>[] = [];
+  private finishCall(callee: Expression): Expression {
+    const params: Expression[] = [];
     if (!this.check(TokenType.RIGHT_PAREN)) {
       do {
         params.push(this.expression());
@@ -327,7 +325,7 @@ class Parser {
     return new CallExpression(callee, paren, params);
   }
 
-  private primary(): Expression<LiteralType> {
+  private primary(): Expression {
     if (this.match(TokenType.TRUE)) {
       return new LiteralExpression(true);
     }
@@ -344,12 +342,16 @@ class Parser {
       return new VariableExpression(this.previous());
     }
     if (this.match(TokenType.LEFT_PAREN)) {
-      const expr: Expression<LiteralType> = this.expression();
+      const expr: Expression = this.expression();
       this.consume(
         TokenType.RIGHT_PAREN,
         `parser expected: '(',actual: ${JSON.stringify(this.peek())}`,
       );
       return new GroupingExpression(expr);
+    }
+    if (isTestEnv()) {
+      while (!this.isAtEnd() && this.match(TokenType.LINE_COMMENT)) {}
+      return this.primary();
     }
 
     throw new Error(

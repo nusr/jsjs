@@ -45,35 +45,31 @@ import {
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
 
-const MAX_WHILE_COUNT = 10000000;
-
-class Interpreter
-  implements ExpressionVisitor<LiteralType>, StatementVisitor<LiteralType>
-{
+class Interpreter implements ExpressionVisitor, StatementVisitor {
   globals = new Environment(null);
   private environment = this.globals;
 
-  interpret = (list: Statement<LiteralType>[], env: Environment): void => {
+  interpret = (list: Statement[], env: Environment): void => {
     this.globals = env;
     this.environment = env;
     for (const item of list) {
       this.execute(item);
     }
   };
-  private execute = (statement: Statement<LiteralType>) => {
+  private execute = (statement: Statement) => {
     return statement.accept(this);
   };
-  private evaluate = (expr: Expression<LiteralType>): LiteralType => {
+  private evaluate = (expr: Expression): LiteralType => {
     return expr.accept(this);
   };
-  visitExpressionStatement = (statement: ExpressionStatement<LiteralType>) => {
+  visitExpressionStatement = (statement: ExpressionStatement) => {
     return this.evaluate(statement.expression);
   };
-  visitBlockStatement = (statement: BlockStatement<LiteralType>) => {
+  visitBlockStatement = (statement: BlockStatement) => {
     return this.executeBlock(statement, new Environment(this.environment));
   };
   executeBlock = (
-    statement: BlockStatement<LiteralType>,
+    statement: BlockStatement,
     environment: Environment,
   ): LiteralType => {
     const previous = this.environment;
@@ -92,18 +88,18 @@ class Interpreter
     }
     return result;
   };
-  visitClassStatement = (statement: ClassStatement<LiteralType>) => {
+  visitClassStatement = (statement: ClassStatement) => {
     console.log(statement);
     return null;
   };
-  visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
+  visitFunctionStatement = (statement: FunctionStatement) => {
     this.environment.define(
       statement.name.lexeme,
       new LoxCallable(statement, this.environment),
     );
     return null;
   };
-  visitIfStatement = (statement: IfStatement<LiteralType>) => {
+  visitIfStatement = (statement: IfStatement) => {
     if (this.isTruthy(this.evaluate(statement.condition))) {
       this.execute(statement.thenBranch);
     } else if (statement.elseBranch) {
@@ -111,9 +107,9 @@ class Interpreter
     }
     return null;
   };
-  visitPrintStatement = (statement: PrintStatement<LiteralType>) => {
+  visitPrintStatement = (statement: PrintStatement) => {
     const result: LiteralType = this.evaluate(statement.expression);
-    // console.log(result);
+    console.log(result);
     eventEmitter.emit('print', { value: result });
     if (isTestEnv() && statement.comment !== null) {
       const expect = statement.comment.lexeme;
@@ -121,22 +117,18 @@ class Interpreter
       globalExpect.add();
       if (expect === actual) {
         globalExpect.addSuccess();
-      } else {
-        throw new Error(
-          `visitPrintStatement expect: ${expect},actual: ${actual}, line: ${statement.comment.line}`,
-        );
       }
     }
     return null;
   };
-  visitReturnStatement = (statement: ReturnStatement<LiteralType>) => {
+  visitReturnStatement = (statement: ReturnStatement) => {
     if (statement.value !== null) {
       const result = this.evaluate(statement.value);
       throw new ReturnValue(result);
     }
     return null;
   };
-  visitVariableStatement = (statement: VariableStatement<LiteralType>) => {
+  visitVariableStatement = (statement: VariableStatement) => {
     let value = null;
     if (statement.initializer !== null) {
       value = this.evaluate(statement.initializer);
@@ -144,26 +136,19 @@ class Interpreter
     this.environment.define(statement.name.lexeme, value);
     return null;
   };
-  visitWhileStatement = (statement: WhileStatement<LiteralType>) => {
-    let count = 0;
+  visitWhileStatement = (statement: WhileStatement) => {
     while (this.isTruthy(this.evaluate(statement.condition))) {
       this.execute(statement.body);
-      count++;
-      if (count > MAX_WHILE_COUNT) {
-        throw new Error('over max while count');
-      }
     }
     return null;
   };
 
-  visitAssignExpression = (expr: AssignExpression<LiteralType>) => {
+  visitAssignExpression = (expr: AssignExpression) => {
     const temp: LiteralType = this.evaluate(expr.value);
     this.environment.assign(expr.name, temp);
     return temp;
   };
-  visitBinaryExpression = (
-    expr: BinaryExpression<LiteralType>,
-  ): LiteralType => {
+  visitBinaryExpression = (expr: BinaryExpression): LiteralType => {
     const left: LiteralType = this.evaluate(expr.left);
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
@@ -208,7 +193,7 @@ class Interpreter
     }
     return null;
   };
-  visitCallExpression = (expr: CallExpression<LiteralType>): LiteralType => {
+  visitCallExpression = (expr: CallExpression): LiteralType => {
     const callee: LiteralType = this.evaluate(expr.callee);
     const argumentList: LiteralType[] = [];
     for (let item of expr.argumentList) {
@@ -219,13 +204,13 @@ class Interpreter
     }
     return callee.call(this, argumentList);
   };
-  visitGetExpression = (expr: GetExpression<LiteralType>) => {
+  visitGetExpression = (expr: GetExpression) => {
     return this.parenthesize(expr.name.lexeme, expr.object);
   };
-  visitSetExpression = (expr: SetExpression<LiteralType>) => {
+  visitSetExpression = (expr: SetExpression) => {
     return this.parenthesize(expr.name.lexeme, expr.object, expr.value);
   };
-  visitLogicalExpression = (expr: LogicalExpression<LiteralType>) => {
+  visitLogicalExpression = (expr: LogicalExpression) => {
     const left = this.evaluate(expr.left);
     if (expr.operator.type === TokenType.OR) {
       if (this.isTruthy(left)) {
@@ -238,26 +223,22 @@ class Interpreter
     }
     return this.evaluate(expr.right);
   };
-  visitSuperExpression = (expr: SuperExpression<LiteralType>) => {
+  visitSuperExpression = (expr: SuperExpression) => {
     return this.parenthesize(expr.keyword.lexeme, expr.value);
   };
-  visitThisExpression = (expr: ThisExpression<LiteralType>) => {
+  visitThisExpression = (expr: ThisExpression) => {
     return this.parenthesize(expr.keyword.lexeme);
   };
-  visitVariableExpression = (expr: VariableExpression<LiteralType>) => {
+  visitVariableExpression = (expr: VariableExpression) => {
     return this.environment.get(expr.name);
   };
-  visitGroupingExpression = (
-    expr: GroupingExpression<LiteralType>,
-  ): LiteralType => {
+  visitGroupingExpression = (expr: GroupingExpression): LiteralType => {
     return this.evaluate(expr.expression);
   };
-  visitLiteralExpression = (
-    expr: LiteralExpression<LiteralType>,
-  ): LiteralType => {
+  visitLiteralExpression = (expr: LiteralExpression): LiteralType => {
     return expr.value;
   };
-  visitUnaryExpression = (expr: UnaryExpression<LiteralType>): LiteralType => {
+  visitUnaryExpression = (expr: UnaryExpression): LiteralType => {
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
       case TokenType.MINUS:
@@ -268,7 +249,7 @@ class Interpreter
       case TokenType.MINUS_MINUS: {
         assert(typeof right === 'number', 'must be number');
         assert(
-          expr.right instanceof VariableExpression<LiteralType>,
+          expr.right instanceof VariableExpression,
           'Invalid left-hand side expression in prefix operation',
         );
         let result = right;
@@ -284,7 +265,7 @@ class Interpreter
     return null;
   };
 
-  print = (expr: Expression<LiteralType>) => {
+  print = (expr: Expression) => {
     return expr.accept(this);
   };
   isEqual(left: LiteralType, right: LiteralType) {
@@ -302,10 +283,7 @@ class Interpreter
     }
     return Boolean(value);
   }
-  private parenthesize(
-    name: string,
-    ...exprs: Expression<LiteralType>[]
-  ): LiteralType {
+  private parenthesize(name: string, ...exprs: Expression[]): LiteralType {
     const list: LiteralType[] = [];
     for (let expr of exprs) {
       list.push(expr.accept(this));

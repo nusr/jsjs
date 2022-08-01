@@ -1,167 +1,163 @@
 import type Token from './token';
 import type { LiteralType } from './type';
-export interface ExpressionVisitor<T> {
-  visitAssignExpression: (expression: AssignExpression<T>) => T;
-  visitBinaryExpression: (expression: BinaryExpression<T>) => T;
-  visitCallExpression: (expression: CallExpression<T>) => T;
-  visitGetExpression: (expression: GetExpression<T>) => T;
-  visitSetExpression: (expression: SetExpression<T>) => T;
-  visitGroupingExpression: (expression: GroupingExpression<T>) => T;
-  visitLiteralExpression: (expression: LiteralExpression<T>) => T;
-  visitLogicalExpression: (expression: LogicalExpression<T>) => T;
-  visitSuperExpression: (expression: SuperExpression<T>) => T;
-  visitThisExpression: (expression: ThisExpression<T>) => T;
-  visitUnaryExpression: (expression: UnaryExpression<T>) => T;
-  visitVariableExpression: (expression: VariableExpression<T>) => T;
+export interface ExpressionVisitor {
+  visitAssignExpression: (expression: AssignExpression) => LiteralType;
+  visitBinaryExpression: (expression: BinaryExpression) => LiteralType;
+  visitCallExpression: (expression: CallExpression) => LiteralType;
+  visitGetExpression: (expression: GetExpression) => LiteralType;
+  visitSetExpression: (expression: SetExpression) => LiteralType;
+  visitGroupingExpression: (expression: GroupingExpression) => LiteralType;
+  visitLiteralExpression: (expression: LiteralExpression) => LiteralType;
+  visitLogicalExpression: (expression: LogicalExpression) => LiteralType;
+  visitSuperExpression: (expression: SuperExpression) => LiteralType;
+  visitThisExpression: (expression: ThisExpression) => LiteralType;
+  visitUnaryExpression: (expression: UnaryExpression) => LiteralType;
+  visitVariableExpression: (expression: VariableExpression) => LiteralType;
 }
-export abstract class Expression<T> {
-  abstract accept(visitor: ExpressionVisitor<T>): T;
+export abstract class Expression {
+  abstract accept(visitor: ExpressionVisitor): LiteralType;
 }
-export class AssignExpression<T> extends Expression<T> {
+export class AssignExpression extends Expression {
   readonly name: Token;
-  readonly value: Expression<T>;
-  constructor(name: Token, value: Expression<T>) {
+  readonly value: Expression;
+  constructor(name: Token, value: Expression) {
     super();
     this.name = name;
     this.value = value;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitAssignExpression(this);
   }
 }
-export class BinaryExpression<T> extends Expression<T> {
-  readonly left: Expression<T>;
+export class BinaryExpression extends Expression {
+  readonly left: Expression;
   readonly operator: Token;
-  readonly right: Expression<T>;
-  constructor(left: Expression<T>, operator: Token, right: Expression<T>) {
+  readonly right: Expression;
+  constructor(left: Expression, operator: Token, right: Expression) {
     super();
     this.left = left;
     this.operator = operator;
     this.right = right;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitBinaryExpression(this);
   }
 }
-export class CallExpression<T> extends Expression<T> {
-  readonly callee: Expression<T>;
+export class CallExpression extends Expression {
+  readonly callee: Expression;
   readonly paren: Token;
-  readonly argumentList: Expression<T>[];
-  constructor(
-    callee: Expression<T>,
-    paren: Token,
-    argumentList: Expression<T>[],
-  ) {
+  readonly argumentList: Expression[];
+  constructor(callee: Expression, paren: Token, argumentList: Expression[]) {
     super();
     this.callee = callee;
     this.paren = paren;
     this.argumentList = argumentList;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitCallExpression(this);
   }
 }
-export class GetExpression<T> extends Expression<T> {
-  readonly object: Expression<T>;
+export class GetExpression extends Expression {
+  readonly object: Expression;
   readonly name: Token;
-  constructor(object: Expression<T>, name: Token) {
+  constructor(object: Expression, name: Token) {
     super();
     this.object = object;
     this.name = name;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGetExpression(this);
   }
 }
-export class SetExpression<T> extends Expression<T> {
-  readonly object: Expression<T>;
+export class SetExpression extends Expression {
+  readonly object: Expression;
   readonly name: Token;
-  readonly value: Expression<T>;
-  constructor(object: Expression<T>, name: Token, value: Expression<T>) {
+  readonly value: Expression;
+  constructor(object: Expression, name: Token, value: Expression) {
     super();
     this.object = object;
     this.name = name;
     this.value = value;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitSetExpression(this);
   }
 }
-export class GroupingExpression<T> extends Expression<T> {
-  readonly expression: Expression<T>;
-  constructor(expression: Expression<T>) {
+export class GroupingExpression extends Expression {
+  readonly expression: Expression;
+  constructor(expression: Expression) {
     super();
     this.expression = expression;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGroupingExpression(this);
   }
 }
-export class LiteralExpression<T> extends Expression<T> {
+export class LiteralExpression extends Expression {
   readonly value: LiteralType;
   constructor(value: LiteralType) {
     super();
     this.value = value;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitLiteralExpression(this);
   }
 }
-export class LogicalExpression<T> extends Expression<T> {
-  readonly left: Expression<T>;
+export class LogicalExpression extends Expression {
+  readonly left: Expression;
   readonly operator: Token;
-  readonly right: Expression<T>;
-  constructor(left: Expression<T>, operator: Token, right: Expression<T>) {
+  readonly right: Expression;
+  constructor(left: Expression, operator: Token, right: Expression) {
     super();
     this.left = left;
     this.operator = operator;
     this.right = right;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitLogicalExpression(this);
   }
 }
-export class SuperExpression<T> extends Expression<T> {
+export class SuperExpression extends Expression {
   readonly keyword: Token;
-  readonly value: Expression<T>;
-  constructor(keyword: Token, value: Expression<T>) {
+  readonly value: Expression;
+  constructor(keyword: Token, value: Expression) {
     super();
     this.keyword = keyword;
     this.value = value;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitSuperExpression(this);
   }
 }
-export class ThisExpression<T> extends Expression<T> {
+export class ThisExpression extends Expression {
   readonly keyword: Token;
   constructor(keyword: Token) {
     super();
     this.keyword = keyword;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitThisExpression(this);
   }
 }
-export class UnaryExpression<T> extends Expression<T> {
+export class UnaryExpression extends Expression {
   readonly operator: Token;
-  readonly right: Expression<T>;
-  constructor(operator: Token, right: Expression<T>) {
+  readonly right: Expression;
+  constructor(operator: Token, right: Expression) {
     super();
     this.operator = operator;
     this.right = right;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitUnaryExpression(this);
   }
 }
-export class VariableExpression<T> extends Expression<T> {
+export class VariableExpression extends Expression {
   readonly name: Token;
   constructor(name: Token) {
     super();
     this.name = name;
   }
-  accept(visitor: ExpressionVisitor<T>): T {
+  accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitVariableExpression(this);
   }
 }

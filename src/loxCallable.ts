@@ -4,17 +4,14 @@ import type { FunctionStatement } from './statement';
 import Environment from './environment';
 
 class LoxCallable implements BaseCallable {
-  private readonly declaration: FunctionStatement<LiteralType>;
+  private readonly declaration: FunctionStatement;
   private readonly closure: Environment;
-  constructor(
-    declaration: FunctionStatement<LiteralType>,
-    closure: Environment,
-  ) {
+  constructor(declaration: FunctionStatement, closure: Environment) {
     this.declaration = declaration;
     this.closure = closure;
   }
   call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
-    const env = new Environment(interpreter.globals);
+    const env = new Environment(this.closure);
     for (let i = 0; i < this.declaration.params.length; i++) {
       env.define(this.declaration.params[i]?.lexeme!, argumentList[i]);
     }
