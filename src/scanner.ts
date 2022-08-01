@@ -100,10 +100,18 @@ class Scanner {
         this.addToken(TokenType.DOT);
         break;
       case '-':
-        this.addToken(TokenType.MINUS);
+        if (this.match('+')) {
+          this.addToken(TokenType.MINUS_MINUS);
+        } else {
+          this.addToken(TokenType.MINUS);
+        }
         break;
       case '+':
-        this.addToken(TokenType.PLUS);
+        if (this.match('+')) {
+          this.addToken(TokenType.PLUS_PLUS);
+        } else {
+          this.addToken(TokenType.PLUS);
+        }
         break;
       case ';':
         this.addToken(TokenType.SEMICOLON);

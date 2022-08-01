@@ -7,7 +7,9 @@ export enum TokenType {
   COMMA, // ,
   DOT, // .
   MINUS, // -
+  MINUS_MINUS, // --
   PLUS, // +
+  PLUS_PLUS, // ++
   SEMICOLON, // ;
   SLASH, // /
   STAR, // *
@@ -45,6 +47,6 @@ export enum TokenType {
   VAR, // variable
   WHILE,
   DO_WHILE, // do while
-  EOF, // end
   LINE_COMMENT,
+  EOF, // end
 }

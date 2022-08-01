@@ -131,7 +131,7 @@ class Parser {
     const body = this.statement();
     const list: Statement<LiteralType>[] = [body];
     if (end !== null) {
-      list.push(new ExpressionStatement<LinkStyle>(end));
+      list.push(new ExpressionStatement<LiteralType>(end));
     }
     const whileBody = new BlockStatement(list);
     const whileStatement = new WhileStatement(condition, whileBody);
@@ -288,7 +288,14 @@ class Parser {
     return unary;
   }
   private unary(): Expression<LiteralType> {
-    if (this.match(TokenType.MINUS, TokenType.BANG)) {
+    if (
+      this.match(
+        TokenType.PLUS_PLUS,
+        TokenType.MINUS_MINUS,
+        TokenType.MINUS,
+        TokenType.BANG,
+      )
+    ) {
       const operator: Token = this.previous();
       const value = this.unary();
       return new UnaryExpression(operator, value);

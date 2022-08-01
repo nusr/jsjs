@@ -39,7 +39,24 @@ export function getVersion(): string {
   return process.env.VERSION;
 }
 
-export function isTestEnv(): boolean {
+export function getNodeEnv(): string {
   // @ts-ignore
-  return process.env.NODE_ENV === 'test';
+  return process.env.NODE_ENV;
+}
+
+export function isTestEnv(): boolean {
+  return getNodeEnv()=== 'test';
+}
+
+export function assert(
+  condition: boolean,
+  message = 'assert error',
+): asserts condition {
+  if (!condition) {
+    if (getNodeEnv() === 'production') {
+      console.error(message);
+      return;
+    }
+    throw new Error(message);
+  }
 }

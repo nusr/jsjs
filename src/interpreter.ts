@@ -1,6 +1,6 @@
 import type { LiteralType } from './type';
 
-import type {
+import {
   BinaryExpression,
   GroupingExpression,
   LiteralExpression,
@@ -36,7 +36,12 @@ import eventEmitter from './eventEmitter';
 import Environment from './environment';
 import { RuntimeError } from './error';
 import globalExpect from './expect';
-import { convertLiteralTypeToString, isBaseCallable, isTestEnv } from './util';
+import {
+  convertLiteralTypeToString,
+  isBaseCallable,
+  isTestEnv,
+  assert,
+} from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
 
@@ -92,7 +97,10 @@ class Interpreter
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement<LiteralType>) => {
-    this.environment.define(statement.name.lexeme, new LoxCallable(statement, this.environment));
+    this.environment.define(
+      statement.name.lexeme,
+      new LoxCallable(statement, this.environment),
+    );
     return null;
   };
   visitIfStatement = (statement: IfStatement<LiteralType>) => {
@@ -114,7 +122,9 @@ class Interpreter
       if (expect === actual) {
         globalExpect.addSuccess();
       } else {
-        throw new Error(`visitPrintStatement expect: ${expect},actual: ${actual}, line: ${statement.comment.line}`)
+        throw new Error(
+          `visitPrintStatement expect: ${expect},actual: ${actual}, line: ${statement.comment.line}`,
+        );
       }
     }
     return null;
@@ -140,7 +150,7 @@ class Interpreter
       this.execute(statement.body);
       count++;
       if (count > MAX_WHILE_COUNT) {
-        throw new Error('over max while count')
+        throw new Error('over max while count');
       }
     }
     return null;
@@ -254,6 +264,22 @@ class Interpreter
         return -Number(right);
       case TokenType.BANG:
         return !this.isTruthy(right);
+      case TokenType.PLUS_PLUS:
+      case TokenType.MINUS_MINUS: {
+        assert(typeof right === 'number', 'must be number');
+        assert(
+          expr.right instanceof VariableExpression<LiteralType>,
+          'Invalid left-hand side expression in prefix operation',
+        );
+        let result = right;
+        if (expr.operator.type === TokenType.MINUS_MINUS) {
+          result--;
+        } else {
+          result++;
+        }
+        this.environment.assign(expr.right.name, result);
+        return result;
+      }
     }
     return null;
   };

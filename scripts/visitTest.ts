@@ -32,7 +32,7 @@ function runFile(filePath) {
 }
 
 function checkEqual(oldData, newData, excludeKeys) {
-  if (!oldData) {
+  if (!oldData || !newData) {
     return false;
   }
   for (const key of Object.keys(oldData)) {
@@ -52,18 +52,22 @@ function init() {
   const fileList = getAllFiles(dirPath);
   let total = 0;
   let fail = 0;
-  const blackList = ['benchmark'];
+  const blackList = ['benchmark', 'return_inside'];
   for (const item of fileList) {
     if (blackList.some((v) => item.includes(v))) {
       console.log('skip file path: ', item);
       continue;
     }
+    let t = process.hrtime();
     try {
       runFile(item);
     } catch (error) {
       console.log(item, error);
       fail++;
     }
+    t = process.hrtime(t);
+    const ms = t[0] * 1e3 + Math.floor(t[1] / 1e6);
+    console.log(`file path: ${item}, time: ${ms}ms`);
     total++;
   }
   const result: ResultItem = {
