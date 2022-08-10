@@ -44,6 +44,7 @@ import {
 } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
+import { LoxClass } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   globals = new Environment(null);
@@ -89,7 +90,9 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return result;
   };
   visitClassStatement = (statement: ClassStatement) => {
-    console.log(statement);
+    this.environment.define(statement.name.lexeme, null);
+    const instance = new LoxClass(statement.name.lexeme);
+    this.environment.assign(statement.name, instance)
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement) => {
@@ -108,16 +111,14 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return null;
   };
   visitPrintStatement = (statement: PrintStatement) => {
-    const result: LiteralType = this.evaluate(statement.expression);
+    let result: LiteralType = this.evaluate(statement.expression);
+    if (result && result.toString && typeof result.toString === 'function') {
+      result = result.toString();
+    }
     console.log(result);
     eventEmitter.emit('print', { value: result });
-    if (isTestEnv() && statement.comment !== null) {
-      const expect = statement.comment.lexeme;
-      const actual = convertLiteralTypeToString(result);
-      globalExpect.add();
-      if (expect === actual) {
-        globalExpect.addSuccess();
-      }
+    if (isTestEnv()) {
+      globalExpect.assert(convertLiteralTypeToString(result));
     }
     return null;
   };

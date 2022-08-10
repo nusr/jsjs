@@ -3,6 +3,7 @@ import { TokenType } from './tokenType';
 import { defaultErrorHandler } from './error';
 import type { LiteralType } from './type';
 import { isTestEnv } from './util';
+import globalExpect from './expect';
 const EMPTY_DATA = '\0';
 
 class Scanner {
@@ -146,9 +147,7 @@ class Scanner {
             if (text.includes('expect:')) {
               const t = text.split(':').pop() || '';
               if (t.trim()) {
-                this.tokens.push(
-                  new Token(TokenType.LINE_COMMENT, t.trim(), null, this.line),
-                );
+                globalExpect.addCase(t.trim());
               }
             }
           }

@@ -1,6 +1,6 @@
 import type Token from './token';
 import type { Expression, VariableExpression } from './expression';
-import type { LiteralType } from './type';
+import type { LiteralType } from './type';;
 export interface StatementVisitor {
   visitBlockStatement: (statement: BlockStatement) => LiteralType;
   visitClassStatement: (statement: ClassStatement) => LiteralType;
@@ -27,13 +27,9 @@ export class BlockStatement extends Statement {
 }
 export class ClassStatement extends Statement {
   readonly name: Token;
-  readonly superClass: VariableExpression;
+  readonly superClass: VariableExpression | null;
   readonly methods: FunctionStatement[];
-  constructor(
-    name: Token,
-    superClass: VariableExpression,
-    methods: FunctionStatement[],
-  ) {
+  constructor(name: Token, superClass: VariableExpression | null, methods: FunctionStatement[]) {
     super();
     this.name = name;
     this.superClass = superClass;
@@ -71,11 +67,7 @@ export class IfStatement extends Statement {
   readonly condition: Expression;
   readonly thenBranch: Statement;
   readonly elseBranch: Statement | null;
-  constructor(
-    condition: Expression,
-    thenBranch: Statement,
-    elseBranch: Statement | null,
-  ) {
+  constructor(condition: Expression, thenBranch: Statement, elseBranch: Statement | null) {
     super();
     this.condition = condition;
     this.thenBranch = thenBranch;
@@ -87,11 +79,9 @@ export class IfStatement extends Statement {
 }
 export class PrintStatement extends Statement {
   readonly expression: Expression;
-  readonly comment: Token | null;
-  constructor(expression: Expression, comment: Token | null) {
+  constructor(expression: Expression) {
     super();
     this.expression = expression;
-    this.comment = comment;
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitPrintStatement(this);
@@ -133,3 +123,4 @@ export class WhileStatement extends Statement {
     return visitor.visitWhileStatement(this);
   }
 }
+  

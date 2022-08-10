@@ -9,11 +9,11 @@ import {
   UnaryExpression,
   VariableExpression,
 } from './expression';
-import type { LiteralType } from './type';
 import { TokenType } from './tokenType';
 import type Token from './token';
 import {
   BlockStatement,
+  ClassStatement,
   ExpressionStatement,
   FunctionStatement,
   IfStatement,
@@ -23,8 +23,6 @@ import {
   VariableStatement,
   WhileStatement,
 } from './statement';
-
-import { isTestEnv } from './util';
 
 class Parser {
   private readonly tokens: Token[];
@@ -44,13 +42,27 @@ class Parser {
       return this.varStatement();
     }
 
+    if (this.match(TokenType.CLASS)) {
+      return this.classStatement();
+    }
+
     if (this.match(TokenType.FUN)) {
-      return this.funcStatement();
+      return this.funcStatement('function');
     }
 
     return this.statement();
   }
-  private varStatement(): Statement {
+  private classStatement(): ClassStatement {
+    const name = this.consume(TokenType.IDENTIFIER, 'expect class name');
+    this.consume(TokenType.lEFT_BRACE, 'expect {');
+    let methods: FunctionStatement[] = [];
+    while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
+      methods.push(this.funcStatement('method'));
+    }
+    this.consume(TokenType.RIGHT_BRACE, 'expect }');
+    return new ClassStatement(name, null, methods);
+  }
+  private varStatement(): VariableStatement {
     const name: Token = this.consume(
       TokenType.IDENTIFIER,
       'expect identifier after var',
@@ -62,12 +74,12 @@ class Parser {
     this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
     return new VariableStatement(name, initializer);
   }
-  private funcStatement(): Statement {
+  private funcStatement(name: string): FunctionStatement {
     const functionName: Token = this.consume(
       TokenType.IDENTIFIER,
-      'expect identifier after func',
+      `expect identifier after ${name}`,
     );
-    this.consume(TokenType.LEFT_PAREN, 'expect ( after function name');
+    this.consume(TokenType.LEFT_PAREN, `expect ( after ${name}`);
     const params: Token[] = [];
     if (!this.check(TokenType.RIGHT_PAREN)) {
       do {
@@ -76,7 +88,7 @@ class Parser {
         );
       } while (this.match(TokenType.COMMA));
     }
-    this.consume(TokenType.RIGHT_PAREN, 'expect ) after function name');
+    this.consume(TokenType.RIGHT_PAREN, `expect ) after ${name}`);
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
     const block = this.blockStatement();
     return new FunctionStatement(functionName, block, params);
@@ -192,11 +204,7 @@ class Parser {
     if (!this.isAtEnd()) {
       this.consume(TokenType.SEMICOLON, 'expected ; after print');
     }
-    let comment: Token | null = null;
-    if (isTestEnv() && this.match(TokenType.LINE_COMMENT)) {
-      comment = this.previous();
-    }
-    return new PrintStatement(expr, comment);
+    return new PrintStatement(expr);
   }
   private expressionStatement(): ExpressionStatement {
     const expr = this.expression();
@@ -348,10 +356,6 @@ class Parser {
         `parser expected: '(',actual: ${JSON.stringify(this.peek())}`,
       );
       return new GroupingExpression(expr);
-    }
-    if (isTestEnv()) {
-      while (!this.isAtEnd() && this.match(TokenType.LINE_COMMENT)) {}
-      return this.primary();
     }
 
     throw new Error(

@@ -73,11 +73,11 @@ defineAST(
   'Statement',
   [
     `Block # statements: ${StatementName}[]`,
-    `Class # name: Token, superClass: VariableExpression, methods: FunctionStatement[]`,
+    `Class # name: Token, superClass: VariableExpression | null, methods: FunctionStatement[]`,
     `Expression # expression: ${expressionName}`,
     `Function # name: Token, body: BlockStatement, params: Token[]`,
     `If # condition: ${expressionName}, thenBranch: ${StatementName}, elseBranch: ${StatementName} | null`,
-    `Print # expression: ${expressionName}, comment: Token | null`,
+    `Print # expression: ${expressionName}`,
     `Return # keyword: Token, value: ${expressionName} | null`,
     `Variable # name: Token, initializer: ${expressionName} | null`,
     `While # condition: ${expressionName}, body: ${StatementName}`,

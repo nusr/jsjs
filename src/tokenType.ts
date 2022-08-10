@@ -47,6 +47,5 @@ export enum TokenType {
   VAR, // variable
   WHILE,
   DO_WHILE, // do while
-  LINE_COMMENT,
   EOF, // end
 }

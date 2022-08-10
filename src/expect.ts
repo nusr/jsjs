@@ -1,11 +1,18 @@
 class Expect {
   total = 0;
   success = 0;
-  add() {
+  private list: string[] = [];
+  assert(actual: string) {
     this.total++;
+    if (this.list.length > 0) {
+      const expect = this.list.pop();
+      if (actual === expect) {
+        this.success++;
+      }
+    }
   }
-  addSuccess() {
-    this.success++;
+  addCase(expect: string) {
+    this.list.unshift(expect);
   }
 }
 const globalExpect = new Expect();
