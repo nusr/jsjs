@@ -44,7 +44,7 @@ import {
 } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
-import { LoxClass } from './class';
+import { LoxClass, LoxInstance } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   globals = new Environment(null);
@@ -92,7 +92,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   visitClassStatement = (statement: ClassStatement) => {
     this.environment.define(statement.name.lexeme, null);
     const instance = new LoxClass(statement.name.lexeme);
-    this.environment.assign(statement.name, instance)
+    this.environment.assign(statement.name, instance);
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement) => {
@@ -206,10 +206,20 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return callee.call(this, argumentList);
   };
   visitGetExpression = (expr: GetExpression) => {
-    return this.parenthesize(expr.name.lexeme, expr.object);
+    const temp = this.evaluate(expr.object);
+    if (temp instanceof LoxInstance) {
+      return temp.get(expr.name);
+    }
+    throw new Error('error GetExpression');
   };
   visitSetExpression = (expr: SetExpression) => {
-    return this.parenthesize(expr.name.lexeme, expr.object, expr.value);
+    const temp = this.evaluate(expr.object);
+    if (!(temp instanceof LoxInstance)) {
+      return new Error('error SetExpression');
+    }
+    const value = this.evaluate(expr.value);
+    temp.set(expr.name, value);
+    return value;
   };
   visitLogicalExpression = (expr: LogicalExpression) => {
     const left = this.evaluate(expr.left);

@@ -3,9 +3,11 @@ import {
   BinaryExpression,
   CallExpression,
   Expression,
+  GetExpression,
   GroupingExpression,
   LiteralExpression,
   LogicalExpression,
+  SetExpression,
   UnaryExpression,
   VariableExpression,
 } from './expression';
@@ -224,6 +226,8 @@ class Parser {
       if (expr instanceof VariableExpression) {
         const name = expr.name;
         return new AssignExpression(name, value);
+      } else if (expr instanceof GetExpression) {
+        return new SetExpression(expr, expr.name, value);
       }
       throw new Error(`invalid assign target: ${equal}`);
     }
@@ -313,7 +317,11 @@ class Parser {
     while (true) {
       if (this.match(TokenType.LEFT_PAREN)) {
         expr = this.finishCall(expr);
-      } else {
+      } else if (this.match(TokenType.DOT)) {
+        const name = this.consume(TokenType.IDENTIFIER, "expect name");
+        expr = new GetExpression(expr, name)
+      }
+      else{
         break;
       }
     }
