@@ -16,7 +16,10 @@ function init() {
 }
 
 function runFile(filePath: string) {
-    const temp = path.resolve(process.cwd(), filePath);
+    let temp = filePath;
+    if (!path.isAbsolute(filePath)) {
+        temp = path.resolve(process.cwd(), filePath);
+    }
     fs.readFile(temp, 'utf-8', (error, data) => {
         if (error) {
             defaultErrorHandler.error(0, error.stack || error.message);
