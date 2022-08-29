@@ -1,17 +1,15 @@
 import path from 'path';
 import fs from 'fs';
 import jsonData from './test.json';
+import { execFileSync } from 'child_process';
 
 type ResultItem = {
   time: string;
   total: number;
   fail: number;
-  expectTotal: number;
-  expectFail: number;
 };
 
 const jsonFilePath = path.join(process.cwd(), 'scripts', 'test.json');
-const { Lox, globalExpect, Environment } = require('../lib/lox.umd');
 
 const getAllFiles = (dirPath: string, fileList: string[] = [], index = 0) => {
   const files = fs.readdirSync(dirPath);
@@ -24,13 +22,6 @@ const getAllFiles = (dirPath: string, fileList: string[] = [], index = 0) => {
   }
   return fileList;
 };
-
-function runFile(filePath) {
-  const temp = path.resolve(process.cwd(), filePath);
-  const data = fs.readFileSync(temp, 'utf-8');
-  return new Lox().run(data, new Environment(null));
-}
-
 function checkEqual(oldData, newData, excludeKeys) {
   if (!oldData || !newData) {
     return false;
@@ -48,34 +39,29 @@ function checkEqual(oldData, newData, excludeKeys) {
 
 function init() {
   const testDir = process.argv[2] || 'test';
-  const dirPath = path.join(process.cwd(), testDir);
+  const prefix = process.cwd();
+  const dirPath = path.join(prefix, testDir);
   const fileList = getAllFiles(dirPath);
-  let total = 0;
   let fail = 0;
-  const blackList = ['benchmark', 'return_inside'];
-  for (const item of fileList) {
-    if (blackList.some((v) => item.includes(v))) {
-      console.log('skip file path: ', item);
-      continue;
-    }
-    let t = process.hrtime();
+  for (let i = 0; i < fileList.length; i++) {
+    const item = fileList[i];
     try {
-      runFile(item);
+      execFileSync('node', [`${prefix}/scripts/bin.js`, item], {
+        timeout: 1000,
+        env: {
+          ...process.env,
+          NODE_ENV: 'test',
+        }
+      });
     } catch (error) {
-      console.log(item, error);
       fail++;
+      console.log('fail file path: ', item);
     }
-    t = process.hrtime(t);
-    const ms = t[0] * 1e3 + Math.floor(t[1] / 1e6);
-    console.log(`file path: ${item}, time: ${ms}ms`);
-    total++;
   }
   const result: ResultItem = {
     time: new Date().toLocaleString('en'),
-    total,
+    total: fileList.length,
     fail,
-    expectTotal: globalExpect.total,
-    expectFail: globalExpect.total - globalExpect.success,
   };
   console.log('old: ', jsonData[0]);
   console.log('new: ', result);
