@@ -1,5 +1,5 @@
 import { build, BuildOptions, BuildResult, analyzeMetafile } from 'esbuild';
-import packageJson from './package.json';
+import packageJson from '../package.json';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -7,7 +7,6 @@ const envConfig = getEnv();
 const productionMode = 'production';
 const nodeEnv = envConfig.NODE_ENV || productionMode;
 const isDev = nodeEnv === 'development';
-console.log('NODE_ENV', nodeEnv);
 const globalName = '__export__';
 const licenseText = '';
 
@@ -68,8 +67,21 @@ function buildUMD(filePath: string) {
   });
 }
 
+/**
+ * build esm
+ * @param { string } filePath
+ */
+function buildNode(filePath: string) {
+  return buildBrowserConfig({
+    outfile: filePath,
+    format: 'cjs',
+    platform: 'node',
+    entryPoints: ['src/node.ts']
+  });
+}
+
 async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
-  const minify = options.outfile?.includes('min');
+  const minify = options.outfile?.includes('min.');
   const result = await build({
     bundle: true,
     watch: isDev,
@@ -125,30 +137,24 @@ function buildTestData() {
   );
 }
 
-function buildBin() {
-  const text = fs.readFileSync(
-    path.join(process.cwd(), 'scripts', 'bin.js'),
-    'utf-8',
-  );
-  fs.writeFileSync(
-    path.join(process.cwd(), 'bin/lox'),
-    '#!/usr/bin/env node\n' + text,
-    'utf-8',
-  );
-}
-
 async function main() {
+  fs.rmdir(path.join(process.cwd(), 'lib'), { recursive: true }, (error) => {
+    if (error) {
+      console.log(error);
+    }
+  });  
   if (isDev) {
     return buildUMD(packageJson.main);
   }
   buildTestData();
-  buildBin();
   return await Promise.all([
     buildUMD('assets/lox.umd.js'),
     buildESM(packageJson.module),
     buildUMD(packageJson.main),
     buildESM(packageJson.module.replace('js', 'min.js')),
     buildUMD(packageJson.main.replace('js', 'min.js')),
+    buildNode(packageJson.main.replace('umd', 'node')),
+    buildNode(packageJson.main.replace('umd', 'node.min')),
   ]);
 }
 
