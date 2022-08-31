@@ -7,7 +7,7 @@ import globalExpect from './expect';
 const EMPTY_DATA = '\0';
 
 class Scanner {
-  readonly source: string;
+  readonly source: string[];
   readonly tokens: Token[] = [];
   static readonly keywordMap: Map<string, TokenType> = new Map([
     ['class', TokenType.CLASS],
@@ -30,7 +30,7 @@ class Scanner {
   private line = 1;
 
   constructor(text: string) {
-    this.source = text;
+    this.source = [...text];
   }
   scanTokens = () => {
     while (!this.isAtEnd()) {
@@ -46,12 +46,14 @@ class Scanner {
   private addToken(type: TokenType) {
     this.addOneToken(type, null);
   }
+  private substr(start = this.start, end = this.current): string {
+    return this.source.slice(start, end).join('')
+  }
   private addOneToken(type: TokenType, literal: LiteralType) {
-    const text = this.source.substring(this.start, this.current);
-    this.tokens.push(new Token(type, text, literal, this.line));
+    this.tokens.push(new Token(type, this.substr(), literal, this.line));
   }
   private getChar(index: number) {
-    return this.source.charAt(index);
+    return this.source[index] as string;
   }
   private peek() {
     if (this.isAtEnd()) {
@@ -143,7 +145,7 @@ class Scanner {
             this.advance();
           }
           if (isTestEnv()) {
-            const text = this.source.substring(this.start, this.current);
+            const text = this.substr()
             if (text.includes('expect:')) {
               const t = text.split(':').pop() || '';
               if (t.trim()) {
@@ -221,7 +223,7 @@ class Scanner {
       return;
     }
     this.advance();
-    const value = this.source.substring(this.start + 1, this.current - 1);
+    const value = this.substr(this.start + 1, this.current - 1);
     this.addOneToken(TokenType.STRING, value);
   }
   private number() {
@@ -234,14 +236,14 @@ class Scanner {
         this.advance();
       }
     }
-    const value = this.source.substring(this.start, this.current);
+    const value = this.substr()
     this.addOneToken(TokenType.NUMBER, parseFloat(value));
   }
   private identifier() {
     while (this.isAlphaNumeric(this.peek())) {
       this.advance();
     }
-    const text = this.source.substring(this.start, this.current);
+    const text = this.substr()
     const temp = Scanner.keywordMap.get(text);
     let type: TokenType = TokenType.IDENTIFIER;
     if (temp !== undefined) {
