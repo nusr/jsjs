@@ -46,7 +46,7 @@ function init() {
   for (let i = 0; i < fileList.length; i++) {
     const item = fileList[i];
     try {
-      execFileSync('node', [`${prefix}/scripts/bin.js`, item], {
+      execFileSync('node', [`${prefix}/lib/lox.node.js`, item], {
         timeout: 1000,
         env: {
           ...process.env,
