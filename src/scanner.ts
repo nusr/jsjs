@@ -1,14 +1,12 @@
 import Token from './token';
 import { TokenType } from './tokenType';
-import { defaultErrorHandler } from './error';
 import type { LiteralType } from './type';
-import { isTestEnv } from './util';
-import globalExpect from './expect';
 const EMPTY_DATA = '\0';
 
 class Scanner {
   readonly source: string[];
   readonly tokens: Token[] = [];
+  readonly errors: string[] = [];
   static readonly keywordMap: Map<string, TokenType> = new Map([
     ['class', TokenType.CLASS],
     ['else', TokenType.ELSE],
@@ -40,6 +38,10 @@ class Scanner {
     this.tokens.push(new Token(TokenType.EOF, '', null, this.line));
     return this.tokens;
   };
+  private addError = (line: number, where: string, message: string) => {
+    const msg = `[line ${line}] Error ${where} : ${message} `;
+    this.errors.push(msg);
+  };
   private isAtEnd() {
     return this.current >= this.source.length;
   }
@@ -47,7 +49,7 @@ class Scanner {
     this.addOneToken(type, null);
   }
   private substr(start = this.start, end = this.current): string {
-    return this.source.slice(start, end).join('')
+    return this.source.slice(start, end).join('');
   }
   private addOneToken(type: TokenType, literal: LiteralType) {
     this.tokens.push(new Token(type, this.substr(), literal, this.line));
@@ -144,15 +146,15 @@ class Scanner {
           while (this.peek() !== '\n' && !this.isAtEnd()) {
             this.advance();
           }
-          if (isTestEnv()) {
-            const text = this.substr()
-            if (text.includes('expect:')) {
-              const t = text.split(':').pop() || '';
-              if (t.trim()) {
-                globalExpect.addCase(t.trim());
-              }
-            }
-          }
+          // if (isTestEnv()) {
+          // const text = this.substr()
+          // if (text.includes('expect:')) {
+          // const t = text.split(':').pop() || '';
+          // if (t.trim()) {
+          // globalExpect.addCase(t.trim());
+          // }
+          // }
+          // }
         } else if (this.match('*')) {
           /* multiple line comments */
           while (
@@ -164,7 +166,7 @@ class Scanner {
             this.advance();
           }
           if (this.peekNext() !== '/') {
-            defaultErrorHandler.error(
+            this.addError(
               this.line,
               'multiple line comment end error',
             );
@@ -206,7 +208,7 @@ class Scanner {
         } else if (this.isAlpha(c)) {
           this.identifier();
         } else {
-          defaultErrorHandler.error(this.line, `Unexpected character: ${c}`);
+          this.addError(this.line, `Unexpected character: ${c}`, '');
         }
         break;
     }
@@ -219,7 +221,7 @@ class Scanner {
       this.advance();
     }
     if (this.isAtEnd()) {
-      defaultErrorHandler.error(this.line, 'Unterminated string');
+      this.addError(this.line, 'Unterminated string', '');
       return;
     }
     this.advance();
@@ -236,14 +238,14 @@ class Scanner {
         this.advance();
       }
     }
-    const value = this.substr()
+    const value = this.substr();
     this.addOneToken(TokenType.NUMBER, parseFloat(value));
   }
   private identifier() {
     while (this.isAlphaNumeric(this.peek())) {
       this.advance();
     }
-    const text = this.substr()
+    const text = this.substr();
     const temp = Scanner.keywordMap.get(text);
     let type: TokenType = TokenType.IDENTIFIER;
     if (temp !== undefined) {

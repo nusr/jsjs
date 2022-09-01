@@ -17,5 +17,5 @@ compiler.exe
 compiler
 assets
 !assets/index.html
-esbuild.js
-scripts/*.js
+scripts/esbuild.js
+scripts/visitTest.js

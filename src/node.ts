@@ -2,7 +2,6 @@ import path from 'path'
 import fs from 'fs'
 import readline from 'readline'
 import { Lox } from './lox';
-import { defaultErrorHandler } from './error'  
 import Environment from './environment' 
 
 function init() {
@@ -24,13 +23,12 @@ function runFile(filePath: string) {
     }
     fs.readFile(temp, 'utf-8', (error, data) => {
         if (error) {
-            defaultErrorHandler.error(0, error.stack || error.message);
             return;
         }
         new Lox().run(data, new Environment(null));
-        if (defaultErrorHandler.get()) {
-            process.exit(65);
-        }
+        // if (defaultErrorHandler.get()) {
+            // process.exit(65);
+        // }
     });
 }
 function runPrompt() {
@@ -44,7 +42,6 @@ function runPrompt() {
     reader
         .on('line', (line) => {
             new Lox().run(line, env);
-            defaultErrorHandler.reset();
             reader.prompt();
         })
         .on('close', () => {

@@ -76,7 +76,7 @@ function buildNode(filePath: string) {
     outfile: filePath,
     format: 'cjs',
     platform: 'node',
-    entryPoints: ['src/node.ts']
+    entryPoints: ['src/node.ts'],
   });
 }
 
@@ -107,46 +107,15 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
   return result;
 }
 
-function buildTestData() {
-  const getAllFiles = (dirPath, fileList: string[] = [], index = 0) => {
-    const files = fs.readdirSync(dirPath);
-    for (const file of files) {
-      if (fs.statSync(dirPath + '/' + file).isDirectory()) {
-        fileList = getAllFiles(dirPath + '/' + file, fileList, index + 1);
-      } else {
-        fileList.push(path.join(dirPath, '/', file));
-      }
-    }
-    return fileList;
-  };
-  const dirPath = path.join(process.cwd(), 'test');
-  const fileList = getAllFiles(dirPath);
-  const result: Array<{ name: string; text: string }> = [];
-  for (let i = 0; i < fileList.length; i++) {
-    const item = fileList[i];
-    const data = fs.readFileSync(item, 'utf-8');
-    result.push({
-      name: `${i + 1}.${path.basename(item)}`,
-      text: data,
-    });
-  }
-  fs.writeFileSync(
-    path.join(process.cwd(), 'assets', 'testData.json'),
-    JSON.stringify(result),
-    'utf-8',
-  );
-}
-
 async function main() {
   fs.rmdir(path.join(process.cwd(), 'lib'), { recursive: true }, (error) => {
     if (error) {
       console.log(error);
     }
-  });  
+  });
   if (isDev) {
     return buildUMD(packageJson.main);
   }
-  buildTestData();
   return await Promise.all([
     buildUMD('assets/lox.umd.js'),
     buildESM(packageJson.module),

@@ -16,7 +16,7 @@
     "prebuild": "npm run postinstall",
     "test": "npm run build -- NODE_ENV=test && node scripts/visitTest.js",
     "bin": "npm run build && node ./bin/lox",
-    "postinstall": "node post-install.js"
+    "postinstall": "node scripts/post-install.js"
   },
   "keywords": [],
   "author": "Steve Xu",

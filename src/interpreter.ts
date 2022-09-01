@@ -31,15 +31,10 @@ import type {
   ClassStatement,
   VariableStatement,
 } from './statement';
-
-import eventEmitter from './eventEmitter';
 import Environment from './environment';
 import { RuntimeError } from './error';
-import globalExpect from './expect';
 import {
-  convertLiteralTypeToString,
   isBaseCallable,
-  isTestEnv,
   assert,
 } from './util';
 import { LoxCallable } from './loxCallable';
@@ -116,10 +111,6 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       result = result.toString();
     }
     console.log(result);
-    eventEmitter.emit('print', { value: result });
-    if (isTestEnv()) {
-      globalExpect.assert(convertLiteralTypeToString(result));
-    }
     return null;
   };
   visitReturnStatement = (statement: ReturnStatement) => {
