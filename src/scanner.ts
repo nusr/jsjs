@@ -38,8 +38,8 @@ class Scanner {
     this.tokens.push(new Token(TokenType.EOF, '', null, this.line));
     return this.tokens;
   };
-  private addError = (line: number, where: string, message: string) => {
-    const msg = `[line ${line}] Error ${where} : ${message} `;
+  private addError = (line: number, message: string) => {
+    const msg = `[line ${line}] Error : ${message} `;
     this.errors.push(msg);
   };
   private isAtEnd() {
@@ -208,7 +208,7 @@ class Scanner {
         } else if (this.isAlpha(c)) {
           this.identifier();
         } else {
-          this.addError(this.line, `Unexpected character: ${c}`, '');
+          this.addError(this.line, `Unexpected character: ${c}`);
         }
         break;
     }
@@ -221,7 +221,7 @@ class Scanner {
       this.advance();
     }
     if (this.isAtEnd()) {
-      this.addError(this.line, 'Unterminated string', '');
+      this.addError(this.line, 'Unterminated string');
       return;
     }
     this.advance();

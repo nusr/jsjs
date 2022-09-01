@@ -1,5 +1,4 @@
 import type { LiteralType, BaseCallable } from './type';
-import type Interpreter from './interpreter';
 import type Token from './token';
 
 export class LoxInstance {
@@ -33,7 +32,7 @@ export class LoxClass implements BaseCallable {
   size() {
     return 0;
   }
-  call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
+  call(): LiteralType {
     return new LoxInstance(this);
   }
   toString() {
