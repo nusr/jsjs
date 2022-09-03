@@ -1,6 +1,5 @@
 import Token from './token';
 import { TokenType } from './tokenType';
-import type { LiteralType } from './type';
 const EMPTY_DATA = '\0';
 
 class Scanner {
@@ -12,9 +11,9 @@ class Scanner {
     ['else', TokenType.ELSE],
     ['false', TokenType.FALSE],
     ['for', TokenType.FOR],
-    ['fun', TokenType.FUN],
+    ['function', TokenType.FUNCTION],
     ['if', TokenType.IF],
-    ['null', TokenType.NIL],
+    ['null', TokenType.NULL],
     ['print', TokenType.PRINT],
     ['return', TokenType.RETURN],
     ['super', TokenType.SUPER],
@@ -35,24 +34,21 @@ class Scanner {
       this.start = this.current;
       this.scanToken();
     }
-    this.tokens.push(new Token(TokenType.EOF, '', null, this.line));
+    this.tokens.push(new Token(TokenType.EOF, '', this.line));
     return this.tokens;
   };
   private addError = (line: number, message: string) => {
-    const msg = `[line ${line}] Error : ${message} `;
+    const msg = `line: ${line}],scanner error : ${message} `;
     this.errors.push(msg);
   };
   private isAtEnd() {
     return this.current >= this.source.length;
   }
-  private addToken(type: TokenType) {
-    this.addOneToken(type, null);
-  }
   private substr(start = this.start, end = this.current): string {
     return this.source.slice(start, end).join('');
   }
-  private addOneToken(type: TokenType, literal: LiteralType) {
-    this.tokens.push(new Token(type, this.substr(), literal, this.line));
+  private addOneToken(type: TokenType, value = this.substr()) {
+    this.tokens.push(new Token(type, value, this.line));
   }
   private getChar(index: number) {
     return this.source[index] as string;
@@ -87,58 +83,58 @@ class Scanner {
     const c = this.advance();
     switch (c) {
       case '(':
-        this.addToken(TokenType.LEFT_PAREN);
+        this.addOneToken(TokenType.LEFT_PAREN);
         break;
       case ')':
-        this.addToken(TokenType.RIGHT_PAREN);
+        this.addOneToken(TokenType.RIGHT_PAREN);
         break;
       case '{':
-        this.addToken(TokenType.lEFT_BRACE);
+        this.addOneToken(TokenType.lEFT_BRACE);
         break;
       case '}':
-        this.addToken(TokenType.RIGHT_BRACE);
+        this.addOneToken(TokenType.RIGHT_BRACE);
         break;
       case ',':
-        this.addToken(TokenType.COMMA);
+        this.addOneToken(TokenType.COMMA);
         break;
       case '.':
-        this.addToken(TokenType.DOT);
+        this.addOneToken(TokenType.DOT);
         break;
       case '-':
         if (this.match('+')) {
-          this.addToken(TokenType.MINUS_MINUS);
+          this.addOneToken(TokenType.MINUS_MINUS);
         } else {
-          this.addToken(TokenType.MINUS);
+          this.addOneToken(TokenType.MINUS);
         }
         break;
       case '+':
         if (this.match('+')) {
-          this.addToken(TokenType.PLUS_PLUS);
+          this.addOneToken(TokenType.PLUS_PLUS);
         } else {
-          this.addToken(TokenType.PLUS);
+          this.addOneToken(TokenType.PLUS);
         }
         break;
       case ';':
-        this.addToken(TokenType.SEMICOLON);
+        this.addOneToken(TokenType.SEMICOLON);
         break;
       case '*':
-        this.addToken(TokenType.STAR);
+        this.addOneToken(TokenType.STAR);
         break;
       case '!':
-        this.addToken(this.match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+        this.addOneToken(this.match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
         break;
       case '=':
-        this.addToken(
+        this.addOneToken(
           this.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL,
         );
         break;
       case '>':
-        this.addToken(
+        this.addOneToken(
           this.match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER,
         );
         break;
       case '<':
-        this.addToken(this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+        this.addOneToken(this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
         break;
       case '/':
         // single line comment
@@ -174,21 +170,21 @@ class Scanner {
           this.advance(); // skip *
           this.advance(); // skip /
         } else {
-          this.addToken(TokenType.SLASH);
+          this.addOneToken(TokenType.SLASH);
         }
         break;
       case '|':
         if (this.match('|')) {
-          this.addToken(TokenType.OR);
+          this.addOneToken(TokenType.OR);
         } else {
-          this.addToken(TokenType.BIT_OR);
+          this.addOneToken(TokenType.BIT_OR);
         }
         break;
       case '&':
         if (this.match('&')) {
-          this.addToken(TokenType.AND);
+          this.addOneToken(TokenType.AND);
         } else {
-          this.addToken(TokenType.BIT_AND);
+          this.addOneToken(TokenType.BIT_AND);
         }
         break;
       case ' ':
@@ -238,8 +234,7 @@ class Scanner {
         this.advance();
       }
     }
-    const value = this.substr();
-    this.addOneToken(TokenType.NUMBER, parseFloat(value));
+    this.addOneToken(TokenType.NUMBER);
   }
   private identifier() {
     while (this.isAlphaNumeric(this.peek())) {
@@ -251,7 +246,7 @@ class Scanner {
     if (temp !== undefined) {
       type = temp;
     }
-    this.addToken(type);
+    this.addOneToken(type);
   }
   private isAlphaNumeric(c: string) {
     return this.isAlpha(c) || this.isDigit(c);

@@ -48,7 +48,7 @@ export class BinaryExpression extends Expression {
     return visitor.visitBinaryExpression(this);
   }
   toString() {
-    return `${this.left.toString()} ${this.operator.lexeme} ${this.right.toString()}`
+    return `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`
   }
 }
 export class CallExpression extends Expression {
@@ -140,7 +140,7 @@ export class LogicalExpression extends Expression {
     return visitor.visitLogicalExpression(this);
   }
   toString() {
-    return `${this.left.toString()} ${this.operator.lexeme} ${this.right.toString()}`;
+    return `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`;
   }
 }
 export class SuperExpression extends Expression {
@@ -183,7 +183,7 @@ export class UnaryExpression extends Expression {
     return visitor.visitUnaryExpression(this);
   }
   toString() {
-    return `${this.operator.lexeme} ${this.right.toString()}`;
+    return `${this.operator.toString()} ${this.right.toString()}`;
   }
 }
 export class VariableExpression extends Expression {
@@ -196,6 +196,6 @@ export class VariableExpression extends Expression {
     return visitor.visitVariableExpression(this);
   }
   toString() {
-    return this.name.lexeme;
+    return this.name.toString();
   }
 }

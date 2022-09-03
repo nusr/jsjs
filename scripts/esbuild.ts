@@ -81,7 +81,7 @@ function buildNode(filePath: string) {
 }
 
 async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
-  const minify = options.outfile?.includes('min.');
+  const minify = options.outfile?.includes('.min.');
   const result = await build({
     bundle: true,
     watch: isDev,
@@ -117,11 +117,11 @@ async function main() {
     return buildUMD(packageJson.main);
   }
   return await Promise.all([
-    buildUMD('assets/lox.umd.js'),
+    buildUMD('assets/jsjs.umd.js'),
     buildESM(packageJson.module),
     buildUMD(packageJson.main),
-    buildESM(packageJson.module.replace('js', 'min.js')),
-    buildUMD(packageJson.main.replace('js', 'min.js')),
+    buildESM(packageJson.module.replace('.js', '.min.js')),
+    buildUMD(packageJson.main.replace('.js', '.min.js')),
     buildNode(packageJson.main.replace('umd', 'node')),
     buildNode(packageJson.main.replace('umd', 'node.min')),
   ]);

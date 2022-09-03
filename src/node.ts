@@ -1,13 +1,13 @@
 import path from 'path'
 import fs from 'fs'
 import readline from 'readline'
-import { Lox } from './lox';
+import { Jsjs } from './jsjs';
 import Environment from './environment' 
 
 function init() {
     const args = process.argv;
     if (args.length > 3) {
-        console.log('Usage: lox [filepath]]');
+        console.log('Usage: [filepath]]');
         process.exit(64);
     } else if (args.length === 3 && args[2]) {
         runFile(args[2]);
@@ -25,27 +25,24 @@ function runFile(filePath: string) {
         if (error) {
             return;
         }
-        new Lox().run(data, new Environment(null));
-        // if (defaultErrorHandler.get()) {
-            // process.exit(65);
-        // }
+        new Jsjs().run(data, new Environment(null));
     });
 }
 function runPrompt() {
     const reader = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        prompt: 'Lox> ',
+        prompt: '> ',
     });
     reader.prompt();
     const env = new Environment(null);
     reader
         .on('line', (line) => {
-            new Lox().run(line, env);
+            new Jsjs().run(line, env);
             reader.prompt();
         })
         .on('close', () => {
-            console.log('end Lox!');
+            console.log('end !');
             process.exit(0);
         });
 }

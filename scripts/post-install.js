@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { build } = require("esbuild");
 
 function init() {
   const dir = path.join(process.cwd(), 'scripts');
@@ -20,15 +20,14 @@ function init() {
           if (error) {
             console.log(error);
           }
+          build({
+            entryPoints: [filePath],
+            // bundle: true,
+            // platform: 'node',
+            outfile: temp,
+            format: 'cjs',
+          })
         });
-        exec(
-          `npx esbuild ${filePath} --outfile=${temp} --format=cjs`,
-          (error) => {
-            if (error) {
-              console.log(error);
-            }
-          },
-        );
       }
     }
   });

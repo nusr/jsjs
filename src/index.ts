@@ -1,3 +1,3 @@
-import { Lox } from './lox';
+import { Jsjs } from './jsjs';
 import Environment from './environment';
-export { Lox, Environment };
+export { Jsjs, Environment };

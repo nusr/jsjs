@@ -32,7 +32,6 @@ import type {
   VariableStatement,
 } from './statement';
 import Environment from './environment';
-import { RuntimeError } from './error';
 import {
   isBaseCallable,
   assert,
@@ -44,6 +43,7 @@ import { LoxClass, LoxInstance } from './class';
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   globals = new Environment(null);
   private environment = this.globals;
+  errors: string[] = [];
 
   interpret = (list: Statement[], env: Environment): void => {
     this.globals = env;
@@ -192,7 +192,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       argumentList.push(this.evaluate(item));
     }
     if (!isBaseCallable(callee)) {
-      throw new RuntimeError(expr.paren, 'can only call functions');
+      throw new Error(`can only call functions ${expr.paren.type} ${expr.paren.lexeme}`);
     }
     return callee.call(this, argumentList);
   };

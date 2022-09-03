@@ -48,7 +48,7 @@ class Parser {
       return this.classStatement();
     }
 
-    if (this.match(TokenType.FUN)) {
+    if (this.match(TokenType.FUNCTION)) {
       return this.funcStatement('function');
     }
 
@@ -348,11 +348,14 @@ class Parser {
     if (this.match(TokenType.FALSE)) {
       return new LiteralExpression(false);
     }
-    if (this.match(TokenType.NIL)) {
+    if (this.match(TokenType.NULL)) {
       return new LiteralExpression(null);
     }
-    if (this.match(TokenType.NUMBER, TokenType.STRING)) {
-      return new LiteralExpression(this.previous().literal);
+    if (this.match(TokenType.NUMBER)) {
+      return new LiteralExpression(parseFloat(this.previous().lexeme));
+    }
+    if (this.match(TokenType.STRING)) {
+      return new LiteralExpression(this.previous().lexeme);
     }
     if (this.match(TokenType.IDENTIFIER)) {
       return new VariableExpression(this.previous());

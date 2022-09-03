@@ -73,7 +73,7 @@ export class FunctionStatement extends Statement {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `fun ${this.name.lexeme}(${this.params.map(item => item.lexeme).join(',')}){${this.body.toString()}}`
+    return `fun ${this.name.toString()}(${this.params.map(item => item.toString()).join(',')}){${this.body.toString()}}`
   }
 }
 export class IfStatement extends Statement {
@@ -137,7 +137,7 @@ export class VariableStatement extends Statement {
     return visitor.visitVariableStatement(this);
   }
   toString() {
-    const temp = `var ${this.name.lexeme}`;
+    const temp = `var ${this.name.toString()}`;
     if (this.initializer === null) {
       return temp + ';';
     }

@@ -32,10 +32,10 @@ export enum TokenType {
   ELSE,
   FALSE,
   TRUE,
-  FUN,
+  FUNCTION,
   FOR,
   IF,
-  NIL, // null
+  NULL, // null
   AND,
   OR,
   BIT_AND,

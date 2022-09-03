@@ -26,12 +26,11 @@ print a + b;
     <div>
       <span id="result"></span>
     </div>
-    <script src="./lox.umd.js"></script>
+    <script src="./jsjs.umd.js"></script>
     <script>
       function runText(text) {
-        const Lox = window.lox.Lox;
-        const Environment = window.lox.Environment;
-        new Lox().run(text, new Environment(null));
+        const { Jsjs, Environment } = window.jsjs;
+        new Jsjs().run(text, new Environment(null));
       }
       window.onload = function () {
         const textarea = document.querySelector('#code');
