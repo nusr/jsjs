@@ -108,16 +108,17 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
 }
 
 async function main() {
-  fs.rmdir(path.join(process.cwd(), 'lib'), { recursive: true }, (error) => {
+  fs.rm(path.join(process.cwd(), 'lib'), { recursive: true }, (error) => {
     if (error) {
       console.log(error);
     }
   });
+  const startPath = 'assets/jsjs.umd.js';
   if (isDev) {
-    return buildUMD(packageJson.main);
+    return buildUMD(startPath);
   }
   return await Promise.all([
-    buildUMD('assets/jsjs.umd.js'),
+    buildUMD(startPath),
     buildESM(packageJson.module),
     buildUMD(packageJson.main),
     buildESM(packageJson.module.replace('.js', '.min.js')),
