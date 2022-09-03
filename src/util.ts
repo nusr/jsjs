@@ -34,18 +34,9 @@ export function isBaseCallable(call: any): call is BaseCallable {
   );
 }
 
-export function getVersion(): string {
-  // @ts-ignore
-  return process.env.VERSION;
-}
-
 export function getNodeEnv(): string {
   // @ts-ignore
   return process.env.NODE_ENV;
-}
-
-export function isTestEnv(): boolean {
-  return getNodeEnv()=== 'test';
 }
 
 export function assert(

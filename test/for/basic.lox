@@ -1,5 +1,0 @@
-for (var i = 0; i < 1; i = i + 1) {
-  print i; // expect: 0
-}
-
-for (var i = 0; i < 10; ++i) print i;

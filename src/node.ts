@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import readline from 'readline'
-import { Jsjs } from './jsjs';
+import Jsjs from './jsjs';
 import Environment from './environment' 
 
 function init() {

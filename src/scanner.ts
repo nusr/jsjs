@@ -142,15 +142,6 @@ class Scanner {
           while (this.peek() !== '\n' && !this.isAtEnd()) {
             this.advance();
           }
-          // if (isTestEnv()) {
-          // const text = this.substr()
-          // if (text.includes('expect:')) {
-          // const t = text.split(':').pop() || '';
-          // if (t.trim()) {
-          // globalExpect.addCase(t.trim());
-          // }
-          // }
-          // }
         } else if (this.match('*')) {
           /* multiple line comments */
           while (
@@ -160,6 +151,9 @@ class Scanner {
             )
           ) {
             this.advance();
+            if (this.peek() === '\n') {
+              this.line++;
+            }
           }
           if (this.peekNext() !== '/') {
             this.addError(
@@ -196,7 +190,10 @@ class Scanner {
         this.line++;
         break;
       case '"':
-        this.string();
+        this.string(c);
+        break;
+      case "'":
+        this.string(c);
         break;
       default:
         if (this.isDigit(c)) {
@@ -209,8 +206,8 @@ class Scanner {
         break;
     }
   }
-  private string() {
-    while (this.peek() !== '"' && !this.isAtEnd()) {
+  private string(spliter: string) {
+    while (this.peek() !== spliter && !this.isAtEnd()) {
       if (this.peek() === '\n') {
         this.line++;
       }

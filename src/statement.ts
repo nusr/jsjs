@@ -56,7 +56,7 @@ export class ExpressionStatement extends Statement {
     return visitor.visitExpressionStatement(this);
   }
   toString() {
-    return this.expression.toString();
+    return this.expression.toString() + ';';
   }
 }
 export class FunctionStatement extends Statement {
@@ -73,7 +73,7 @@ export class FunctionStatement extends Statement {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `fun ${this.name.toString()}(${this.params.map(item => item.toString()).join(',')}){${this.body.toString()}}`
+    return `function ${this.name.toString()}(${this.params.map(item => item.toString()).join(',')})${this.body.toString()}`
   }
 }
 export class IfStatement extends Statement {
@@ -90,11 +90,11 @@ export class IfStatement extends Statement {
     return visitor.visitIfStatement(this);
   }
   toString() {
-    const temp = `if(${this.condition.toString()}){${this.thenBranch.toString()}}`
+    const temp = `if(${this.condition.toString()})${this.thenBranch.toString()}`
     if (this.elseBranch === null) {
       return temp;
     }
-    return `${temp}else{${this.elseBranch.toString()}}`
+    return `${temp} else ${this.elseBranch.toString()}`
   }
 }
 export class PrintStatement extends Statement {
@@ -122,7 +122,7 @@ export class ReturnStatement extends Statement {
     return visitor.visitReturnStatement(this);
   }
   toString() {
-    return `return${this.value === null ? '' : this.value.toString()};`
+    return `return ${this.value === null ? '' : this.value.toString()};`
   }
 }
 export class VariableStatement extends Statement {
@@ -156,6 +156,6 @@ export class WhileStatement extends Statement {
     return visitor.visitWhileStatement(this);
   }
   toString() {
-    return `while(${this.condition.toString()})${this.body.toString()};`
+    return `while(${this.condition.toString()})${this.body.toString()}`
   }
 }

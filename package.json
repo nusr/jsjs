@@ -14,7 +14,6 @@
     "start": "npm run build -- NODE_ENV=development",
     "build": "node scripts/esbuild.js",
     "prebuild": "npm run postinstall",
-    "test-all": "npm run build -- NODE_ENV=test && node scripts/visitTest.js",
     "bin": "npm run build && node ./bin/jsjs",
     "postinstall": "node scripts/post-install.js",
     "test": "jest --config scripts/jest.config.js",

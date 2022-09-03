@@ -210,9 +210,7 @@ class Parser {
   }
   private expressionStatement(): ExpressionStatement {
     const expr = this.expression();
-    if (!this.isAtEnd()) {
-      this.consume(TokenType.SEMICOLON, 'expected ; after expression');
-    }
+    this.match(TokenType.SEMICOLON)
     return new ExpressionStatement(expr);
   }
   public expression(): Expression {

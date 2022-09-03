@@ -15,32 +15,52 @@
     <div><select id="select"></select></div>
     <div>
       <textarea id="code">
-var a = 1;
-var b = 2;
-print a + b;
+var a = "a";
+/**
+  * @param {number} x
+  * @param {number} y
+  */
+function add(x, y) {
+  return x + y;
+}
+var cond = add(1, 2 * 3);
+cond;
+if (cond) {
+  a = "b";
+} else {
+  a = "c";
+}
+a;
       </textarea>
     </div>
     <div>
       <button id="run">run</button>
     </div>
-    <div>
-      <span id="result"></span>
-    </div>
+    <div id="result"></div>
     <script src="./jsjs.umd.js"></script>
     <script>
-      function runText(text) {
-        const { Jsjs, Environment } = window.jsjs;
-        new Jsjs().run(text, new Environment(null));
-      }
       window.onload = function () {
-        const textarea = document.querySelector('#code');
-        const button = document.querySelector('#run');
-        const result = document.querySelector('#result');
-        window.localStorage.setItem('debug', '*');
+        const textareaDom = document.querySelector("#code");
+        const buttonDom = document.querySelector("#run");
+        const resultDom = document.querySelector("#result");
+        window.localStorage.setItem("debug", "*");
 
-        button.addEventListener('click', function () {
-          const text = (textarea && textarea.value) || '';
-          runText(text);
+        buttonDom.addEventListener("click", function () {
+          const text = (textareaDom && textareaDom.value) || "";
+          const { Jsjs, Environment } = window.jsjs;
+          const interpreter = new Jsjs();
+          const result = interpreter.run(text, new Environment(null));
+          if (interpreter.errors.length > 0) {
+            resultDom.innerHTML =
+              interpreter.errors
+                .map((item) => `<div>error: ${item}</div>`)
+                .join("") + resultDom.innerHTM;
+          } else {
+            console.log(result);
+            resultDom.innerHTML =
+              result.map((item) => `<div>log: ${item}</div>`).join("") +
+              resultDom.innerHTML;
+          }
         });
       };
     </script>

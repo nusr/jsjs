@@ -31,7 +31,7 @@ export class AssignExpression extends Expression {
     return visitor.visitAssignExpression(this);
   }
   toString() {
-    return `${this.name} = ${this.value.toString()}`
+    return `${this.name.toString()} = ${this.value.toString()}`
   }
 }
 export class BinaryExpression extends Expression {
@@ -65,7 +65,7 @@ export class CallExpression extends Expression {
     return visitor.visitCallExpression(this);
   }
   toString() {
-    return ''
+    return `${this.callee.toString()}(${this.argumentList.map(item => item.toString()).join(',')})`
   }
 }
 export class GetExpression extends Expression {
@@ -123,7 +123,22 @@ export class LiteralExpression extends Expression {
     return visitor.visitLiteralExpression(this);
   }
   toString() {
-    return convertLiteralTypeToString(this.value);
+    if (this.value === null) {
+      return 'null';
+    }
+    if (typeof this.value === 'string') {
+      return `'${this.value}'`;
+    }
+    if (typeof this.value === 'boolean') {
+      return this.value.toString();
+    }
+    if (typeof this.value === 'number') {
+      return this.value.toString();
+    }
+    if (this.value && typeof this.value.toString === 'function') {
+      return this.value.toString();
+    }
+    return '';
   }
 }
 export class LogicalExpression extends Expression {

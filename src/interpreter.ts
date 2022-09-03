@@ -45,12 +45,14 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   private environment = this.globals;
   errors: string[] = [];
 
-  interpret = (list: Statement[], env: Environment): void => {
+  interpret = (list: Statement[], env: Environment): LiteralType[] => {
     this.globals = env;
     this.environment = env;
+    const result: LiteralType[] = []
     for (const item of list) {
-      this.execute(item);
+      result.push(this.execute(item))
     }
+    return result;
   };
   private execute = (statement: Statement) => {
     return statement.accept(this);
