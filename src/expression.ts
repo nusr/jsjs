@@ -1,5 +1,6 @@
 import type Token from './token';
 import type { LiteralType } from './type';
+import { convertLiteralTypeToString } from './util';
 export interface ExpressionVisitor {
   visitAssignExpression: (expression: AssignExpression) => LiteralType;
   visitBinaryExpression: (expression: BinaryExpression) => LiteralType;
@@ -16,6 +17,7 @@ export interface ExpressionVisitor {
 }
 export abstract class Expression {
   abstract accept(visitor: ExpressionVisitor): LiteralType;
+  abstract toString(): string;
 }
 export class AssignExpression extends Expression {
   readonly name: Token;
@@ -27,6 +29,9 @@ export class AssignExpression extends Expression {
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitAssignExpression(this);
+  }
+  toString() {
+    return `${this.name} = ${this.value.toString()}`
   }
 }
 export class BinaryExpression extends Expression {
@@ -42,6 +47,9 @@ export class BinaryExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitBinaryExpression(this);
   }
+  toString() {
+    return `${this.left.toString()} ${this.operator.lexeme} ${this.right.toString()}`
+  }
 }
 export class CallExpression extends Expression {
   readonly callee: Expression;
@@ -56,6 +64,9 @@ export class CallExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitCallExpression(this);
   }
+  toString() {
+    return ''
+  }
 }
 export class GetExpression extends Expression {
   readonly object: Expression;
@@ -67,6 +78,9 @@ export class GetExpression extends Expression {
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGetExpression(this);
+  }
+  toString() {
+    return ''
   }
 }
 export class SetExpression extends Expression {
@@ -82,6 +96,9 @@ export class SetExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitSetExpression(this);
   }
+  toString() {
+    return ''
+  }
 }
 export class GroupingExpression extends Expression {
   readonly expression: Expression;
@@ -92,6 +109,9 @@ export class GroupingExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGroupingExpression(this);
   }
+  toString() {
+    return `(${this.expression.toString()})`
+  }
 }
 export class LiteralExpression extends Expression {
   readonly value: LiteralType;
@@ -101,6 +121,9 @@ export class LiteralExpression extends Expression {
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitLiteralExpression(this);
+  }
+  toString() {
+    return convertLiteralTypeToString(this.value);
   }
 }
 export class LogicalExpression extends Expression {
@@ -116,6 +139,9 @@ export class LogicalExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitLogicalExpression(this);
   }
+  toString() {
+    return `${this.left.toString()} ${this.operator.lexeme} ${this.right.toString()}`;
+  }
 }
 export class SuperExpression extends Expression {
   readonly keyword: Token;
@@ -128,6 +154,9 @@ export class SuperExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitSuperExpression(this);
   }
+  toString() {
+    return ''
+  }
 }
 export class ThisExpression extends Expression {
   readonly keyword: Token;
@@ -137,6 +166,9 @@ export class ThisExpression extends Expression {
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitThisExpression(this);
+  }
+  toString() {
+    return ''
   }
 }
 export class UnaryExpression extends Expression {
@@ -150,6 +182,9 @@ export class UnaryExpression extends Expression {
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitUnaryExpression(this);
   }
+  toString() {
+    return `${this.operator.lexeme} ${this.right.toString()}`;
+  }
 }
 export class VariableExpression extends Expression {
   readonly name: Token;
@@ -159,5 +194,8 @@ export class VariableExpression extends Expression {
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitVariableExpression(this);
+  }
+  toString() {
+    return this.name.lexeme;
   }
 }
