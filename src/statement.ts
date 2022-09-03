@@ -14,6 +14,7 @@ export interface StatementVisitor {
 }
 export abstract class Statement {
   abstract accept(visitor: StatementVisitor): LiteralType;
+  abstract toString(): string;
 }
 export class BlockStatement extends Statement {
   readonly statements: Statement[];
@@ -23,6 +24,9 @@ export class BlockStatement extends Statement {
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitBlockStatement(this);
+  }
+  toString() {
+    return `{${this.statements.map(item => item.toString()).join(';')}}`;
   }
 }
 export class ClassStatement extends Statement {
@@ -38,6 +42,9 @@ export class ClassStatement extends Statement {
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitClassStatement(this);
   }
+  toString() {
+    return ''
+  }
 }
 export class ExpressionStatement extends Statement {
   readonly expression: Expression;
@@ -47,6 +54,9 @@ export class ExpressionStatement extends Statement {
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitExpressionStatement(this);
+  }
+  toString() {
+    return this.expression.toString();
   }
 }
 export class FunctionStatement extends Statement {
@@ -62,6 +72,9 @@ export class FunctionStatement extends Statement {
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitFunctionStatement(this);
   }
+  toString() {
+    return `fun ${this.name.lexeme}(${this.params.map(item => item.lexeme).join(',')}){${this.body.toString()}}`
+  }
 }
 export class IfStatement extends Statement {
   readonly condition: Expression;
@@ -76,6 +89,13 @@ export class IfStatement extends Statement {
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitIfStatement(this);
   }
+  toString() {
+    const temp = `if(${this.condition.toString()}){${this.thenBranch.toString()}}`
+    if (this.elseBranch === null) {
+      return temp;
+    }
+    return `${temp}else{${this.elseBranch.toString()}}`
+  }
 }
 export class PrintStatement extends Statement {
   readonly expression: Expression;
@@ -85,6 +105,9 @@ export class PrintStatement extends Statement {
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitPrintStatement(this);
+  }
+  toString() {
+    return `print ${this.expression.toString()};`
   }
 }
 export class ReturnStatement extends Statement {
@@ -98,6 +121,9 @@ export class ReturnStatement extends Statement {
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitReturnStatement(this);
   }
+  toString() {
+    return `return${this.value === null ? '' : this.value.toString()};`
+  }
 }
 export class VariableStatement extends Statement {
   readonly name: Token;
@@ -109,6 +135,13 @@ export class VariableStatement extends Statement {
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitVariableStatement(this);
+  }
+  toString() {
+    const temp = `var ${this.name.lexeme}`;
+    if (this.initializer === null) {
+      return temp + ';';
+    }
+    return `${temp} = ${this.initializer.toString()};`
   }
 }
 export class WhileStatement extends Statement {
@@ -122,5 +155,7 @@ export class WhileStatement extends Statement {
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitWhileStatement(this);
   }
+  toString() {
+    return `while(${this.condition.toString()})${this.body.toString()};`
+  }
 }
-  
