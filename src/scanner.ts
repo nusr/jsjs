@@ -1,32 +1,18 @@
 import Token from './token';
 import { TokenType } from './tokenType';
-const EMPTY_DATA = '\0';
+import { KEYWORD_MAP, EMPTY_DATA } from './constant';
 
 class Scanner {
   readonly source: string[];
   readonly tokens: Token[] = [];
   readonly errors: string[] = [];
-  static readonly keywordMap: Map<string, TokenType> = new Map([
-    ['class', TokenType.CLASS],
-    ['else', TokenType.ELSE],
-    ['false', TokenType.FALSE],
-    ['for', TokenType.FOR],
-    ['function', TokenType.FUNCTION],
-    ['if', TokenType.IF],
-    ['null', TokenType.NULL],
-    ['print', TokenType.PRINT],
-    ['return', TokenType.RETURN],
-    ['super', TokenType.SUPER],
-    ['this', TokenType.THIS],
-    ['true', TokenType.TRUE],
-    ['var', TokenType.VAR],
-    ['while', TokenType.WHILE],
-  ]);
+  static readonly keywordMap = KEYWORD_MAP;
   private start = 0;
   private current = 0;
   private line = 1;
 
   constructor(text: string) {
+    // unicode split
     this.source = [...text];
   }
   scanTokens = () => {

@@ -16,6 +16,14 @@ function init() {
     }
 }
 
+function run(data: string, env: Environment) {
+    const instance = new Jsjs();
+    const result = instance.run(data, env);
+    for (const item of result) {
+        console.log(item);
+    }
+}
+
 function runFile(filePath: string) {
     let temp = filePath;
     if (!path.isAbsolute(filePath)) {
@@ -25,7 +33,7 @@ function runFile(filePath: string) {
         if (error) {
             return;
         }
-        new Jsjs().run(data, new Environment(null));
+        run(data, new Environment(null))
     });
 }
 function runPrompt() {
@@ -38,7 +46,7 @@ function runPrompt() {
     const env = new Environment(null);
     reader
         .on('line', (line) => {
-            new Jsjs().run(line, env);
+            run(line, env);
             reader.prompt();
         })
         .on('close', () => {

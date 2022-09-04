@@ -1,6 +1,6 @@
-import Scanner from "../scanner";
-import Token from "../token";
-import { TokenType } from "../tokenType";
+import Scanner from "../../src/scanner";
+import Token from "../../src/token";
+import { TokenType } from "../../src/tokenType";
 import * as fs from 'fs';
 import *  as path from 'path';
 

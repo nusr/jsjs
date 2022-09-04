@@ -1,11 +1,11 @@
-import Parser from "../parser";
-import Scanner from "../scanner";
-import { BlockStatement, ExpressionStatement, FunctionStatement, IfStatement, ReturnStatement, Statement, VariableStatement } from "../statement";
+import Parser from "../../src/parser";
+import Scanner from "../../src/scanner";
+import { BlockStatement, ExpressionStatement, FunctionStatement, IfStatement, ReturnStatement, Statement, VariableStatement } from "../../src/statement";
 import * as fs from 'fs';
 import *  as path from 'path';
-import Token from "../token";
-import { TokenType } from "../tokenType";
-import { AssignExpression, BinaryExpression, CallExpression, LiteralExpression, VariableExpression } from "../expression";
+import Token from "../../src/token";
+import { TokenType } from "../../src/tokenType";
+import { AssignExpression, BinaryExpression, CallExpression, LiteralExpression, VariableExpression } from "../../src/expression";
 
 let inputData = '';
 beforeAll(() => {

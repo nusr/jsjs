@@ -41,30 +41,30 @@ class Parser {
   };
   private declaration(): Statement {
     if (this.match(TokenType.VAR)) {
-      return this.varStatement();
+      return this.varDeclaration();
     }
 
     if (this.match(TokenType.CLASS)) {
-      return this.classStatement();
+      return this.classDeclaration();
     }
 
     if (this.match(TokenType.FUNCTION)) {
-      return this.funcStatement('function');
+      return this.functionDeclaration('function');
     }
 
     return this.statement();
   }
-  private classStatement(): ClassStatement {
+  private classDeclaration(): ClassStatement {
     const name = this.consume(TokenType.IDENTIFIER, 'expect class name');
     this.consume(TokenType.lEFT_BRACE, 'expect {');
     let methods: FunctionStatement[] = [];
     while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
-      methods.push(this.funcStatement('method'));
+      methods.push(this.functionDeclaration('method'));
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect }');
     return new ClassStatement(name, null, methods);
   }
-  private varStatement(): VariableStatement {
+  private varDeclaration(): VariableStatement {
     const name: Token = this.consume(
       TokenType.IDENTIFIER,
       'expect identifier after var',
@@ -76,7 +76,7 @@ class Parser {
     this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
     return new VariableStatement(name, initializer);
   }
-  private funcStatement(name: string): FunctionStatement {
+  private functionDeclaration(name: string): FunctionStatement {
     const functionName: Token = this.consume(
       TokenType.IDENTIFIER,
       `expect identifier after ${name}`,
@@ -123,7 +123,7 @@ class Parser {
     this.consume(TokenType.LEFT_PAREN, 'expect (');
     var initializer: Statement | null = null;
     if (this.match(TokenType.VAR)) {
-      initializer = this.varStatement();
+      initializer = this.varDeclaration();
     } else if (!this.check(TokenType.SEMICOLON)) {
       initializer = this.expressionStatement();
     } else {

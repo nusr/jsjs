@@ -227,13 +227,13 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return this.evaluate(expr.right);
   };
-  visitSuperExpression = (expr: SuperExpression) => {
-    return this.parenthesize(expr.keyword.lexeme, expr.value);
+  visitSuperExpression = (expr: SuperExpression): LiteralType => {
+    return expr;
   };
-  visitThisExpression = (expr: ThisExpression) => {
-    return this.parenthesize(expr.keyword.lexeme);
+  visitThisExpression = (expr: ThisExpression): LiteralType => {
+    return expr;
   };
-  visitVariableExpression = (expr: VariableExpression) => {
+  visitVariableExpression = (expr: VariableExpression): LiteralType => {
     return this.environment.get(expr.name);
   };
   visitGroupingExpression = (expr: GroupingExpression): LiteralType => {
@@ -286,13 +286,6 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       return false;
     }
     return Boolean(value);
-  }
-  private parenthesize(name: string, ...exprs: Expression[]): LiteralType {
-    const list: LiteralType[] = [];
-    for (let expr of exprs) {
-      list.push(expr.accept(this));
-    }
-    return `(${name} ${list.join(' ')})`;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Environment, Jsjs } from '../index'
+import { Environment, Jsjs } from '../../src/index'
 import * as fs from 'fs';
 import *  as path from 'path';
 

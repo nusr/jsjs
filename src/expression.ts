@@ -123,22 +123,10 @@ export class LiteralExpression extends Expression {
     return visitor.visitLiteralExpression(this);
   }
   toString() {
-    if (this.value === null) {
-      return 'null';
-    }
     if (typeof this.value === 'string') {
       return `'${this.value}'`;
     }
-    if (typeof this.value === 'boolean') {
-      return this.value.toString();
-    }
-    if (typeof this.value === 'number') {
-      return this.value.toString();
-    }
-    if (this.value && typeof this.value.toString === 'function') {
-      return this.value.toString();
-    }
-    return '';
+    return convertLiteralTypeToString(this.value);
   }
 }
 export class LogicalExpression extends Expression {
