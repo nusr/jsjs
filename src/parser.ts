@@ -210,7 +210,7 @@ class Parser {
   }
   private expressionStatement(): ExpressionStatement {
     const expr = this.expression();
-    this.match(TokenType.SEMICOLON)
+    this.match(TokenType.SEMICOLON);
     return new ExpressionStatement(expr);
   }
   public expression(): Expression {
@@ -254,7 +254,14 @@ class Parser {
 
   private equality(): Expression {
     let expr: Expression = this.comparison();
-    while (this.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
+    while (
+      this.match(
+        TokenType.BANG_EQUAL,
+        TokenType.BANG_EQUAL_EQUAL,
+        TokenType.EQUAL_EQUAL,
+        TokenType.EQUAL_EQUAL_EQUAL,
+      )
+    ) {
       const operator: Token = this.previous();
       const right: Expression = this.comparison();
       expr = new BinaryExpression(expr, operator, right);
@@ -288,7 +295,7 @@ class Parser {
   }
   private factor(): Expression {
     let unary: Expression = this.unary();
-    while (this.match(TokenType.STAR, TokenType.SLASH)) {
+    while (this.match(TokenType.STAR, TokenType.SLASH, TokenType.REMAINDER)) {
       const operator: Token = this.previous();
       const right: Expression = this.unary();
       unary = new BinaryExpression(unary, operator, right);
@@ -316,10 +323,9 @@ class Parser {
       if (this.match(TokenType.LEFT_PAREN)) {
         expr = this.finishCall(expr);
       } else if (this.match(TokenType.DOT)) {
-        const name = this.consume(TokenType.IDENTIFIER, "expect name");
-        expr = new GetExpression(expr, name)
-      }
-      else{
+        const name = this.consume(TokenType.IDENTIFIER, 'expect name');
+        expr = new GetExpression(expr, name);
+      } else {
         break;
       }
     }

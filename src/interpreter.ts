@@ -32,10 +32,7 @@ import type {
   VariableStatement,
 } from './statement';
 import Environment from './environment';
-import {
-  isBaseCallable,
-  assert,
-} from './util';
+import { isBaseCallable, assert } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
 import { LoxClass, LoxInstance } from './class';
@@ -48,9 +45,9 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   interpret = (list: Statement[], env: Environment): LiteralType[] => {
     this.globals = env;
     this.environment = env;
-    const result: LiteralType[] = []
+    const result: LiteralType[] = [];
     for (const item of list) {
-      result.push(this.execute(item))
+      result.push(this.execute(item));
     }
     return result;
   };
@@ -164,6 +161,8 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         return null;
       case TokenType.STAR:
         return Number(left) * Number(right);
+      case TokenType.REMAINDER:
+        return Number(left) * Number(right);
       case TokenType.SLASH: {
         const temp = Number(right);
         if (temp === 0) {
@@ -181,9 +180,13 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       case TokenType.LESS_EQUAL:
         return Number(left) <= Number(right);
       case TokenType.BANG_EQUAL:
-        return !this.isEqual(left, right);
+        return left != right;
+      case TokenType.BANG_EQUAL_EQUAL:
+        return left !== right;
       case TokenType.EQUAL_EQUAL:
-        return this.isEqual(left, right);
+        return left == right;
+      case TokenType.EQUAL_EQUAL_EQUAL:
+        return left == right;
     }
     return null;
   };
@@ -194,7 +197,9 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       argumentList.push(this.evaluate(item));
     }
     if (!isBaseCallable(callee)) {
-      throw new Error(`can only call functions ${expr.paren.type} ${expr.paren.lexeme}`);
+      throw new Error(
+        `can only call functions ${expr.paren.type} ${expr.paren.lexeme}`,
+      );
     }
     return callee.call(this, argumentList);
   };
@@ -272,15 +277,6 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   print = (expr: Expression) => {
     return expr.accept(this);
   };
-  isEqual(left: LiteralType, right: LiteralType) {
-    if (left === null && right === null) {
-      return true;
-    }
-    if (left === null) {
-      return false;
-    }
-    return left === right;
-  }
   isTruthy(value: LiteralType) {
     if (value === null) {
       return false;

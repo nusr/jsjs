@@ -13,12 +13,15 @@ export enum TokenType {
   SEMICOLON, // ;
   SLASH, // /
   STAR, // *
+  REMAINDER, // %
 
   // one or two character tokens
   BANG, // !
   BANG_EQUAL, // !=
+  BANG_EQUAL_EQUAL, // !==
   EQUAL, // =
   EQUAL_EQUAL, // ==
+  EQUAL_EQUAL_EQUAL, // ===
   GREATER, // >
   GREATER_EQUAL, // >=
   LESS, // <

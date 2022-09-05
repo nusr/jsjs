@@ -19,9 +19,9 @@ npm run test
 
 #### Expressions & operators
 
-* [ ] Addition (+)
+* [x] Addition (+)
 * [ ] Addition assignment (+=)
-* [ ] Assignment (=)
+* [x] Assignment (=)
 * [ ] async function expression
 * [ ] async function* expression
 * [ ] await
@@ -35,59 +35,59 @@ npm run test
 * [ ] class expression
 * [ ] Comma operator (,)
 * [ ] Conditional (ternary) operator
-* [ ] Decrement (--)
+* [x] Decrement (--)
 * [ ] delete operator
 * [ ] Destructuring assignment
-* [ ] Division (/)
+* [x] Division (/)
 * [ ] Division assignment (/=)
-* [ ] Equality (==)
+* [x] Equality (==)
 * [ ] Exponentiation (**)
 * [ ] Exponentiation assignment (**=)
 * [ ] Function expression
 * [ ] function* expression
-* [ ] Greater than (>)
-* [ ] Greater than or equal (>=)
-* [ ] Grouping operator ( )
+* [x] Greater than (>)
+* [x] Greater than or equal (>=)
+* [x] Grouping operator ( )
 * [ ] import
 * [ ] import.meta
 * [ ] in operator
-* [ ] Increment (++)
-* [ ] Inequality (!=)
+* [x] Increment (++)
+* [x] Inequality (!=)
 * [ ] instanceof
 * [ ] Left shift (<<)
 * [ ] Left shift assignment (<<=)
-* [ ] Less than (<)
-* [ ] Less than or equal (<=)
-* [ ] Logical AND (&&)
-* [ ] Logical AND assignment (&&=)
-* [ ] Logical NOT (!)
+* [x] Less than (<)
+* [x] Less than or equal (<=)
+* [x] Logical AND (&&)
+* [x] Logical AND assignment (&&=)
+* [x] Logical NOT (!)
 * [ ] Logical nullish assignment (??=)
-* [ ] Logical OR (||)
+* [x] Logical OR (||)
 * [ ] Logical OR assignment (||=)
-* [ ] Multiplication (*)
+* [x] Multiplication (*)
 * [ ] Multiplication assignment (*=)
 * [ ] new operator
 * [ ] new.target
-* [ ] null
+* [x] null
 * [ ] Nullish coalescing operator (??)
 * [ ] Object initializer
 * [ ] Operator precedence
 * [ ] Optional chaining (?.)
 * [ ] Property accessors
-* [ ] Remainder (%)
+* [x] Remainder (%)
 * [ ] Remainder assignment (%=)
 * [ ] Right shift (>>)
 * [ ] Right shift assignment (>>=)
 * [ ] Spread syntax (...)
-* [ ] Strict equality (===)
-* [ ] Strict inequality (!==)
-* [ ] Subtraction (-)
+* [x] Strict equality (===)
+* [x] Strict inequality (!==)
+* [x] Subtraction (-)
 * [ ] Subtraction assignment (-=)
 * [ ] super
 * [ ] this
 * [ ] typeof
-* [ ] Unary negation (-)
-* [ ] Unary plus (+)
+* [x] Unary negation (-)
+* [x] Unary plus (+)
 * [ ] Unsigned right shift (>>>)
 * [ ] Unsigned right shift assignment (>>>=)
 * [ ] void operator
@@ -98,31 +98,31 @@ npm run test
 
 * [ ] async function
 * [ ] async function*
-* [ ] block
+* [x] block
 * [ ] break
 * [ ] class
 * [ ] const
 * [ ] continue
 * [ ] debugger
-* [ ] do...while
+* [x] do...while
 * [ ] empty
 * [ ] export
-* [ ] for
+* [x] for
 * [ ] for await...of
 * [ ] for...in
 * [ ] for...of
 * [ ] function declaration
 * [ ] function*
-* [ ] if...else
+* [x] if...else
 * [ ] import
 * [ ] label
 * [ ] let
-* [ ] return
+* [x] return
 * [ ] switch
 * [ ] throw
 * [ ] try...catch
-* [ ] var
-* [ ] while
+* [x] var
+* [x] while
 * [ ] with
 
 #### Functions

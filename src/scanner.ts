@@ -106,13 +106,30 @@ class Scanner {
       case '*':
         this.addOneToken(TokenType.STAR);
         break;
+      case '%':
+        this.addOneToken(TokenType.REMAINDER);
+        break;
       case '!':
-        this.addOneToken(this.match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+        if (this.match('=')) {
+          if (this.match('=')) {
+            this.addOneToken(TokenType.BANG_EQUAL_EQUAL)
+          } else {
+            this.addOneToken(TokenType.BANG_EQUAL)
+          }
+        } else {
+          this.addOneToken(TokenType.BANG)
+        }
         break;
       case '=':
-        this.addOneToken(
-          this.match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL,
-        );
+        if (this.match('=')) {
+          if (this.match('=')) {
+            this.addOneToken(TokenType.EQUAL_EQUAL_EQUAL)
+          } else {
+            this.addOneToken(TokenType.EQUAL_EQUAL)
+          }
+        } else {
+          this.addOneToken(TokenType.EQUAL)
+        }
         break;
       case '>':
         this.addOneToken(
