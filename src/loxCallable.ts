@@ -18,10 +18,10 @@ class LoxCallable implements BaseCallable {
     return interpreter.executeBlock(this.declaration.body, env);
   }
   size(): number {
-    return 0;
+    return this.declaration.params.length;
   }
   toString() {
-    return `<fn ${this.declaration.name.lexeme}>`;
+    return this.declaration.toString();
   }
 }
 

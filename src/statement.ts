@@ -26,7 +26,7 @@ export class BlockStatement extends Statement {
     return visitor.visitBlockStatement(this);
   }
   toString() {
-    return `{${this.statements.map(item => item.toString()).join(';')}}`;
+    return `{${this.statements.map(item => item.toString()).join('')}}`;
   }
 }
 export class ClassStatement extends Statement {

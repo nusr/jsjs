@@ -186,7 +186,7 @@ export class UnaryExpression extends Expression {
     return visitor.visitUnaryExpression(this);
   }
   toString() {
-    return `${this.operator.toString()} ${this.right.toString()}`;
+    return `${this.operator.toString()}${this.right.toString()}`;
   }
 }
 export class VariableExpression extends Expression {

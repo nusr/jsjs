@@ -87,7 +87,7 @@ class Scanner {
         this.addOneToken(TokenType.DOT);
         break;
       case '-':
-        if (this.match('+')) {
+        if (this.match('-')) {
           this.addOneToken(TokenType.MINUS_MINUS);
         } else {
           this.addOneToken(TokenType.MINUS);

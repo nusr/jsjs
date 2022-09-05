@@ -1,4 +1,5 @@
-import { Environment, Jsjs } from '../../src/index';
+import { run } from '../../src/node';
+import Environment from '../../src/environment';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -10,8 +11,7 @@ beforeAll(() => {
 describe('parser.test.ts', () => {
   test('parser', () => {
     const env = new Environment(null);
-    const jsjs = new Jsjs();
-    const result = jsjs.run(inputData, env);
+    const result = run(inputData, env);
     expect(result).toEqual([
       null,
       null,
