@@ -1,9 +1,8 @@
 import type { LiteralType } from './type';
 
-class ReturnValue extends Error {
+class ReturnValue {
   value: LiteralType;
   constructor(value: LiteralType) {
-    super(value);
     this.value = value;
   }
 }
