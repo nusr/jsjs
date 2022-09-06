@@ -1,31 +1,34 @@
 import { run } from '../../src/node';
-import Environment from '../../src/environment';
+import { Environment, Log } from '../../src/index';
 import * as fs from 'fs';
 import * as path from 'path';
+import { LiteralType } from '../../src/type';
 
 let inputData = '';
 beforeAll(() => {
   inputData = fs.readFileSync(path.join(__dirname, 'testData.js'), 'utf-8');
 });
 
-describe('parser.test.ts', () => {
-  test('parser', () => {
+describe('node.test.ts', () => {
+  test('node interpreter', () => {
+    let resultList: LiteralType[][] = [];
     const env = new Environment(null);
-    const result = run(inputData, env);
-    expect(result).toEqual([
-      null,
-      null,
-      null,
-      7,
-      null,
-      'b',
-      null,
-      null,
-      1,
-      2,
-      null,
-      2,
-      1,
+    const log = new Log();
+    log.log = (result: LiteralType[]) => {
+      resultList.push(result);
+    };
+    run(inputData, env, log);
+
+    expect(resultList).toEqual([
+      [7],
+      ['b'],
+      [1],
+      [2],
+      [2],
+      [1],
+      [832040],
+      ['global'],
+      ['block'],
     ]);
   });
 });

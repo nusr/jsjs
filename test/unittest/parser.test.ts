@@ -71,7 +71,11 @@ describe('parser.test.ts', () => {
         ),
       ),
       new ExpressionStatement(
-        new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 10)),
+        new CallExpression(
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 10)),
+          new Token(TokenType.RIGHT_PAREN, ')', 10),
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 10))],
+        ),
       ),
       new IfStatement(
         new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 11)),
@@ -93,7 +97,11 @@ describe('parser.test.ts', () => {
         ]),
       ),
       new ExpressionStatement(
-        new VariableExpression(new Token(TokenType.IDENTIFIER, 'a', 16)),
+        new CallExpression(
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 16)),
+          new Token(TokenType.RIGHT_PAREN, ')', 16),
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'a', 16))],
+        ),
       ),
       new FunctionStatement(
         new Token(TokenType.IDENTIFIER, 'makeCounter', 18),
@@ -117,10 +125,18 @@ describe('parser.test.ts', () => {
                   ),
                 ),
               ),
-              new ReturnStatement(
-                new Token(TokenType.RETURN, 'return', 22),
-                new VariableExpression(
-                  new Token(TokenType.IDENTIFIER, 'i', 22),
+
+              new ExpressionStatement(
+                new CallExpression(
+                  new VariableExpression(
+                    new Token(TokenType.IDENTIFIER, 'log', 22),
+                  ),
+                  new Token(TokenType.RIGHT_PAREN, ')', 22),
+                  [
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'i', 22),
+                    ),
+                  ],
                 ),
               ),
             ]),
@@ -174,11 +190,141 @@ describe('parser.test.ts', () => {
         ),
       ),
       new ExpressionStatement(
-        new UnaryExpression(
-          new Token(TokenType.MINUS_MINUS, '--', 33),
-          new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 33)),
+        new CallExpression(
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 33)),
+          new Token(TokenType.RIGHT_PAREN, ')', 33),
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 33))],
         ),
       ),
+      new ExpressionStatement(
+        new UnaryExpression(
+          new Token(TokenType.MINUS_MINUS, '--', 34),
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 34)),
+        ),
+      ),
+      new ExpressionStatement(
+        new CallExpression(
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 35)),
+          new Token(TokenType.RIGHT_PAREN, ')', 35),
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 35))],
+        ),
+      ),
+      new FunctionStatement(
+        new Token(TokenType.IDENTIFIER, 'fib', 36),
+        new BlockStatement([
+          new IfStatement(
+            new BinaryExpression(
+              new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 37)),
+              new Token(TokenType.LESS_EQUAL, '<=', 37),
+              new LiteralExpression(1),
+            ),
+            new ReturnStatement(
+              new Token(TokenType.RETURN, 'return', 37),
+              new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 37)),
+            ),
+            null,
+          ),
+          new ReturnStatement(
+            new Token(TokenType.RETURN, 'return', 38),
+            new BinaryExpression(
+              new CallExpression(
+                new VariableExpression(
+                  new Token(TokenType.IDENTIFIER, 'fib', 38),
+                ),
+                new Token(TokenType.RIGHT_PAREN, ')', 38),
+                [
+                  new BinaryExpression(
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'n', 38),
+                    ),
+                    new Token(TokenType.MINUS, '-', 38),
+                    new LiteralExpression(1),
+                  ),
+                ],
+              ),
+              new Token(TokenType.PLUS, '+', 38),
+              new CallExpression(
+                new VariableExpression(
+                  new Token(TokenType.IDENTIFIER, 'fib', 38),
+                ),
+                new Token(TokenType.RIGHT_PAREN, ')', 38),
+                [
+                  new BinaryExpression(
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'n', 38),
+                    ),
+                    new Token(TokenType.MINUS, '-', 38),
+                    new LiteralExpression(2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ]),
+        [new Token(TokenType.IDENTIFIER, 'n', 36)],
+      ),
+      new ExpressionStatement(
+        new CallExpression(
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 40)),
+          new Token(TokenType.RIGHT_PAREN, ')', 40),
+          [
+            new CallExpression(
+              new VariableExpression(
+                new Token(TokenType.IDENTIFIER, 'fib', 40),
+              ),
+              new Token(TokenType.RIGHT_PAREN, ')', 40),
+              [new LiteralExpression(30)],
+            ),
+          ],
+        ),
+      ),
+      new VariableStatement(
+        new Token(TokenType.IDENTIFIER, 'globalA', 41),
+        new LiteralExpression('global'),
+      ),
+      new BlockStatement([
+        new FunctionStatement(
+          new Token(TokenType.IDENTIFIER, 'showA', 43),
+          new BlockStatement([
+            new ExpressionStatement(
+              new CallExpression(
+                new VariableExpression(
+                  new Token(TokenType.IDENTIFIER, 'log', 44),
+                ),
+                new Token(TokenType.RIGHT_PAREN, ')', 44),
+                [
+                  new VariableExpression(
+                    new Token(TokenType.IDENTIFIER, 'globalA', 44),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+          [],
+        ),
+        new ExpressionStatement(
+          new CallExpression(
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'showA', 47),
+            ),
+            new Token(TokenType.RIGHT_PAREN, ')', 47),
+            [],
+          ),
+        ),
+        new VariableStatement(
+          new Token(TokenType.IDENTIFIER, 'globalA', 48),
+          new LiteralExpression('block'),
+        ),
+        new ExpressionStatement(
+          new CallExpression(
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'showA', 49),
+            ),
+            new Token(TokenType.RIGHT_PAREN, ')', 49),
+            [],
+          ),
+        ),
+      ]),
     ];
     expect(ast).toEqual(expectAst);
   });
@@ -195,16 +341,22 @@ describe('parser.test.ts', () => {
       "var a = 'a';",
       'function add(x,y){return x + y;}',
       'var cond = add(1,2 * 3);',
-      'cond;',
+      'log(cond);',
       "if(cond){a = 'b';} else {a = 'c';}",
-      'a;',
-      'function makeCounter(){var i = 0;function count(){i = i + 1;return i;}return count;}',
+      'log(a);',
+      'function makeCounter(){var i = 0;function count(){i = i + 1;log(i);}return count;}',
       'var counter = makeCounter();',
       'counter();',
       'counter();',
       'var n = 1;',
       '++n;',
+      'log(n);',
       '--n;',
+      'log(n);',
+      'function fib(n){if(n <= 1)return n;return fib(n - 1) + fib(n - 2);}',
+      'log(fib(30));',
+      "var globalA = 'global';",
+      "{function showA(){log(globalA);}showA();var globalA = 'block';showA();}",
     ]);
   });
 });

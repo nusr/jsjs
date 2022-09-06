@@ -38,16 +38,20 @@ import { ReturnValue } from './returnValue';
 import { LoxClass, LoxInstance } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
-  globals = new Environment(null);
-  private environment = this.globals;
+  private environment: Environment;
+  private readonly statements: Statement[];
   errors: string[] = [];
-
-  interpret = (list: Statement[], env: Environment): LiteralType[] => {
-    this.globals = env;
-    this.environment = env;
-    const result: LiteralType[] = [];
-    for (const item of list) {
-      result.push(this.execute(item));
+  constructor(statements: Statement[], environment: Environment) {
+    this.environment = environment;
+    this.statements = statements;
+  }
+  interpret = (): LiteralType => {
+    let result: LiteralType = null;
+    for (const item of this.statements) {
+      result = this.execute(item);
+      if (result instanceof ReturnValue) {
+        return result.value;
+      }
     }
     return result;
   };
@@ -55,7 +59,11 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return statement.accept(this);
   };
   private evaluate = (expr: Expression): LiteralType => {
-    return expr.accept(this);
+    const result = expr.accept(this);
+    if (result instanceof ReturnValue) {
+      return result.value;
+    }
+    return result;
   };
   visitExpressionStatement = (statement: ExpressionStatement) => {
     return this.evaluate(statement.expression);
@@ -68,19 +76,16 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     environment: Environment,
   ): LiteralType => {
     const previous = this.environment;
-    let result: LiteralType | null = null;
-    try {
-      this.environment = environment;
-      for (let item of statement.statements) {
-        this.execute(item);
+    let result: LiteralType = null;
+    this.environment = environment;
+    for (let item of statement.statements) {
+      result = this.execute(item);
+      if (result instanceof ReturnValue) {
+        this.environment = previous;
+        return result;
       }
-    } catch (error) {
-      if (error instanceof ReturnValue) {
-        result = error.value;
-      }
-    } finally {
-      this.environment = previous;
     }
+    this.environment = previous;
     return result;
   };
   visitClassStatement = (statement: ClassStatement) => {
@@ -97,10 +102,14 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return null;
   };
   visitIfStatement = (statement: IfStatement) => {
+    let result: LiteralType = null;
     if (this.isTruthy(this.evaluate(statement.condition))) {
-      this.execute(statement.thenBranch);
+      result = this.execute(statement.thenBranch);
     } else if (statement.elseBranch) {
-      this.execute(statement.elseBranch);
+      result = this.execute(statement.elseBranch);
+    }
+    if (result instanceof ReturnValue) {
+      return result;
     }
     return null;
   };
@@ -113,11 +122,11 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return null;
   };
   visitReturnStatement = (statement: ReturnStatement) => {
+    let result: LiteralType = null;
     if (statement.value !== null) {
-      const result = this.evaluate(statement.value);
-      throw new ReturnValue(result);
+      result = this.evaluate(statement.value);
     }
-    return null;
+    return new ReturnValue(result);
   };
   visitVariableStatement = (statement: VariableStatement) => {
     let value = null;
@@ -129,7 +138,10 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
   visitWhileStatement = (statement: WhileStatement) => {
     while (this.isTruthy(this.evaluate(statement.condition))) {
-      this.execute(statement.body);
+      const result = this.execute(statement.body);
+      if (result instanceof ReturnValue) {
+        return result;
+      }
     }
     return null;
   };
@@ -201,7 +213,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         `can only call functions ${expr.paren.type} ${expr.paren.lexeme}`,
       );
     }
-    return callee.call(this, argumentList);
+    return callee.call(argumentList, this);
   };
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);

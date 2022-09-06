@@ -1,15 +1,24 @@
 import type { LiteralType, BaseCallable } from './type';
-
-class NativeClock implements BaseCallable {
-  call(): LiteralType {
-    return Math.floor(new Date().getTime() / 1000);
+import { isBaseCallable } from './util';
+class Log implements BaseCallable {
+  log(result: LiteralType[]) {
+    console.log(...result);
   }
-  size(): number {
-    return 0;
+  call(argumentList: LiteralType[]): LiteralType {
+    const result: LiteralType[] = [];
+    for (const item of argumentList) {
+      if (isBaseCallable(item)) {
+        result.push(item.toString());
+      } else {
+        result.push(item);
+      }
+    }
+    this.log(result);
+    return null;
   }
   toString() {
-    return `<native fn>`;
+    return `log`;
   }
 }
 
-export { NativeClock };
+export { Log };

@@ -1,4 +1,4 @@
-import type { TokenType } from './tokenType';
+import  { TokenType } from './tokenType';
 class Token {
   readonly type: TokenType;
   readonly lexeme: string;
@@ -15,6 +15,9 @@ class Token {
   }
 
   public toString() {
+    if (this.type === TokenType.STRING) {
+      return `'${this.lexeme}'`;
+    }
     return this.lexeme;
   }
 }

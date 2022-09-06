@@ -29,9 +29,6 @@ export class LoxClass implements BaseCallable {
   constructor(name: string) {
     this.name = name;
   }
-  size() {
-    return 0;
-  }
   call(): LiteralType {
     return new LoxInstance(this);
   }

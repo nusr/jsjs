@@ -1,3 +1,4 @@
 import Jsjs from './jsjs';
 import Environment from './environment';
-export { Jsjs, Environment };
+import { Log } from './native'
+export { Jsjs, Environment, Log };

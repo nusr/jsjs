@@ -24,14 +24,7 @@ function isFunction(fun: any): fun is Function {
 }
 
 export function isBaseCallable(call: any): call is BaseCallable {
-  return (
-    'size' in call &&
-    'toString' in call &&
-    'call' in call &&
-    isFunction(call.size) &&
-    isFunction(call.toString) &&
-    isFunction(call.call)
-  );
+  return call && isFunction(call.toString) && isFunction(call.call);
 }
 
 export function getNodeEnv(): string {

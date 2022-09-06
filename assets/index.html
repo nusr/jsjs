@@ -24,14 +24,49 @@ function add(x, y) {
   return x + y;
 }
 var cond = add(1, 2 * 3);
-cond;
+log(cond);
 if (cond) {
   a = "b";
 } else {
   a = "c";
 }
-a;
-      </textarea>
+log(a);
+
+function makeCounter() {
+  var i = 0;
+  function count() {
+    i = i + 1;
+    log(i);
+  }
+
+  return count;
+}
+
+var counter = makeCounter();
+counter();
+counter();
+var n = 1;
+++n;
+log(n);
+--n;
+log(n);
+function fib(n) {
+  if (n <= 1) return n;
+  return fib(n-1) + fib(n-2);
+}
+log(fib(20));
+var globalA = "global";
+{
+  function showA() {
+    log(globalA);
+  }
+
+  showA();
+  var globalA = "block";
+  showA();
+}
+       </textarea
+      >
     </div>
     <div>
       <button id="run">run</button>
@@ -40,26 +75,33 @@ a;
     <script src="./jsjs.umd.js"></script>
     <script>
       window.onload = function () {
-        const textareaDom = document.querySelector("#code");
-        const buttonDom = document.querySelector("#run");
-        const resultDom = document.querySelector("#result");
-        window.localStorage.setItem("debug", "*");
+        const textareaDom = document.querySelector('#code');
+        const buttonDom = document.querySelector('#run');
+        const resultDom = document.querySelector('#result');
+        window.localStorage.setItem('debug', '*');
 
-        buttonDom.addEventListener("click", function () {
-          const text = (textareaDom && textareaDom.value) || "";
-          const { Jsjs, Environment } = window.jsjs;
-          const interpreter = new Jsjs();
-          const result = interpreter.run(text, new Environment(null));
+        buttonDom.addEventListener('click', function () {
+          const text = (textareaDom && textareaDom.value) || '';
+          const { Jsjs, Environment, Log } = window.jsjs;
+          const interpreter = new Jsjs(text, new Environment(null));
+          const log = new Log();
+          let resultList = [];
+          log.log = (result) => {
+            resultList = result;
+          };
+          interpreter.register('log', log);
+          const result = interpreter.run();
           if (interpreter.errors.length > 0) {
             resultDom.innerHTML =
               interpreter.errors
                 .map((item) => `<div>error: ${item}</div>`)
-                .join("") + resultDom.innerHTM;
+                .join('') + resultDom.innerHTM;
           } else {
+            console.log(...resultList);
             console.log(result);
-            resultDom.innerHTML =
-              result.map((item) => `<div>log: ${item}</div>`).join("") +
-              resultDom.innerHTML;
+            resultDom.innerHTML += resultList
+              .map((item) => `<div>log: ${item}</div>`)
+              .join('');
           }
         });
       };
