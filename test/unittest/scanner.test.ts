@@ -153,7 +153,91 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.RIGHT_PAREN, ')', 35),
       new Token(TokenType.SEMICOLON, ';', 35),
 
-      new Token(TokenType.EOF, '', 52),
+      new Token(TokenType.FUNCTION, 'function', 36),
+      new Token(TokenType.IDENTIFIER, 'fib', 36),
+      new Token(TokenType.LEFT_PAREN, '(', 36),
+      new Token(TokenType.IDENTIFIER, 'n', 36),
+      new Token(TokenType.RIGHT_PAREN, ')', 36),
+      new Token(TokenType.lEFT_BRACE, '{', 36),
+
+      new Token(TokenType.IF, 'if', 37),
+      new Token(TokenType.LEFT_PAREN, '(', 37),
+      new Token(TokenType.IDENTIFIER, 'n', 37),
+      new Token(TokenType.LESS_EQUAL, '<=', 37),
+      new Token(TokenType.NUMBER, '1', 37),
+      new Token(TokenType.RIGHT_PAREN, ')', 37),
+      new Token(TokenType.RETURN, 'return', 37),
+      new Token(TokenType.IDENTIFIER, 'n', 37),
+      new Token(TokenType.SEMICOLON, ';', 37),
+
+      new Token(TokenType.RETURN, 'return', 38),
+      new Token(TokenType.IDENTIFIER, 'fib', 38),
+      new Token(TokenType.LEFT_PAREN, '(', 38),
+      new Token(TokenType.IDENTIFIER, 'n', 38),
+      new Token(TokenType.MINUS, '-', 38),
+      new Token(TokenType.NUMBER, '1', 38),
+      new Token(TokenType.RIGHT_PAREN, ')', 38),
+      new Token(TokenType.PLUS, '+', 38),
+      new Token(TokenType.IDENTIFIER, 'fib', 38),
+      new Token(TokenType.LEFT_PAREN, '(', 38),
+      new Token(TokenType.IDENTIFIER, 'n', 38),
+      new Token(TokenType.MINUS, '-', 38),
+      new Token(TokenType.NUMBER, '2', 38),
+      new Token(TokenType.RIGHT_PAREN, ')', 38),
+      new Token(TokenType.SEMICOLON, ';', 38),
+
+      new Token(TokenType.RIGHT_BRACE, '}', 39),
+
+      new Token(TokenType.IDENTIFIER, 'log', 40),
+      new Token(TokenType.LEFT_PAREN, '(', 40),
+      new Token(TokenType.IDENTIFIER, 'fib', 40),
+      new Token(TokenType.LEFT_PAREN, '(', 40),
+      new Token(TokenType.NUMBER, '30', 40),
+      new Token(TokenType.RIGHT_PAREN, ')', 40),
+      new Token(TokenType.RIGHT_PAREN, ')', 40),
+      new Token(TokenType.SEMICOLON, ';', 40),
+
+      new Token(TokenType.VAR, 'var', 41),
+      new Token(TokenType.IDENTIFIER, 'globalA', 41),
+      new Token(TokenType.EQUAL, '=', 41),
+      new Token(TokenType.STRING, 'global', 41),
+      new Token(TokenType.SEMICOLON, ';', 41),
+
+      new Token(TokenType.lEFT_BRACE, '{', 42),
+
+      new Token(TokenType.FUNCTION, 'function', 43),
+      new Token(TokenType.IDENTIFIER, 'showA', 43),
+      new Token(TokenType.LEFT_PAREN, '(', 43),
+      new Token(TokenType.RIGHT_PAREN, ')', 43),
+      new Token(TokenType.lEFT_BRACE, '{', 43),
+
+      new Token(TokenType.IDENTIFIER, 'log', 44),
+      new Token(TokenType.LEFT_PAREN, '(', 44),
+      new Token(TokenType.IDENTIFIER, 'globalA', 44),
+      new Token(TokenType.RIGHT_PAREN, ')', 44),
+      new Token(TokenType.SEMICOLON, ';', 44),
+
+      new Token(TokenType.RIGHT_BRACE, '}', 45),
+
+      new Token(TokenType.IDENTIFIER, 'showA', 47),
+      new Token(TokenType.LEFT_PAREN, '(', 47),
+      new Token(TokenType.RIGHT_PAREN, ')', 47),
+      new Token(TokenType.SEMICOLON, ';', 47),
+
+      new Token(TokenType.VAR, 'var', 48),
+      new Token(TokenType.IDENTIFIER, 'globalA', 48),
+      new Token(TokenType.EQUAL, '=', 48),
+      new Token(TokenType.STRING, 'block', 48),
+      new Token(TokenType.SEMICOLON, ';', 48),
+
+      new Token(TokenType.IDENTIFIER, 'showA', 49),
+      new Token(TokenType.LEFT_PAREN, '(', 49),
+      new Token(TokenType.RIGHT_PAREN, ')', 49),
+      new Token(TokenType.SEMICOLON, ';', 49),
+
+      new Token(TokenType.RIGHT_BRACE, '}', 50),
+
+      new Token(TokenType.EOF, '', 50),
     ];
 
     expect(new Scanner(inputData).scanTokens()).toEqual(exepctTokens);
