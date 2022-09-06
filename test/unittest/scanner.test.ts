@@ -17,6 +17,7 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.EQUAL, '=', 1),
       new Token(TokenType.STRING, 'a', 1),
       new Token(TokenType.SEMICOLON, ';', 1),
+
       new Token(TokenType.FUNCTION, 'function', 6),
       new Token(TokenType.IDENTIFIER, 'add', 6),
       new Token(TokenType.LEFT_PAREN, '(', 6),
@@ -31,6 +32,7 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.IDENTIFIER, 'y', 7),
       new Token(TokenType.SEMICOLON, ';', 7),
       new Token(TokenType.RIGHT_BRACE, '}', 8),
+
       new Token(TokenType.VAR, 'var', 9),
       new Token(TokenType.IDENTIFIER, 'cond', 9),
       new Token(TokenType.EQUAL, '=', 9),
@@ -43,8 +45,13 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.NUMBER, '3', 9),
       new Token(TokenType.RIGHT_PAREN, ')', 9),
       new Token(TokenType.SEMICOLON, ';', 9),
+
+      new Token(TokenType.IDENTIFIER, 'log', 10),
+      new Token(TokenType.LEFT_PAREN, '(', 10),
       new Token(TokenType.IDENTIFIER, 'cond', 10),
+      new Token(TokenType.RIGHT_PAREN, ')', 10),
       new Token(TokenType.SEMICOLON, ';', 10),
+
       new Token(TokenType.IF, 'if', 11),
       new Token(TokenType.LEFT_PAREN, '(', 11),
       new Token(TokenType.IDENTIFIER, 'cond', 11),
@@ -62,7 +69,11 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.STRING, 'c', 14),
       new Token(TokenType.SEMICOLON, ';', 14),
       new Token(TokenType.RIGHT_BRACE, '}', 15),
+
+      new Token(TokenType.IDENTIFIER, 'log', 16),
+      new Token(TokenType.LEFT_PAREN, '(', 16),
       new Token(TokenType.IDENTIFIER, 'a', 16),
+      new Token(TokenType.RIGHT_PAREN, ')', 16),
       new Token(TokenType.SEMICOLON, ';', 16),
 
       new Token(TokenType.FUNCTION, 'function', 18),
@@ -75,6 +86,7 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.EQUAL, '=', 19),
       new Token(TokenType.NUMBER, '0', 19),
       new Token(TokenType.SEMICOLON, ';', 19),
+
       new Token(TokenType.FUNCTION, 'function', 20),
       new Token(TokenType.IDENTIFIER, 'count', 20),
       new Token(TokenType.LEFT_PAREN, '(', 20),
@@ -86,14 +98,19 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.PLUS, '+', 21),
       new Token(TokenType.NUMBER, '1', 21),
       new Token(TokenType.SEMICOLON, ';', 21),
-      new Token(TokenType.RETURN, 'return', 22),
+
+      new Token(TokenType.IDENTIFIER, 'log', 22),
+      new Token(TokenType.LEFT_PAREN, '(', 22),
       new Token(TokenType.IDENTIFIER, 'i', 22),
+      new Token(TokenType.RIGHT_PAREN, ')', 22),
       new Token(TokenType.SEMICOLON, ';', 22),
+
       new Token(TokenType.RIGHT_BRACE, '}', 23),
       new Token(TokenType.RETURN, 'return', 25),
       new Token(TokenType.IDENTIFIER, 'count', 25),
       new Token(TokenType.SEMICOLON, ';', 25),
       new Token(TokenType.RIGHT_BRACE, '}', 26),
+
       new Token(TokenType.VAR, 'var', 28),
       new Token(TokenType.IDENTIFIER, 'counter', 28),
       new Token(TokenType.EQUAL, '=', 28),
@@ -120,11 +137,23 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.IDENTIFIER, 'n', 32),
       new Token(TokenType.SEMICOLON, ';', 32),
 
-      new Token(TokenType.MINUS_MINUS, '--', 33),
+      new Token(TokenType.IDENTIFIER, 'log', 33),
+      new Token(TokenType.LEFT_PAREN, '(', 33),
       new Token(TokenType.IDENTIFIER, 'n', 33),
+      new Token(TokenType.RIGHT_PAREN, ')', 33),
       new Token(TokenType.SEMICOLON, ';', 33),
 
-      new Token(TokenType.EOF, '', 50),
+      new Token(TokenType.MINUS_MINUS, '--', 34),
+      new Token(TokenType.IDENTIFIER, 'n', 34),
+      new Token(TokenType.SEMICOLON, ';', 34),
+
+      new Token(TokenType.IDENTIFIER, 'log', 35),
+      new Token(TokenType.LEFT_PAREN, '(', 35),
+      new Token(TokenType.IDENTIFIER, 'n', 35),
+      new Token(TokenType.RIGHT_PAREN, ')', 35),
+      new Token(TokenType.SEMICOLON, ';', 35),
+
+      new Token(TokenType.EOF, '', 52),
     ];
 
     expect(new Scanner(inputData).scanTokens()).toEqual(exepctTokens);
