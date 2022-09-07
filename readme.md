@@ -17,6 +17,8 @@ npm run test
 
 ## Support features
 
+[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators)
+
 #### Expressions & operators
 
 * [x] Addition (+)
