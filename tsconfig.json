@@ -23,7 +23,8 @@
     "importsNotUsedAsValues": "error",
     "checkJs": true,
     "outDir": "lib",
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "NodeNext"
   },
   "include": ["src"]
 }

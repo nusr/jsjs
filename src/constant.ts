@@ -8,7 +8,6 @@ export const KEYWORD_MAP: Map<string, TokenType> = new Map([
   ['function', TokenType.FUNCTION],
   ['if', TokenType.IF],
   ['null', TokenType.NULL],
-  ['print', TokenType.PRINT],
   ['return', TokenType.RETURN],
   ['super', TokenType.SUPER],
   ['this', TokenType.THIS],

@@ -1,17 +1,17 @@
 import type Token from './token';
 import type { Expression, VariableExpression } from './expression';
-import type { LiteralType } from './type';;
+import type { LiteralType } from './type';
 export interface StatementVisitor {
   visitBlockStatement: (statement: BlockStatement) => LiteralType;
   visitClassStatement: (statement: ClassStatement) => LiteralType;
   visitExpressionStatement: (statement: ExpressionStatement) => LiteralType;
   visitFunctionStatement: (statement: FunctionStatement) => LiteralType;
   visitIfStatement: (statement: IfStatement) => LiteralType;
-  visitPrintStatement: (statement: PrintStatement) => LiteralType;
   visitReturnStatement: (statement: ReturnStatement) => LiteralType;
   visitVariableStatement: (statement: VariableStatement) => LiteralType;
   visitWhileStatement: (statement: WhileStatement) => LiteralType;
 }
+const FUNCTION_PREFIX = 'function ';
 export abstract class Statement {
   abstract accept(visitor: StatementVisitor): LiteralType;
   abstract toString(): string;
@@ -26,14 +26,18 @@ export class BlockStatement extends Statement {
     return visitor.visitBlockStatement(this);
   }
   toString() {
-    return `{${this.statements.map(item => item.toString()).join('')}}`;
+    return `{${this.statements.map((item) => item.toString()).join('')}}`;
   }
 }
 export class ClassStatement extends Statement {
   readonly name: Token;
   readonly superClass: VariableExpression | null;
   readonly methods: FunctionStatement[];
-  constructor(name: Token, superClass: VariableExpression | null, methods: FunctionStatement[]) {
+  constructor(
+    name: Token,
+    superClass: VariableExpression | null,
+    methods: FunctionStatement[],
+  ) {
     super();
     this.name = name;
     this.superClass = superClass;
@@ -43,7 +47,7 @@ export class ClassStatement extends Statement {
     return visitor.visitClassStatement(this);
   }
   toString() {
-    return ''
+    return `class ${this.name.toString()}{${this.methods.map(item => item.toString().replace(FUNCTION_PREFIX, '')).join('')}}`
   }
 }
 export class ExpressionStatement extends Statement {
@@ -73,14 +77,20 @@ export class FunctionStatement extends Statement {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `function ${this.name.toString()}(${this.params.map(item => item.toString()).join(',')})${this.body.toString()}`
+    return `${FUNCTION_PREFIX}${this.name.toString()}(${this.params
+      .map((item) => item.toString())
+      .join(',')})${this.body.toString()}`;
   }
 }
 export class IfStatement extends Statement {
   readonly condition: Expression;
   readonly thenBranch: Statement;
   readonly elseBranch: Statement | null;
-  constructor(condition: Expression, thenBranch: Statement, elseBranch: Statement | null) {
+  constructor(
+    condition: Expression,
+    thenBranch: Statement,
+    elseBranch: Statement | null,
+  ) {
     super();
     this.condition = condition;
     this.thenBranch = thenBranch;
@@ -90,24 +100,11 @@ export class IfStatement extends Statement {
     return visitor.visitIfStatement(this);
   }
   toString() {
-    const temp = `if(${this.condition.toString()})${this.thenBranch.toString()}`
+    const temp = `if(${this.condition.toString()})${this.thenBranch.toString()}`;
     if (this.elseBranch === null) {
       return temp;
     }
-    return `${temp} else ${this.elseBranch.toString()}`
-  }
-}
-export class PrintStatement extends Statement {
-  readonly expression: Expression;
-  constructor(expression: Expression) {
-    super();
-    this.expression = expression;
-  }
-  accept(visitor: StatementVisitor): LiteralType {
-    return visitor.visitPrintStatement(this);
-  }
-  toString() {
-    return `print ${this.expression.toString()};`
+    return `${temp} else ${this.elseBranch.toString()}`;
   }
 }
 export class ReturnStatement extends Statement {
@@ -122,7 +119,7 @@ export class ReturnStatement extends Statement {
     return visitor.visitReturnStatement(this);
   }
   toString() {
-    return `return ${this.value === null ? '' : this.value.toString()};`
+    return `return ${this.value === null ? '' : this.value.toString()};`;
   }
 }
 export class VariableStatement extends Statement {
@@ -141,7 +138,7 @@ export class VariableStatement extends Statement {
     if (this.initializer === null) {
       return temp + ';';
     }
-    return `${temp} = ${this.initializer.toString()};`
+    return `${temp} = ${this.initializer.toString()};`;
   }
 }
 export class WhileStatement extends Statement {
@@ -156,6 +153,6 @@ export class WhileStatement extends Statement {
     return visitor.visitWhileStatement(this);
   }
   toString() {
-    return `while(${this.condition.toString()})${this.body.toString()}`
+    return `while(${this.condition.toString()})${this.body.toString()}`;
   }
 }

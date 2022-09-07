@@ -21,7 +21,6 @@ import { TokenType } from './tokenType';
 import type {
   FunctionStatement,
   IfStatement,
-  PrintStatement,
   ReturnStatement,
   StatementVisitor,
   ExpressionStatement,
@@ -89,9 +88,8 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return result;
   };
   visitClassStatement = (statement: ClassStatement) => {
-    this.environment.define(statement.name.lexeme, null);
-    const instance = new LoxClass(statement.name.lexeme);
-    this.environment.assign(statement.name, instance);
+    const instance = new LoxClass(statement, this.environment);
+    this.environment.define(statement.name.lexeme, instance);
     return null;
   };
   visitFunctionStatement = (statement: FunctionStatement) => {
@@ -113,14 +111,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return null;
   };
-  visitPrintStatement = (statement: PrintStatement) => {
-    let result: LiteralType = this.evaluate(statement.expression);
-    if (result && result.toString && typeof result.toString === 'function') {
-      result = result.toString();
-    }
-    console.log(result);
-    return null;
-  };
+
   visitReturnStatement = (statement: ReturnStatement) => {
     let result: LiteralType = null;
     if (statement.value !== null) {

@@ -24,7 +24,7 @@ class Scanner {
     return this.tokens;
   };
   private addError = (line: number, message: string) => {
-    const msg = `line: ${line}],scanner error : ${message} `;
+    const msg = `line: ${line},scanner error : ${message} `;
     this.errors.push(msg);
   };
   private isAtEnd() {

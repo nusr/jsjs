@@ -14,7 +14,6 @@ varDeclaration        := "var" identifier ( "=" expression )? ";" ;
 statement      := expressionStatement
                | forStatement
                | ifStatement
-               | printStatement
                | returnStatement
                | whileStatement
                | blockStatement ;
@@ -24,7 +23,6 @@ forStatement        := "for" "(" ( varDeclaration | expressionStatement | ";" )
                            expression? ")" statement ;
 ifStatement         := "if" "(" expression ")" statement
                  ( "else" statement )? ;
-printStatement      := "print" expression ";" ;
 returnStatement     := "return" expression? ";" ;
 whileStatement      := "while" "(" expression ")" statement ;
 blockStatement          := "{" declaration* "}" ;

@@ -43,7 +43,6 @@ export enum TokenType {
   OR,
   BIT_AND,
   BIT_OR,
-  PRINT,
   RETURN,
   SUPER,
   THIS,

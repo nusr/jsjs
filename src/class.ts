@@ -1,5 +1,8 @@
 import type { LiteralType, BaseCallable } from './type';
 import type Token from './token';
+import type { ClassStatement } from './statement';
+import { LoxCallable } from './loxCallable';
+import type Environment from './environment';
 
 export class LoxInstance {
   private readonly classObject: LoxClass;
@@ -12,7 +15,7 @@ export class LoxInstance {
   }
   get(name: Token): LiteralType {
     if (!this.fields.has(name.lexeme)) {
-      throw new Error(`not defined property ${name.lexeme}`)
+      throw new Error(`not defined property ${name.lexeme}`);
     }
     return this.fields.get(name.lexeme);
   }
@@ -25,14 +28,20 @@ export class LoxInstance {
 }
 
 export class LoxClass implements BaseCallable {
-  private readonly name: string;
-  constructor(name: string) {
-    this.name = name;
+  private readonly statement: ClassStatement;
+  private readonly closure: Environment | null;
+  constructor(statement: ClassStatement, closure: Environment | null) {
+    this.statement = statement;
+    this.closure = closure;
   }
   call(): LiteralType {
-    return new LoxInstance(this);
+    const instance = new LoxInstance(this);
+    for (const item of this.statement.methods) {
+      instance.set(item.name, new LoxCallable(item, this.closure));
+    }
+    return instance;
   }
   toString() {
-    return this.name;
+    return this.statement.toString();
   }
 }

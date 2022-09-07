@@ -19,7 +19,6 @@ import {
   ExpressionStatement,
   FunctionStatement,
   IfStatement,
-  PrintStatement,
   ReturnStatement,
   Statement,
   VariableStatement,
@@ -98,9 +97,6 @@ class Parser {
   private statement(): Statement {
     if (this.match(TokenType.IF)) {
       return this.ifStatement();
-    }
-    if (this.match(TokenType.PRINT)) {
-      return this.printStatement();
     }
     if (this.match(TokenType.WHILE)) {
       return this.whileStatement();
@@ -200,13 +196,6 @@ class Parser {
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect } after block');
     return new BlockStatement(statements);
-  }
-  private printStatement(): PrintStatement {
-    const expr = this.expression();
-    if (!this.isAtEnd()) {
-      this.consume(TokenType.SEMICOLON, 'expected ; after print');
-    }
-    return new PrintStatement(expr);
   }
   private expressionStatement(): ExpressionStatement {
     const expr = this.expression();
