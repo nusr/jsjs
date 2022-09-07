@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Compiler</title>
-    <style>
-      #code {
-        width: 600px;
-        height: 300px;
-      }
-    </style>
-  </head>
-  <body>
-    <div><select id="select"></select></div>
-    <div>
-      <textarea id="code">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compiler</title>
+  <style>
+    #code {
+      width: 600px;
+      height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <div><select id="select"></select></div>
+  <div>
+    <textarea id="code">
 var a = "a";
 /**
   * @param {number} x
@@ -54,7 +56,7 @@ function fib(n) {
   if (n <= 1) return n;
   return fib(n-1) + fib(n-2);
 }
-log(fib(20));
+log(fib(30));
 var globalA = "global";
 {
   function showA() {
@@ -65,46 +67,46 @@ var globalA = "global";
   var globalA = "block";
   showA();
 }
-       </textarea
-      >
-    </div>
-    <div>
-      <button id="run">run</button>
-    </div>
-    <div id="result"></div>
-    <script src="./jsjs.umd.js"></script>
-    <script>
-      window.onload = function () {
-        const textareaDom = document.querySelector('#code');
-        const buttonDom = document.querySelector('#run');
-        const resultDom = document.querySelector('#result');
-        window.localStorage.setItem('debug', '*');
-
-        buttonDom.addEventListener('click', function () {
-          const text = (textareaDom && textareaDom.value) || '';
-          const { Jsjs, Environment, Log } = window.jsjs;
-          const interpreter = new Jsjs(text, new Environment(null));
-          const log = new Log();
-          let resultList = [];
-          log.log = (result) => {
-            resultList = result;
-          };
-          interpreter.register('log', log);
-          const result = interpreter.run();
-          if (interpreter.errors.length > 0) {
-            resultDom.innerHTML =
-              interpreter.errors
-                .map((item) => `<div>error: ${item}</div>`)
-                .join('') + resultDom.innerHTM;
-          } else {
-            console.log(...resultList);
-            console.log(result);
-            resultDom.innerHTML += resultList
-              .map((item) => `<div>log: ${item}</div>`)
-              .join('');
-          }
-        });
+       </textarea>
+  </div>
+  <div>
+    <button id="run">run</button>
+  </div>
+  <div id="result"></div>
+  <script src="./jsjs.umd.js"></script>
+  <script>
+    function handleClick() {
+      const textareaDom = document.querySelector('#code');
+      const resultDom = document.querySelector('#result');
+      const text = (textareaDom && textareaDom.value) || '';
+      if (!text) {
+        return;
+      }
+      const { Jsjs, Environment, Log } = window.jsjs;
+      const interpreter = new Jsjs(text, new Environment(null));
+      const log = new Log();
+      log.log = (result) => {
+        console.log(...result);
+        resultDom.innerHTML += result
+          .map((item) => `<div>log: ${item}</div>`)
+          .join('');
       };
-    </script>
-  </body>
+      interpreter.register('log', log);
+      const result = interpreter.run();
+      if (interpreter.errors.length > 0) {
+        resultDom.innerHTML =
+          interpreter.errors
+            .map((item) => `<div>error: ${item}</div>`)
+            .join('') + resultDom.innerHTM;
+      } else {
+        console.log(result);
+      }
+    }
+    window.onload = function () {
+      const buttonDom = document.querySelector('#run');
+      buttonDom.addEventListener('click', handleClick);
+    };
+  </script>
+</body>
+
 </html>
