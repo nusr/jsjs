@@ -24,7 +24,8 @@
     "checkJs": true,
     "outDir": "lib",
     "sourceMap": true,
-    "moduleResolution": "NodeNext"
+    "moduleResolution": "NodeNext",
+    "declaration": true
   },
-  "include": ["src"]
+  "include": ["src", "scripts"]
 }

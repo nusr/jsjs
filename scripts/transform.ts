@@ -12,7 +12,7 @@ const getExt = (str: string): string => {
   return basename.slice(firstDot, lastDot) + extname;
 };
 
-const getOptions = (config) => {
+const getOptions = (config: any) => {
   let options = {};
   const transform = config.transform || [];
   for (let i = 0;i < transform.length;i++) {

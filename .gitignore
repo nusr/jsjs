@@ -8,13 +8,5 @@ package-lock.json
 coverage
 dist
 lib
-CMakeFiles
-cmake_install.cmake
-CMakeCache.txt
-build
-MakeFile
-compiler.exe
-compiler
 assets
-!assets/index.html
 scripts/*.js

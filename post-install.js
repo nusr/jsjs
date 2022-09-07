@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { build } = require("esbuild");
+const { build } = require('esbuild');
 
 function init() {
   const dir = path.join(process.cwd(), 'scripts');
@@ -22,11 +22,15 @@ function init() {
           }
           build({
             entryPoints: [filePath],
-            // bundle: true,
-            // platform: 'node',
             outfile: temp,
             format: 'cjs',
-          })
+          });
+        });
+      } else if (ext === '.js') {
+        fs.unlink(item, (error) => {
+          if (error) {
+            console.log(error);
+          }
         });
       }
     }
