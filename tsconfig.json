@@ -27,5 +27,5 @@
     "moduleResolution": "NodeNext",
     "declaration": true
   },
-  "include": ["src", "scripts"]
+  "include": ["src"]
 }

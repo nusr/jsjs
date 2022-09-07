@@ -48,3 +48,10 @@ var globalA = "global";
   var globalA = "block";
   showA();
 }
+class Test {
+  print() {
+      log(1);
+  }
+}
+var a = new Test();
+a.print();

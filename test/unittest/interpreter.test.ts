@@ -29,6 +29,7 @@ describe('interpreter.test.ts', () => {
       [832040],
       ['global'],
       ['block'],
+      [1],
     ]);
   });
   test('other', () => {
@@ -64,14 +65,12 @@ describe('interpreter.test.ts', () => {
       },
       {
         input: `
-      class Test {
-          print() {
-              log(1);
-          }
-      }
-      var a = Test();
-      a.print();`,
-        expect: [1],
+        var a = 3;
+        do { 
+          log(a);
+          --a;
+        } while(a > 0)`,
+        expect: [3, 2, 1],
       },
     ];
     for (const item of list) {

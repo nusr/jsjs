@@ -15,6 +15,7 @@ import {
   Expression,
   ExpressionVisitor,
   VariableExpression,
+  NewExpression,
 } from './expression';
 import { TokenType } from './tokenType';
 
@@ -64,6 +65,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return result;
   };
+
   visitExpressionStatement = (statement: ExpressionStatement) => {
     return this.evaluate(statement.expression);
   };
@@ -92,12 +94,30 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     this.environment.define(statement.name.lexeme, instance);
     return null;
   };
+  visitNewExpression = (expression: NewExpression) => {
+   const classObject = this.evaluate(expression.name)
+   assert(classObject instanceof LoxInstance, `Class constructor ${expression.name.toString()} cannot be invoked without 'new'`);
+   return classObject;
+  };
   visitFunctionStatement = (statement: FunctionStatement) => {
     this.environment.define(
       statement.name.lexeme,
       new LoxCallable(statement, this.environment),
     );
     return null;
+  };
+  visitCallExpression = (expr: CallExpression): LiteralType => {
+    const callee: LiteralType = this.evaluate(expr.callee);
+    const argumentList: LiteralType[] = [];
+    for (let item of expr.argumentList) {
+      argumentList.push(this.evaluate(item));
+    }
+    if (!isBaseCallable(callee)) {
+      throw new Error(
+        `can only call functions ${expr.paren.type} ${expr.paren.lexeme}`,
+      );
+    }
+    return callee.call(argumentList, this);
   };
   visitIfStatement = (statement: IfStatement) => {
     let result: LiteralType = null;
@@ -193,19 +213,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return null;
   };
-  visitCallExpression = (expr: CallExpression): LiteralType => {
-    const callee: LiteralType = this.evaluate(expr.callee);
-    const argumentList: LiteralType[] = [];
-    for (let item of expr.argumentList) {
-      argumentList.push(this.evaluate(item));
-    }
-    if (!isBaseCallable(callee)) {
-      throw new Error(
-        `can only call functions ${expr.paren.type} ${expr.paren.lexeme}`,
-      );
-    }
-    return callee.call(argumentList, this);
-  };
+
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
     if (temp instanceof LoxInstance) {

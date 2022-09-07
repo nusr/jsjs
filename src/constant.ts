@@ -14,6 +14,8 @@ export const KEYWORD_MAP: Map<string, TokenType> = new Map([
   ['true', TokenType.TRUE],
   ['var', TokenType.VAR],
   ['while', TokenType.WHILE],
+  ['do', TokenType.DO_WHILE],
+  ['new', TokenType.NEW],
 ])
 
 export const EMPTY_DATA = '\0';

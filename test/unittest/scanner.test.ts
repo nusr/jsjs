@@ -236,8 +236,42 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.SEMICOLON, ';', 49),
 
       new Token(TokenType.RIGHT_BRACE, '}', 50),
+      
+      new Token(TokenType.CLASS, 'class', 51),
+      new Token(TokenType.IDENTIFIER, 'Test', 51),
+      new Token(TokenType.lEFT_BRACE, '{', 51),
+      
+      new Token(TokenType.IDENTIFIER, 'print', 52),
+      new Token(TokenType.LEFT_PAREN, '(', 52),
+      new Token(TokenType.RIGHT_PAREN, ')', 52),
+      new Token(TokenType.lEFT_BRACE, '{', 52),
+      
+      new Token(TokenType.IDENTIFIER, 'log', 53),
+      new Token(TokenType.LEFT_PAREN, '(', 53),
+      new Token(TokenType.NUMBER, '1', 53),
+      new Token(TokenType.RIGHT_PAREN, ')', 53),
+      new Token(TokenType.SEMICOLON, ';', 53),
+      
+      new Token(TokenType.RIGHT_BRACE, '}', 54),
+      new Token(TokenType.RIGHT_BRACE, '}', 55),
+      
+      new Token(TokenType.VAR, 'var', 56),
+      new Token(TokenType.IDENTIFIER, 'a', 56),
+      new Token(TokenType.EQUAL, '=', 56),
+      new Token(TokenType.NEW, 'new', 56),
+      new Token(TokenType.IDENTIFIER, 'Test', 56),
+      new Token(TokenType.LEFT_PAREN, '(', 56),
+      new Token(TokenType.RIGHT_PAREN, ')', 56),
+      new Token(TokenType.SEMICOLON, ';', 56),
+      
+      new Token(TokenType.IDENTIFIER, 'a', 57),
+      new Token(TokenType.DOT, '.', 57),
+      new Token(TokenType.IDENTIFIER, 'print', 57),
+      new Token(TokenType.LEFT_PAREN, '(', 57),
+      new Token(TokenType.RIGHT_PAREN, ')', 57),
+      new Token(TokenType.SEMICOLON, ';', 57),
 
-      new Token(TokenType.EOF, '', 50),
+      new Token(TokenType.EOF, '', 57),
     ];
 
     expect(new Scanner(inputData).scanTokens()).toEqual(exepctTokens);

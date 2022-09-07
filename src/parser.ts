@@ -7,6 +7,7 @@ import {
   GroupingExpression,
   LiteralExpression,
   LogicalExpression,
+  NewExpression,
   SetExpression,
   UnaryExpression,
   VariableExpression,
@@ -158,9 +159,7 @@ class Parser {
     const expr = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect )');
     const value = new WhileStatement(expr, body);
-    const statements: Statement[] = [];
-    statements.push(body, value);
-    return new BlockStatement(statements);
+    return new BlockStatement([body,value]);
   }
   private returnStatement(): ReturnStatement {
     const keyword = this.previous();
@@ -360,6 +359,11 @@ class Parser {
         `parser expected: '(',actual: ${JSON.stringify(this.peek())}`,
       );
       return new GroupingExpression(expr);
+    }
+    if (this.match(TokenType.NEW)) {
+      const keyword = this.previous();
+      const expr = this.expression()
+      return new NewExpression(keyword, expr)
     }
 
     throw new Error(

@@ -2,6 +2,7 @@ import type Token from './token';
 import type { LiteralType } from './type';
 import { convertLiteralTypeToString } from './util';
 export interface ExpressionVisitor {
+  visitNewExpression: (Expression: NewExpression) => LiteralType
   visitAssignExpression: (expression: AssignExpression) => LiteralType;
   visitBinaryExpression: (expression: BinaryExpression) => LiteralType;
   visitCallExpression: (expression: CallExpression) => LiteralType;
@@ -18,6 +19,21 @@ export interface ExpressionVisitor {
 export abstract class Expression {
   abstract accept(visitor: ExpressionVisitor): LiteralType;
   abstract toString(): string;
+}
+export class NewExpression extends Expression  {
+  readonly keyword: Token;
+  readonly name: Expression;
+  constructor(keyword: Token, name: Expression) {
+    super();
+    this.keyword = keyword;
+    this.name = name;
+  }
+  accept(visitor: ExpressionVisitor): LiteralType {
+    return visitor.visitNewExpression(this);
+  }
+  toString() {
+    return `${this.keyword.toString()} ${this.name.toString()}`
+  }
 }
 export class AssignExpression extends Expression {
   readonly name: Token;
@@ -80,7 +96,7 @@ export class GetExpression extends Expression {
     return visitor.visitGetExpression(this);
   }
   toString() {
-    return ''
+    return `${this.object.toString()}.${this.name.toString()}`
   }
 }
 export class SetExpression extends Expression {
@@ -97,7 +113,7 @@ export class SetExpression extends Expression {
     return visitor.visitSetExpression(this);
   }
   toString() {
-    return ''
+    return `${this.object.toString()}.${this.name.toString()} = ${this.value.toString()}`
   }
 }
 export class GroupingExpression extends Expression {

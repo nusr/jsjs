@@ -29,6 +29,7 @@ describe('node.test.ts', () => {
       [832040],
       ['global'],
       ['block'],
+      [1]
     ]);
   });
 });

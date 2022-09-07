@@ -1,4 +1,5 @@
 ```bnf
+// https://github.com/antlr/grammars-v4/blob/master/javascript/ecmascript/ECMAScript.g4
 program        := declaration* EOF ;
 
 declaration    := classDeclaration
@@ -40,9 +41,10 @@ term           := factor ( ( "-" | "+" ) factor )* ;
 factor         := unary ( ( "/" | "*" ) unary )* ;
 unary          := ( "!" | "-" ) unary | call ;
 call           := primary ( "(" arguments? ")" | "." identifier )* ;
-primary        := literal | "this" | identifier | "(" expression ")"
+primary        := newExpression | literal | "this" | identifier | "(" expression ")"
                | "super" "." identifier ;
 
+newExpression  := "new" identifier "(" parameters? ")"
 function       := identifier "(" parameters? ")" blockStatement ;
 parameters     := identifier ( "," identifier )* ;
 arguments      := expression ( "," expression )* ;

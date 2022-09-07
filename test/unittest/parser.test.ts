@@ -2,6 +2,7 @@ import Parser from '../../src/parser';
 import Scanner from '../../src/scanner';
 import {
   BlockStatement,
+  ClassStatement,
   ExpressionStatement,
   FunctionStatement,
   IfStatement,
@@ -17,7 +18,9 @@ import {
   AssignExpression,
   BinaryExpression,
   CallExpression,
+  GetExpression,
   LiteralExpression,
+  NewExpression,
   UnaryExpression,
   VariableExpression,
 } from '../../src/expression';
@@ -325,6 +328,45 @@ describe('parser.test.ts', () => {
           ),
         ),
       ]),
+      new ClassStatement(new Token(TokenType.IDENTIFIER, 'Test', 51), null, [
+        new FunctionStatement(
+          new Token(TokenType.IDENTIFIER, 'print', 52),
+          new BlockStatement([
+            new ExpressionStatement(
+              new CallExpression(
+                new VariableExpression(
+                  new Token(TokenType.IDENTIFIER, 'log', 53),
+                ),
+                new Token(TokenType.RIGHT_PAREN, ')', 53),
+                [new LiteralExpression(1)],
+              ),
+            ),
+          ]),
+          [],
+        ),
+      ]),
+
+      new VariableStatement(
+        new Token(TokenType.IDENTIFIER, 'a', 56),
+        new NewExpression(
+          new Token(TokenType.NEW, 'new', 56),
+          new CallExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'Test', 56)),
+            new Token(TokenType.RIGHT_PAREN, ')', 56),
+            [],
+          ),
+        ),
+      ),
+      new ExpressionStatement(
+        new CallExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'a', 57)),
+            new Token(TokenType.IDENTIFIER, 'print', 57),
+          ),
+          new Token(TokenType.RIGHT_PAREN, ')', 57),
+          [],
+        ),
+      ),
     ];
     expect(ast).toEqual(expectAst);
   });
@@ -357,6 +399,9 @@ describe('parser.test.ts', () => {
       'log(fib(30));',
       "var globalA = 'global';",
       "{function showA(){log(globalA);}showA();var globalA = 'block';showA();}",
+      'class Test{print(){log(1);}}',
+      'var a = new Test();',
+      'a.print();',
     ]);
   });
 });
