@@ -100,20 +100,18 @@ export class GetExpression extends Expression {
   }
 }
 export class SetExpression extends Expression {
-  readonly object: Expression;
-  readonly name: Token;
+  readonly object: GetExpression;
   readonly value: Expression;
-  constructor(object: Expression, name: Token, value: Expression) {
+  constructor(object: GetExpression, value: Expression) {
     super();
     this.object = object;
-    this.name = name;
     this.value = value;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitSetExpression(this);
   }
   toString() {
-    return `${this.object.toString()}.${this.name.toString()} = ${this.value.toString()}`
+    return `${this.object.toString()} = ${this.value.toString()}`
   }
 }
 export class GroupingExpression extends Expression {

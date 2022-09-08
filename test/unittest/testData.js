@@ -1,4 +1,4 @@
-var a = "a";
+var a = 'a';
 /**
  * @param {number} x
  * @param {number} y
@@ -9,9 +9,9 @@ function add(x, y) {
 var cond = add(1, 2 * 3);
 log(cond);
 if (cond) {
-  a = "b";
+  a = 'b';
 } else {
-  a = "c";
+  a = 'c';
 }
 log(a);
 
@@ -35,23 +35,29 @@ log(n);
 log(n);
 function fib(n) {
   if (n <= 1) return n;
-  return fib(n-1) + fib(n-2);
+  return fib(n - 1) + fib(n - 2);
 }
 log(fib(30));
-var globalA = "global";
+var globalA = 'global';
 {
   function showA() {
     log(globalA);
   }
 
   showA();
-  var globalA = "block";
+  var globalA = 'block';
   showA();
 }
 class Test {
-  print() {
-      log(1);
+  b = 5;
+  print(a) {
+    log(a);
   }
 }
 var a = new Test();
-a.print();
+a.print(3);
+log(a.b);
+a.b = '9';
+log(a.b);
+a.print = '1';
+log(a.print);

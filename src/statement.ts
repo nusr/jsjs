@@ -32,11 +32,11 @@ export class BlockStatement extends Statement {
 export class ClassStatement extends Statement {
   readonly name: Token;
   readonly superClass: VariableExpression | null;
-  readonly methods: FunctionStatement[];
+  readonly methods: Array<VariableStatement | FunctionStatement>;
   constructor(
     name: Token,
     superClass: VariableExpression | null,
-    methods: FunctionStatement[],
+    methods: Array<VariableStatement | FunctionStatement>,
   ) {
     super();
     this.name = name;

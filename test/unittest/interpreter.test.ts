@@ -72,6 +72,23 @@ describe('interpreter.test.ts', () => {
         } while(a > 0)`,
         expect: [3, 2, 1],
       },
+      {
+        input: `
+        class Test {
+          b = 5;
+          print(a) {
+              log(a);
+          }
+        }
+        var a = new Test();
+        a.print(3);
+        log(a.b);
+        a.b = '9';
+        log(a.b);
+        a.print = '1';
+        log(a.print);`,
+        expect: [3, 5, '9', '1'],
+      },
     ];
     for (const item of list) {
       const env = new Environment(null);

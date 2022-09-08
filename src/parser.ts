@@ -57,9 +57,13 @@ class Parser {
   private classDeclaration(): ClassStatement {
     const name = this.consume(TokenType.IDENTIFIER, 'expect class name');
     this.consume(TokenType.lEFT_BRACE, 'expect {');
-    let methods: FunctionStatement[] = [];
+    let methods: Array<VariableStatement | FunctionStatement> = [];
     while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
-      methods.push(this.functionDeclaration('method'));
+      if (this.checkNext(TokenType.LEFT_PAREN)) {
+        methods.push(this.functionDeclaration('method'));
+      } else {
+        methods.push(this.varDeclaration());
+      }
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect }');
     return new ClassStatement(name, null, methods);
@@ -159,7 +163,7 @@ class Parser {
     const expr = this.expression();
     this.consume(TokenType.RIGHT_PAREN, 'expect )');
     const value = new WhileStatement(expr, body);
-    return new BlockStatement([body,value]);
+    return new BlockStatement([body, value]);
   }
   private returnStatement(): ReturnStatement {
     const keyword = this.previous();
@@ -213,7 +217,7 @@ class Parser {
         const name = expr.name;
         return new AssignExpression(name, value);
       } else if (expr instanceof GetExpression) {
-        return new SetExpression(expr, expr.name, value);
+        return new SetExpression(expr, value);
       }
       throw new Error(`invalid assign target: ${equal}`);
     }
@@ -303,16 +307,22 @@ class Parser {
       const value = this.unary();
       return new UnaryExpression(operator, value);
     }
+    return this.newExpression();
+  }
+  private newExpression(): Expression {
+    if (this.match(TokenType.NEW)) {
+      return new NewExpression(this.previous(), this.call());
+    }
     return this.call();
   }
   private call(): Expression {
     let expr: Expression = this.primary();
     while (true) {
-      if (this.match(TokenType.LEFT_PAREN)) {
-        expr = this.finishCall(expr);
-      } else if (this.match(TokenType.DOT)) {
+      if (this.match(TokenType.DOT)) {
         const name = this.consume(TokenType.IDENTIFIER, 'expect name');
         expr = new GetExpression(expr, name);
+      } else if (this.match(TokenType.LEFT_PAREN)) {
+        expr = this.finishCall(expr);
       } else {
         break;
       }
@@ -356,18 +366,18 @@ class Parser {
       const expr: Expression = this.expression();
       this.consume(
         TokenType.RIGHT_PAREN,
-        `parser expected: '(',actual: ${JSON.stringify(this.peek())}`,
+        `parser expected: '(',actual: ${this.peek().toString()}`,
       );
       return new GroupingExpression(expr);
     }
     if (this.match(TokenType.NEW)) {
       const keyword = this.previous();
-      const expr = this.expression()
-      return new NewExpression(keyword, expr)
+      const expr = this.expression();
+      return new NewExpression(keyword, expr);
     }
 
     throw new Error(
-      `parser can not handle token: ${JSON.stringify(this.peek())}`,
+      `parser can not handle token: ${this.peek().toString()}`,
     );
   }
   private consume(type: TokenType, message: string) {
@@ -400,6 +410,12 @@ class Parser {
       return false;
     }
     return this.peek().type === type;
+  }
+  private checkNext(type: TokenType) {
+    if (this.current + 1 < this.tokens.length) {
+      return false;
+    }
+    return (this.tokens[this.current + 1] as Token).type === type;
   }
   private isAtEnd(): boolean {
     return this.peek().type === TokenType.EOF;

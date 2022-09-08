@@ -20,7 +20,6 @@ import {
 import { TokenType } from './tokenType';
 
 import type {
-  FunctionStatement,
   IfStatement,
   ReturnStatement,
   StatementVisitor,
@@ -31,11 +30,12 @@ import type {
   ClassStatement,
   VariableStatement,
 } from './statement';
+import { FunctionStatement } from './statement';
 import Environment from './environment';
 import { isBaseCallable, assert } from './util';
 import { LoxCallable } from './loxCallable';
 import { ReturnValue } from './returnValue';
-import { LoxClass, LoxInstance } from './class';
+import { ClassObject, ClassInstance } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   private environment: Environment;
@@ -90,14 +90,29 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return result;
   };
   visitClassStatement = (statement: ClassStatement) => {
-    const instance = new LoxClass(statement, this.environment);
+    const fields: Record<string, LiteralType> = {};
+    for (const item of statement.methods) {
+      if (item instanceof FunctionStatement) {
+        fields[item.name.lexeme] = new LoxCallable(item, this.environment);
+      } else {
+        let temp: LiteralType = null;
+        if (item.initializer != null) {
+          temp = this.evaluate(item.initializer);
+        }
+        fields[item.name.lexeme] = temp;
+      }
+    }
+    const instance = new ClassObject(statement.name.lexeme, fields);
     this.environment.define(statement.name.lexeme, instance);
     return null;
   };
   visitNewExpression = (expression: NewExpression) => {
-   const classObject = this.evaluate(expression.name)
-   assert(classObject instanceof LoxInstance, `Class constructor ${expression.name.toString()} cannot be invoked without 'new'`);
-   return classObject;
+    const classObject = this.evaluate(expression.name);
+    assert(
+      classObject instanceof ClassInstance,
+      `Class constructor ${expression.name.toString()} cannot be invoked without 'new'`,
+    );
+    return classObject;
   };
   visitFunctionStatement = (statement: FunctionStatement) => {
     this.environment.define(
@@ -167,41 +182,23 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
       case TokenType.MINUS:
-        return Number(left) - Number(right);
+        return left - right;
       case TokenType.PLUS:
-        if (typeof left === 'number' && typeof right === 'number') {
-          return Number(left) + Number(right);
-        }
-        if (typeof left === 'string' || typeof right === 'string') {
-          return String(left) + String(right);
-        }
-        if (
-          (typeof left === 'string' && typeof right === 'number') ||
-          (typeof left === 'number' && typeof right === 'string')
-        ) {
-          return String(left) + String(right);
-        }
-        return null;
+        return left + right;
       case TokenType.STAR:
-        return Number(left) * Number(right);
+        return left * right;
       case TokenType.REMAINDER:
-        return Number(left) * Number(right);
-      case TokenType.SLASH: {
-        const temp = Number(right);
-        if (temp === 0) {
-          throw new Error('slash is zero');
-        }
-        return Number(left) / temp;
-      }
-
+        return left % right;
+      case TokenType.SLASH:
+        return left / right;
       case TokenType.GREATER:
-        return Number(left) > Number(right);
+        return left > right;
       case TokenType.GREATER_EQUAL:
-        return Number(left) >= Number(right);
+        return left >= right;
       case TokenType.LESS:
-        return Number(left) < Number(right);
+        return left < right;
       case TokenType.LESS_EQUAL:
-        return Number(left) <= Number(right);
+        return left <= right;
       case TokenType.BANG_EQUAL:
         return left != right;
       case TokenType.BANG_EQUAL_EQUAL:
@@ -209,26 +206,26 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       case TokenType.EQUAL_EQUAL:
         return left == right;
       case TokenType.EQUAL_EQUAL_EQUAL:
-        return left == right;
+        return left === right;
     }
     return null;
   };
 
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
-    if (temp instanceof LoxInstance) {
+    if (temp instanceof ClassInstance) {
       return temp.get(expr.name);
     }
     throw new Error('error GetExpression');
   };
   visitSetExpression = (expr: SetExpression) => {
-    const temp = this.evaluate(expr.object);
-    if (!(temp instanceof LoxInstance)) {
-      return new Error('error SetExpression');
+    const temp = this.evaluate(expr.object.object);
+    if (temp instanceof ClassInstance) {
+      const value = this.evaluate(expr.value);
+      temp.set(expr.object.name, value);
+      return value;
     }
-    const value = this.evaluate(expr.value);
-    temp.set(expr.name, value);
-    return value;
+    return new Error('error SetExpression');
   };
   visitLogicalExpression = (expr: LogicalExpression) => {
     const left = this.evaluate(expr.left);
@@ -262,12 +259,11 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
       case TokenType.MINUS:
-        return -Number(right);
+        return -right;
       case TokenType.BANG:
         return !this.isTruthy(right);
       case TokenType.PLUS_PLUS:
       case TokenType.MINUS_MINUS: {
-        assert(typeof right === 'number', 'must be number');
         assert(
           expr.right instanceof VariableExpression,
           'Invalid left-hand side expression in prefix operation',
