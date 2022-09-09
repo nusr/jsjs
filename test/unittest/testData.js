@@ -51,13 +51,16 @@ var globalA = 'global';
 class Test {
   b = 5;
   print(a) {
-    log(a);
+      log(a);
   }
 }
-var a = new Test();
-a.print(3);
-log(a.b);
-a.b = '9';
-log(a.b);
-a.print = '1';
-log(a.print);
+var b = new Test();
+b.print(3);
+log(b.b);
+b.b = '9';
+log(b.b);
+b.print = '1';
+log(b.print);
+var c = new Test();
+log(c.b);
+c.print(4);
