@@ -412,7 +412,7 @@ class Parser {
     return this.peek().type === type;
   }
   private checkNext(type: TokenType) {
-    if (this.current + 1 < this.tokens.length) {
+    if (this.isAtEnd()) {
       return false;
     }
     return (this.tokens[this.current + 1] as Token).type === type;
