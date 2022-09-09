@@ -11,7 +11,6 @@ export interface StatementVisitor {
   visitVariableStatement: (statement: VariableStatement) => LiteralType;
   visitWhileStatement: (statement: WhileStatement) => LiteralType;
 }
-const FUNCTION_PREFIX = 'function ';
 export abstract class Statement {
   abstract accept(visitor: StatementVisitor): LiteralType;
   abstract toString(): string;
@@ -47,7 +46,11 @@ export class ClassStatement extends Statement {
     return visitor.visitClassStatement(this);
   }
   toString() {
-    return `class ${this.name.toString()}{${this.methods.map(item => item.toString().replace(FUNCTION_PREFIX, '')).join('')}}`
+    return `class ${this.name.toString()}{${this.methods.map(item => {
+      const temp = item.toString();
+      const index = temp.indexOf(' ');
+      return temp.slice(index + 1);
+    }).join('')}}`
   }
 }
 export class ExpressionStatement extends Statement {
@@ -77,7 +80,7 @@ export class FunctionStatement extends Statement {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `${FUNCTION_PREFIX}${this.name.toString()}(${this.params
+    return `function ${this.name.toString()}(${this.params
       .map((item) => item.toString())
       .join(',')})${this.body.toString()}`;
   }
