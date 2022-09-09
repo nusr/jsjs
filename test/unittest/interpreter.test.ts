@@ -29,68 +29,80 @@ describe('interpreter.test.ts', () => {
       [832040],
       ['global'],
       ['block'],
-      [1],
+      [3],
+      [5],
+      ['9'],
+      ['1'],
+      [5],
+      [4],
     ]);
   });
-  test('other', () => {
-    const list: Array<{ input: string; expect: LiteralType[] }> = [
-      {
-        input: `
-        function ifReturn(a) {
-            if (a > 10) {
-                return a - 1;
-            } else {
-                return a + 1;
-            }
-            return 10;
-        }
-        log(ifReturn(20));
-        log(ifReturn(2));`,
-        expect: [19, 3],
-      },
-      {
-        input: `
-        function whileReturn(n) {
-            while(1) {
-                if (n <= 5) {
-                    return n;
-                }
-                --n;
-            }
-            return 0;
-        }
-        log(whileReturn(2));
-        log(whileReturn(10));`,
-        expect: [2, 5],
-      },
-      {
-        input: `
-        var a = 3;
-        do { 
-          log(a);
-          --a;
-        } while(a > 0)`,
-        expect: [3, 2, 1],
-      },
-      {
-        input: `
-        class Test {
-          b = 5;
-          print(a) {
-              log(a);
+  const list: Array<{ input: string; expect: LiteralType[]; name: string; }> = [
+    {
+      name: 'if return',
+      input: `
+      function ifReturn(a) {
+          if (a > 10) {
+              return a - 1;
+          } else {
+              return a + 1;
           }
+          return 10;
+      }
+      log(ifReturn(20));
+      log(ifReturn(2));`,
+      expect: [19, 3],
+    },
+    {
+      name: 'while return',
+      input: `
+      function whileReturn(n) {
+          while(1) {
+              if (n <= 5) {
+                  return n;
+              }
+              --n;
+          }
+          return 0;
+      }
+      log(whileReturn(2));
+      log(whileReturn(10));`,
+      expect: [2, 5],
+    },
+    {
+      name: 'do while',
+      input: `
+      var a = 3;
+      do { 
+        log(a);
+        --a;
+      } while(a > 0)`,
+      expect: [3, 2, 1],
+    },
+    {
+      name: 'class',
+      input: `
+      class Test {
+        b = 5;
+        print(a) {
+            log(a);
         }
-        var a = new Test();
-        a.print(3);
-        log(a.b);
-        a.b = '9';
-        log(a.b);
-        a.print = '1';
-        log(a.print);`,
-        expect: [3, 5, '9', '1'],
-      },
-    ];
-    for (const item of list) {
+      }
+      var a = new Test();
+      a.print(3);
+      log(a.b);
+      a.b = '9';
+      log(a.b);
+      a.print = '1';
+      log(a.print);
+      var c = new Test();
+      log(c.b);
+      c.print(4);`,
+      expect: [3, 5, '9', '1', 5, 4],
+    },
+  ];
+  for (const item of list) {
+    test(item.name, () => {
       const env = new Environment(null);
       const jsjs = new Jsjs(item.input, env);
       const log = new Log();
@@ -99,6 +111,6 @@ describe('interpreter.test.ts', () => {
       };
       jsjs.register('log', log);
       jsjs.run();
-    }
-  });
+    });
+  }
 });
