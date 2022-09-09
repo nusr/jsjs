@@ -2,21 +2,21 @@ import type { LiteralType, BaseCallable } from './type';
 import type Token from './token';
 
 export class ClassInstance {
-  private readonly classObject: ClassObject;
-  constructor(classObject: ClassObject) {
-    this.classObject = classObject;
+  private readonly methods: Record<string, LiteralType>;
+  constructor(methods: Record<string, LiteralType>) {
+    this.methods = methods;
   }
   get(name: Token): LiteralType {
-    if (name.lexeme in this.classObject.methods) {
-      return this.classObject.methods[name.lexeme];
+    if (name.lexeme in this.methods) {
+      return this.methods[name.lexeme];
     }
     throw new Error(`not defined property ${name.lexeme}`);
   }
   set(name: Token, value: LiteralType): void {
-    this.classObject.methods[name.lexeme] = value;
+    this.methods[name.lexeme] = value;
   }
   toString() {
-    return this.classObject.toString();
+    return this.methods.toString();
   }
 }
 
@@ -28,7 +28,9 @@ export class ClassObject implements BaseCallable {
     this.methods = methods;
   }
   call(): LiteralType {
-    const instance = new ClassInstance(this);
+    const instance = new ClassInstance({
+      ...this.methods,
+    });
     return instance;
   }
   toString() {
