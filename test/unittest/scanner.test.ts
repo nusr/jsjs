@@ -236,42 +236,112 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.SEMICOLON, ';', 49),
 
       new Token(TokenType.RIGHT_BRACE, '}', 50),
-      
+
       new Token(TokenType.CLASS, 'class', 51),
       new Token(TokenType.IDENTIFIER, 'Test', 51),
       new Token(TokenType.lEFT_BRACE, '{', 51),
-      
-      new Token(TokenType.IDENTIFIER, 'print', 52),
-      new Token(TokenType.LEFT_PAREN, '(', 52),
-      new Token(TokenType.RIGHT_PAREN, ')', 52),
-      new Token(TokenType.lEFT_BRACE, '{', 52),
-      
-      new Token(TokenType.IDENTIFIER, 'log', 53),
+
+      new Token(TokenType.IDENTIFIER, 'b', 52),
+      new Token(TokenType.EQUAL, '=', 52),
+      new Token(TokenType.NUMBER, '5', 52),
+      new Token(TokenType.SEMICOLON, ';', 52),
+
+      new Token(TokenType.IDENTIFIER, 'print', 53),
       new Token(TokenType.LEFT_PAREN, '(', 53),
-      new Token(TokenType.NUMBER, '1', 53),
+      new Token(TokenType.IDENTIFIER, 'a', 53),
       new Token(TokenType.RIGHT_PAREN, ')', 53),
-      new Token(TokenType.SEMICOLON, ';', 53),
-      
-      new Token(TokenType.RIGHT_BRACE, '}', 54),
+      new Token(TokenType.lEFT_BRACE, '{', 53),
+
+      new Token(TokenType.IDENTIFIER, 'log', 54),
+      new Token(TokenType.LEFT_PAREN, '(', 54),
+      new Token(TokenType.IDENTIFIER, 'a', 54),
+      new Token(TokenType.RIGHT_PAREN, ')', 54),
+      new Token(TokenType.SEMICOLON, ';', 54),
+
       new Token(TokenType.RIGHT_BRACE, '}', 55),
-      
-      new Token(TokenType.VAR, 'var', 56),
-      new Token(TokenType.IDENTIFIER, 'a', 56),
-      new Token(TokenType.EQUAL, '=', 56),
-      new Token(TokenType.NEW, 'new', 56),
-      new Token(TokenType.IDENTIFIER, 'Test', 56),
-      new Token(TokenType.LEFT_PAREN, '(', 56),
-      new Token(TokenType.RIGHT_PAREN, ')', 56),
-      new Token(TokenType.SEMICOLON, ';', 56),
-      
-      new Token(TokenType.IDENTIFIER, 'a', 57),
-      new Token(TokenType.DOT, '.', 57),
-      new Token(TokenType.IDENTIFIER, 'print', 57),
+      new Token(TokenType.RIGHT_BRACE, '}', 56),
+
+      new Token(TokenType.VAR, 'var', 57),
+      new Token(TokenType.IDENTIFIER, 'b', 57),
+      new Token(TokenType.EQUAL, '=', 57),
+      new Token(TokenType.NEW, 'new', 57),
+      new Token(TokenType.IDENTIFIER, 'Test', 57),
       new Token(TokenType.LEFT_PAREN, '(', 57),
       new Token(TokenType.RIGHT_PAREN, ')', 57),
       new Token(TokenType.SEMICOLON, ';', 57),
 
-      new Token(TokenType.EOF, '', 57),
+      new Token(TokenType.IDENTIFIER, 'b', 58),
+      new Token(TokenType.DOT, '.', 58),
+      new Token(TokenType.IDENTIFIER, 'print', 58),
+      new Token(TokenType.LEFT_PAREN, '(', 58),
+      new Token(TokenType.NUMBER, '3', 58),
+      new Token(TokenType.RIGHT_PAREN, ')', 58),
+      new Token(TokenType.SEMICOLON, ';', 58),
+
+      new Token(TokenType.IDENTIFIER, 'log', 59),
+      new Token(TokenType.LEFT_PAREN, '(', 59),
+      new Token(TokenType.IDENTIFIER, 'b', 59),
+      new Token(TokenType.DOT, '.', 59),
+      new Token(TokenType.IDENTIFIER, 'b', 59),
+      new Token(TokenType.RIGHT_PAREN, ')', 59),
+      new Token(TokenType.SEMICOLON, ';', 59),
+
+      new Token(TokenType.IDENTIFIER, 'b', 60),
+      new Token(TokenType.DOT, '.', 60),
+      new Token(TokenType.IDENTIFIER, 'b', 60),
+      new Token(TokenType.EQUAL, '=', 60),
+      new Token(TokenType.STRING, '9', 60),
+      new Token(TokenType.SEMICOLON, ';', 60),
+
+      new Token(TokenType.IDENTIFIER, 'log', 61),
+      new Token(TokenType.LEFT_PAREN, '(', 61),
+      new Token(TokenType.IDENTIFIER, 'b', 61),
+      new Token(TokenType.DOT, '.', 61),
+      new Token(TokenType.IDENTIFIER, 'b', 61),
+      new Token(TokenType.RIGHT_PAREN, ')', 61),
+      new Token(TokenType.SEMICOLON, ';', 61),
+
+      new Token(TokenType.IDENTIFIER, 'b', 62),
+      new Token(TokenType.DOT, '.', 62),
+      new Token(TokenType.IDENTIFIER, 'print', 62),
+      new Token(TokenType.EQUAL, '=', 62),
+      new Token(TokenType.STRING, '1', 62),
+      new Token(TokenType.SEMICOLON, ';', 62),
+
+      new Token(TokenType.IDENTIFIER, 'log', 63),
+      new Token(TokenType.LEFT_PAREN, '(', 63),
+      new Token(TokenType.IDENTIFIER, 'b', 63),
+      new Token(TokenType.DOT, '.', 63),
+      new Token(TokenType.IDENTIFIER, 'print', 63),
+      new Token(TokenType.RIGHT_PAREN, ')', 63),
+      new Token(TokenType.SEMICOLON, ';', 63),
+
+      new Token(TokenType.VAR, 'var', 64),
+      new Token(TokenType.IDENTIFIER, 'c', 64),
+      new Token(TokenType.EQUAL, '=', 64),
+      new Token(TokenType.NEW, 'new', 64),
+      new Token(TokenType.IDENTIFIER, 'Test', 64),
+      new Token(TokenType.LEFT_PAREN, '(', 64),
+      new Token(TokenType.RIGHT_PAREN, ')', 64),
+      new Token(TokenType.SEMICOLON, ';', 64),
+
+      new Token(TokenType.IDENTIFIER, 'log', 65),
+      new Token(TokenType.LEFT_PAREN, '(', 65),
+      new Token(TokenType.IDENTIFIER, 'c', 65),
+      new Token(TokenType.DOT, '.', 65),
+      new Token(TokenType.IDENTIFIER, 'b', 65),
+      new Token(TokenType.RIGHT_PAREN, ')', 65),
+      new Token(TokenType.SEMICOLON, ';', 65),
+
+      new Token(TokenType.IDENTIFIER, 'c', 66),
+      new Token(TokenType.DOT, '.', 66),
+      new Token(TokenType.IDENTIFIER, 'print', 66),
+      new Token(TokenType.LEFT_PAREN, '(', 66),
+      new Token(TokenType.NUMBER, '4', 66),
+      new Token(TokenType.RIGHT_PAREN, ')', 66),
+      new Token(TokenType.SEMICOLON, ';', 66),
+
+      new Token(TokenType.EOF, '', 67),
     ];
 
     expect(new Scanner(inputData).scanTokens()).toEqual(exepctTokens);
