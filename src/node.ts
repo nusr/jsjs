@@ -3,7 +3,7 @@ import fs from 'fs';
 import readline from 'readline';
 import Jsjs from './jsjs';
 import Environment from './environment';
-import type { LiteralType, BaseCallable } from './type';
+import type { LiteralType, IBaseCallable } from './type';
 import { isBaseCallable } from './util';
 
 export function init() {
@@ -21,7 +21,7 @@ export function init() {
 export function run(
   data: string,
   env: Environment,
-  log: BaseCallable | null = null,
+  log: IBaseCallable | null = null,
 ): LiteralType {
   const instance = new Jsjs(data, env);
   if (isBaseCallable(log)) {

@@ -50,5 +50,7 @@ export enum TokenType {
   WHILE,
   DO_WHILE, // do while
   NEW, // new
+  STATIC, // static
+  CONSTRUCTOR, // constructor
   EOF, // end
 }

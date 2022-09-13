@@ -1,4 +1,4 @@
-import type { LiteralType, BaseCallable } from './type';
+import type { LiteralType, IBaseCallable } from './type';
 
 export function convertLiteralTypeToString(val: LiteralType): string {
   if (val === null) {
@@ -23,7 +23,7 @@ function isFunction(fun: any): fun is Function {
   return typeof fun === 'function';
 }
 
-export function isBaseCallable(call: any): call is BaseCallable {
+export function isBaseCallable(call: any): call is IBaseCallable {
   return call && isFunction(call.toString) && isFunction(call.call);
 }
 
@@ -43,4 +43,8 @@ export function assert(
     }
     throw new Error(message);
   }
+}
+
+export function isBaseSetGet(call: any): call is BaseSetGet {
+  return call && isFunction(call.get) && isFunction(call.set);
 }

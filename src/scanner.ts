@@ -112,23 +112,23 @@ class Scanner {
       case '!':
         if (this.match('=')) {
           if (this.match('=')) {
-            this.addOneToken(TokenType.BANG_EQUAL_EQUAL)
+            this.addOneToken(TokenType.BANG_EQUAL_EQUAL);
           } else {
-            this.addOneToken(TokenType.BANG_EQUAL)
+            this.addOneToken(TokenType.BANG_EQUAL);
           }
         } else {
-          this.addOneToken(TokenType.BANG)
+          this.addOneToken(TokenType.BANG);
         }
         break;
       case '=':
         if (this.match('=')) {
           if (this.match('=')) {
-            this.addOneToken(TokenType.EQUAL_EQUAL_EQUAL)
+            this.addOneToken(TokenType.EQUAL_EQUAL_EQUAL);
           } else {
-            this.addOneToken(TokenType.EQUAL_EQUAL)
+            this.addOneToken(TokenType.EQUAL_EQUAL);
           }
         } else {
-          this.addOneToken(TokenType.EQUAL)
+          this.addOneToken(TokenType.EQUAL);
         }
         break;
       case '>':
@@ -137,7 +137,9 @@ class Scanner {
         );
         break;
       case '<':
-        this.addOneToken(this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+        this.addOneToken(
+          this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS,
+        );
         break;
       case '/':
         // single line comment
@@ -159,10 +161,7 @@ class Scanner {
             }
           }
           if (this.peekNext() !== '/') {
-            this.addError(
-              this.line,
-              'multiple line comment end error',
-            );
+            this.addError(this.line, 'multiple line comment end error');
           }
           this.advance(); // skip *
           this.advance(); // skip /
@@ -201,7 +200,7 @@ class Scanner {
       default:
         if (this.isDigit(c)) {
           this.number();
-        } else if (this.isAlpha(c)) {
+        } else if (this.isAlpha(c) || this.isZh(c)) {
           this.identifier();
         } else {
           this.addError(this.line, `Unexpected character: ${c}`);
@@ -237,8 +236,13 @@ class Scanner {
     this.addOneToken(TokenType.NUMBER);
   }
   private identifier() {
-    while (this.isAlphaNumeric(this.peek())) {
-      this.advance();
+    while (1) {
+      const c = this.peek();
+      if (this.isAlpha(c) || this.isDigit(c) || this.isZh(c)) {
+        this.advance();
+      } else {
+        break;
+      }
     }
     const text = this.substr();
     const temp = Scanner.keywordMap.get(text);
@@ -248,8 +252,8 @@ class Scanner {
     }
     this.addOneToken(type);
   }
-  private isAlphaNumeric(c: string) {
-    return this.isAlpha(c) || this.isDigit(c);
+  private isZh(c: string) {
+    return c >= '\u4e00' && c <= '\u9fa5';
   }
   private isAlpha(c: string) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_';

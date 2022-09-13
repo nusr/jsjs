@@ -32,13 +32,13 @@ import type {
 } from './statement';
 import { FunctionStatement } from './statement';
 import Environment from './environment';
-import { isBaseCallable, assert } from './util';
-import { LoxCallable } from './loxCallable';
+import { isBaseCallable, assert, isBaseSetGet } from './util';
+import { FunctionObject } from './function';
 import { ReturnValue } from './returnValue';
 import { ClassObject, ClassInstance } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
-  private environment: Environment;
+  environment: Environment;
   private readonly statements: Statement[];
   errors: string[] = [];
   constructor(statements: Statement[], environment: Environment) {
@@ -58,7 +58,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   private execute = (statement: Statement) => {
     return statement.accept(this);
   };
-  private evaluate = (expr: Expression): LiteralType => {
+  evaluate = (expr: Expression): LiteralType => {
     const result = expr.accept(this);
     if (result instanceof ReturnValue) {
       return result.value;
@@ -90,19 +90,24 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return result;
   };
   visitClassStatement = (statement: ClassStatement) => {
-    const fields: Record<string, LiteralType> = {};
+    const instance = new ClassObject(statement);
     for (const item of statement.methods) {
-      if (item instanceof FunctionStatement) {
-        fields[item.name.lexeme] = new LoxCallable(item, this.environment);
-      } else {
-        let temp: LiteralType = null;
-        if (item.initializer != null) {
-          temp = this.evaluate(item.initializer);
+      if (item.static) {
+        if (item instanceof FunctionStatement) {
+          instance.set(
+            item.name.lexeme,
+            new FunctionObject(item, this.environment),
+          );
+        } else {
+          let temp: LiteralType = null;
+          if (item.initializer != null) {
+            temp = this.evaluate(item.initializer);
+          }
+          instance.set(item.name.lexeme, temp);
         }
-        fields[item.name.lexeme] = temp;
       }
     }
-    const instance = new ClassObject(statement.name.lexeme, fields);
+
     this.environment.define(statement.name.lexeme, instance);
     return null;
   };
@@ -117,7 +122,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   visitFunctionStatement = (statement: FunctionStatement) => {
     this.environment.define(
       statement.name.lexeme,
-      new LoxCallable(statement, this.environment),
+      new FunctionObject(statement, this.environment),
     );
     return null;
   };
@@ -213,14 +218,14 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
 
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
-    if (temp instanceof ClassInstance) {
+    if (isBaseSetGet(temp)) {
       return temp.get(expr.name);
     }
     throw new Error('error GetExpression');
   };
   visitSetExpression = (expr: SetExpression) => {
     const temp = this.evaluate(expr.object.object);
-    if (temp instanceof ClassInstance) {
+    if (isBaseSetGet(temp)) {
       const value = this.evaluate(expr.value);
       temp.set(expr.object.name, value);
       return value;

@@ -1,6 +1,6 @@
-import type { LiteralType, BaseCallable } from './type';
+import type { LiteralType, IBaseCallable } from './type';
 import { isBaseCallable } from './util';
-class Log implements BaseCallable {
+class Log implements IBaseCallable {
   log(result: LiteralType[]) {
     console.log(...result);
   }

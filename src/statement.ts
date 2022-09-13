@@ -46,11 +46,13 @@ export class ClassStatement extends Statement {
     return visitor.visitClassStatement(this);
   }
   toString() {
-    return `class ${this.name.toString()}{${this.methods.map(item => {
-      const temp = item.toString();
-      const index = temp.indexOf(' ');
-      return temp.slice(index + 1);
-    }).join('')}}`
+    return `class ${this.name.toString()}{${this.methods
+      .map((item) => {
+        const temp = item.toString();
+        const index = temp.indexOf(' ');
+        return temp.slice(index + 1);
+      })
+      .join('')}}`;
   }
 }
 export class ExpressionStatement extends Statement {
@@ -70,17 +72,24 @@ export class FunctionStatement extends Statement {
   readonly name: Token;
   readonly body: BlockStatement;
   readonly params: Token[];
-  constructor(name: Token, body: BlockStatement, params: Token[]) {
+  readonly static: boolean;
+  constructor(
+    name: Token,
+    body: BlockStatement,
+    params: Token[],
+    isStatic = false,
+  ) {
     super();
     this.name = name;
     this.body = body;
     this.params = params;
+    this.static = isStatic;
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `function ${this.name.toString()}(${this.params
+    return `function ${this.static ? 'static ' : ''}${this.name.toString()}(${this.params
       .map((item) => item.toString())
       .join(',')})${this.body.toString()}`;
   }
@@ -128,16 +137,18 @@ export class ReturnStatement extends Statement {
 export class VariableStatement extends Statement {
   readonly name: Token;
   readonly initializer: Expression | null;
-  constructor(name: Token, initializer: Expression | null) {
+  readonly static: boolean;
+  constructor(name: Token, initializer: Expression | null, isStatic = false) {
     super();
     this.name = name;
     this.initializer = initializer;
+    this.static = isStatic;
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitVariableStatement(this);
   }
   toString() {
-    const temp = `var ${this.name.toString()}`;
+    const temp = `var ${this.static ? 'static ' : ''}${this.name.toString()}`;
     if (this.initializer === null) {
       return temp + ';';
     }

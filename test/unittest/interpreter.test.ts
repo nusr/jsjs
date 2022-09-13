@@ -37,7 +37,7 @@ describe('interpreter.test.ts', () => {
       [4],
     ]);
   });
-  const list: Array<{ input: string; expect: LiteralType[]; name: string; }> = [
+  const list: Array<{ input: string; expect: LiteralType[]; name: string }> = [
     {
       name: 'if return',
       input: `
@@ -82,8 +82,12 @@ describe('interpreter.test.ts', () => {
     {
       name: 'class',
       input: `
+      function test() {
+        log('test');
+      }
       class Test {
         b = 5;
+        c = test();
         print(a) {
             log(a);
         }
@@ -98,7 +102,44 @@ describe('interpreter.test.ts', () => {
       var c = new Test();
       log(c.b);
       c.print(4);`,
-      expect: [3, 5, '9', '1', 5, 4],
+      expect: ['test', 3, 5, '9', '1', 'test', 5, 4],
+    },
+    {
+      name: 'class static',
+      input: `
+      function test(){
+        return 1;
+      }
+      class Test {
+        static a = test();
+        static print(a) {
+          log(a);
+        }
+      }
+      log(Test.a);
+      Test.print(2);
+      `,
+      expect: [1, 2],
+    },
+    {
+      name: 'class this',
+      input: `
+      class Test {
+        constructor(a,b) {
+          this.a = a;
+          this.b = b;
+        }
+        print() {
+          log(this.a);
+        }
+      }
+      var a = new Test(1,2);
+      log(a.a);
+      log(a.b);
+      a.a = 3;
+      a.print();
+      `,
+      expect: [1, 2, 3],
     },
   ];
   for (const item of list) {

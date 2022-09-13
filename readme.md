@@ -69,11 +69,11 @@ npm run test
 * [x] Multiplication (*)
 * [ ] Multiplication assignment (*=)
 * [ ] new operator
-* [ ] new.target
+* [x] new.target
 * [x] null
 * [ ] Nullish coalescing operator (??)
 * [ ] Object initializer
-* [ ] Operator precedence
+* [x] Operator precedence
 * [ ] Optional chaining (?.)
 * [ ] Property accessors
 * [x] Remainder (%)
@@ -86,7 +86,7 @@ npm run test
 * [x] Subtraction (-)
 * [ ] Subtraction assignment (-=)
 * [ ] super
-* [ ] this
+* [x] this
 * [ ] typeof
 * [x] Unary negation (-)
 * [x] Unary plus (+)
@@ -102,7 +102,7 @@ npm run test
 * [ ] async function*
 * [x] block
 * [ ] break
-* [ ] class
+* [x] class
 * [ ] const
 * [ ] continue
 * [ ] debugger
@@ -113,7 +113,7 @@ npm run test
 * [ ] for await...of
 * [ ] for...in
 * [ ] for...of
-* [ ] function declaration
+* [x] function declaration
 * [ ] function*
 * [x] if...else
 * [ ] import
@@ -133,15 +133,15 @@ npm run test
 * [ ] Arrow function expressions
 * [ ] Default parameters
 * [ ] getter
-* [ ] Method definitions
+* [x] Method definitions
 * [ ] Rest parameters
 * [ ] setter
 
 #### Classes
 
-* [ ] Class static initialization blocks
-* [ ] constructor
+* [x] Class static initialization blocks
+* [x] constructor
 * [ ] extends
 * [ ] Private class features
 * [x] Public class fields
-* [ ] static
+* [x] static

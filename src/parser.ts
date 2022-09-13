@@ -59,16 +59,17 @@ class Parser {
     this.consume(TokenType.lEFT_BRACE, 'expect {');
     let methods: Array<VariableStatement | FunctionStatement> = [];
     while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
+      const isStatic = this.match(TokenType.STATIC);
       if (this.checkNext(TokenType.LEFT_PAREN)) {
-        methods.push(this.functionDeclaration('method'));
+        methods.push(this.functionDeclaration('method', isStatic));
       } else {
-        methods.push(this.varDeclaration());
+        methods.push(this.varDeclaration(isStatic));
       }
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect }');
     return new ClassStatement(name, null, methods);
   }
-  private varDeclaration(): VariableStatement {
+  private varDeclaration(isStatic = false): VariableStatement {
     const name: Token = this.consume(
       TokenType.IDENTIFIER,
       'expect identifier after var',
@@ -78,9 +79,9 @@ class Parser {
       initializer = this.expression();
     }
     this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
-    return new VariableStatement(name, initializer);
+    return new VariableStatement(name, initializer, isStatic);
   }
-  private functionDeclaration(name: string): FunctionStatement {
+  private functionDeclaration(name: string, isStatic = false): FunctionStatement {
     const functionName: Token = this.consume(
       TokenType.IDENTIFIER,
       `expect identifier after ${name}`,
@@ -97,7 +98,7 @@ class Parser {
     this.consume(TokenType.RIGHT_PAREN, `expect ) after ${name}`);
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
     const block = this.blockStatement();
-    return new FunctionStatement(functionName, block, params);
+    return new FunctionStatement(functionName, block, params, isStatic);
   }
   private statement(): Statement {
     if (this.match(TokenType.IF)) {
