@@ -1,4 +1,4 @@
-import { Environment, Jsjs, Log } from '../../src/index';
+import { Environment, Jsjs, getGlobalObject } from '../../src/index';
 import * as fs from 'fs';
 import * as path from 'path';
 import { LiteralType } from '../../src/type';
@@ -13,11 +13,13 @@ describe('interpreter.test.ts', () => {
     let resultList: LiteralType[][] = [];
     const env = new Environment(null);
     const jsjs = new Jsjs(inputData, env);
-    const log = new Log();
-    log.log = (result: LiteralType[]) => {
-      resultList.push(result);
-    };
-    jsjs.register('log', log);
+    const log = getGlobalObject({
+      log(...result: LiteralType[]) {
+        resultList.push(result);
+      },
+      error() {},
+    });
+    jsjs.register('console', log.console);
     jsjs.run();
     expect(resultList).toEqual([
       [7],
@@ -49,8 +51,8 @@ describe('interpreter.test.ts', () => {
           }
           return 10;
       }
-      log(ifReturn(20));
-      log(ifReturn(2));`,
+      console.log(ifReturn(20));
+      console.log(ifReturn(2));`,
       expect: [19, 3],
     },
     {
@@ -65,8 +67,8 @@ describe('interpreter.test.ts', () => {
           }
           return 0;
       }
-      log(whileReturn(2));
-      log(whileReturn(10));`,
+      console.log(whileReturn(2));
+      console.log(whileReturn(10));`,
       expect: [2, 5],
     },
     {
@@ -74,7 +76,7 @@ describe('interpreter.test.ts', () => {
       input: `
       var a = 3;
       do { 
-        log(a);
+        console.log(a);
         --a;
       } while(a > 0)`,
       expect: [3, 2, 1],
@@ -83,24 +85,24 @@ describe('interpreter.test.ts', () => {
       name: 'class',
       input: `
       function test() {
-        log('test');
+        console.log('test');
       }
       class Test {
         b = 5;
         c = test();
         print(a) {
-            log(a);
+            console.log(a);
         }
       }
       var a = new Test();
       a.print(3);
-      log(a.b);
+      console.log(a.b);
       a.b = '9';
-      log(a.b);
+      console.log(a.b);
       a.print = '1';
-      log(a.print);
+      console.log(a.print);
       var c = new Test();
-      log(c.b);
+      console.log(c.b);
       c.print(4);`,
       expect: ['test', 3, 5, '9', '1', 'test', 5, 4],
     },
@@ -113,10 +115,10 @@ describe('interpreter.test.ts', () => {
       class Test {
         static a = test();
         static print(a) {
-          log(a);
+          console.log(a);
         }
       }
-      log(Test.a);
+      console.log(Test.a);
       Test.print(2);
       `,
       expect: [1, 2],
@@ -130,12 +132,12 @@ describe('interpreter.test.ts', () => {
           this.b = b;
         }
         print() {
-          log(this.a);
+          console.log(this.a);
         }
       }
       var a = new Test(1,2);
-      log(a.a);
-      log(a.b);
+      console.log(a.a);
+      console.log(a.b);
       a.a = 3;
       a.print();
       `,
@@ -146,11 +148,14 @@ describe('interpreter.test.ts', () => {
     test(item.name, () => {
       const env = new Environment(null);
       const jsjs = new Jsjs(item.input, env);
-      const log = new Log();
-      log.log = (result: LiteralType[]) => {
-        expect(result[0]).toEqual(item.expect.shift());
-      };
-      jsjs.register('log', log);
+
+      const log = getGlobalObject({
+        log(...result: LiteralType[]) {
+          expect(result[0]).toEqual(item.expect.shift());
+        },
+        error() {},
+      });
+      jsjs.register('console', log.console);
       jsjs.run();
     });
   }

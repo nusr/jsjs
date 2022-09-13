@@ -46,6 +46,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.RIGHT_PAREN, ')', 9),
       new Token(TokenType.SEMICOLON, ';', 9),
 
+      new Token(TokenType.IDENTIFIER, 'console', 10),
+      new Token(TokenType.DOT, '.', 10),
       new Token(TokenType.IDENTIFIER, 'log', 10),
       new Token(TokenType.LEFT_PAREN, '(', 10),
       new Token(TokenType.IDENTIFIER, 'cond', 10),
@@ -70,6 +72,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.SEMICOLON, ';', 14),
       new Token(TokenType.RIGHT_BRACE, '}', 15),
 
+      new Token(TokenType.IDENTIFIER, 'console', 16),
+      new Token(TokenType.DOT, '.', 16),
       new Token(TokenType.IDENTIFIER, 'log', 16),
       new Token(TokenType.LEFT_PAREN, '(', 16),
       new Token(TokenType.IDENTIFIER, 'a', 16),
@@ -99,6 +103,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.NUMBER, '1', 21),
       new Token(TokenType.SEMICOLON, ';', 21),
 
+      new Token(TokenType.IDENTIFIER, 'console', 22),
+      new Token(TokenType.DOT, '.', 22),
       new Token(TokenType.IDENTIFIER, 'log', 22),
       new Token(TokenType.LEFT_PAREN, '(', 22),
       new Token(TokenType.IDENTIFIER, 'i', 22),
@@ -137,6 +143,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.IDENTIFIER, 'n', 32),
       new Token(TokenType.SEMICOLON, ';', 32),
 
+      new Token(TokenType.IDENTIFIER, 'console', 33),
+      new Token(TokenType.DOT, '.', 33),
       new Token(TokenType.IDENTIFIER, 'log', 33),
       new Token(TokenType.LEFT_PAREN, '(', 33),
       new Token(TokenType.IDENTIFIER, 'n', 33),
@@ -147,6 +155,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.IDENTIFIER, 'n', 34),
       new Token(TokenType.SEMICOLON, ';', 34),
 
+      new Token(TokenType.IDENTIFIER, 'console', 35),
+      new Token(TokenType.DOT, '.', 35),
       new Token(TokenType.IDENTIFIER, 'log', 35),
       new Token(TokenType.LEFT_PAREN, '(', 35),
       new Token(TokenType.IDENTIFIER, 'n', 35),
@@ -188,6 +198,8 @@ describe('scanner.test.ts', () => {
 
       new Token(TokenType.RIGHT_BRACE, '}', 39),
 
+      new Token(TokenType.IDENTIFIER, 'console', 40),
+      new Token(TokenType.DOT, '.', 40),
       new Token(TokenType.IDENTIFIER, 'log', 40),
       new Token(TokenType.LEFT_PAREN, '(', 40),
       new Token(TokenType.IDENTIFIER, 'fib', 40),
@@ -211,6 +223,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.RIGHT_PAREN, ')', 43),
       new Token(TokenType.lEFT_BRACE, '{', 43),
 
+      new Token(TokenType.IDENTIFIER, 'console', 44),
+      new Token(TokenType.DOT, '.', 44),
       new Token(TokenType.IDENTIFIER, 'log', 44),
       new Token(TokenType.LEFT_PAREN, '(', 44),
       new Token(TokenType.IDENTIFIER, 'globalA', 44),
@@ -252,6 +266,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.RIGHT_PAREN, ')', 53),
       new Token(TokenType.lEFT_BRACE, '{', 53),
 
+      new Token(TokenType.IDENTIFIER, 'console', 54),
+      new Token(TokenType.DOT, '.', 54),
       new Token(TokenType.IDENTIFIER, 'log', 54),
       new Token(TokenType.LEFT_PAREN, '(', 54),
       new Token(TokenType.IDENTIFIER, 'a', 54),
@@ -278,6 +294,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.RIGHT_PAREN, ')', 58),
       new Token(TokenType.SEMICOLON, ';', 58),
 
+      new Token(TokenType.IDENTIFIER, 'console', 59),
+      new Token(TokenType.DOT, '.', 59),
       new Token(TokenType.IDENTIFIER, 'log', 59),
       new Token(TokenType.LEFT_PAREN, '(', 59),
       new Token(TokenType.IDENTIFIER, 'b', 59),
@@ -293,6 +311,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.STRING, '9', 60),
       new Token(TokenType.SEMICOLON, ';', 60),
 
+      new Token(TokenType.IDENTIFIER, 'console', 61),
+      new Token(TokenType.DOT, '.', 61),
       new Token(TokenType.IDENTIFIER, 'log', 61),
       new Token(TokenType.LEFT_PAREN, '(', 61),
       new Token(TokenType.IDENTIFIER, 'b', 61),
@@ -308,6 +328,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.STRING, '1', 62),
       new Token(TokenType.SEMICOLON, ';', 62),
 
+      new Token(TokenType.IDENTIFIER, 'console', 63),
+      new Token(TokenType.DOT, '.', 63),
       new Token(TokenType.IDENTIFIER, 'log', 63),
       new Token(TokenType.LEFT_PAREN, '(', 63),
       new Token(TokenType.IDENTIFIER, 'b', 63),
@@ -325,6 +347,8 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.RIGHT_PAREN, ')', 64),
       new Token(TokenType.SEMICOLON, ';', 64),
 
+      new Token(TokenType.IDENTIFIER, 'console', 65),
+      new Token(TokenType.DOT, '.', 65),
       new Token(TokenType.IDENTIFIER, 'log', 65),
       new Token(TokenType.LEFT_PAREN, '(', 65),
       new Token(TokenType.IDENTIFIER, 'c', 65),

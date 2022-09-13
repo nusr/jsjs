@@ -3,8 +3,8 @@ import fs from 'fs';
 import readline from 'readline';
 import Jsjs from './jsjs';
 import Environment from './environment';
-import type { LiteralType, IBaseCallable } from './type';
-import { isBaseCallable } from './util';
+import type { LiteralType } from './type';
+import type { ClassInstance } from './class';
 
 export function init() {
   const args = process.argv;
@@ -21,11 +21,11 @@ export function init() {
 export function run(
   data: string,
   env: Environment,
-  log: IBaseCallable | null = null,
+  log: ClassInstance | null = null,
 ): LiteralType {
   const instance = new Jsjs(data, env);
-  if (isBaseCallable(log)) {
-    instance.register('log', log);
+  if (log !== null) {
+    instance.register('console', log);
   }
   const result = instance.run();
   return result;

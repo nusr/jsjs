@@ -1,24 +1,40 @@
-import type { LiteralType, IBaseCallable } from './type';
+import type { LiteralType, IBaseCallable, IGlobalConsole } from './type';
 import { isBaseCallable } from './util';
-class Log implements IBaseCallable {
-  log(result: LiteralType[]) {
-    console.log(...result);
-  }
-  call(argumentList: LiteralType[]): LiteralType {
-    const result: LiteralType[] = [];
-    for (const item of argumentList) {
-      if (isBaseCallable(item)) {
-        result.push(item.toString());
-      } else {
-        result.push(item);
+import { ClassInstance } from './class';
+
+const consoleTypes = ['log', 'error'] as const;
+type ConsoleType = typeof consoleTypes[number];
+
+function getConsoleImplement(
+  type: ConsoleType,
+  consoleObject: IGlobalConsole,
+): IBaseCallable {
+  return {
+    call(argumentList: LiteralType[]) {
+      const result: LiteralType[] = [];
+      for (const item of argumentList) {
+        if (isBaseCallable(item)) {
+          result.push(item.toString());
+        } else {
+          result.push(item);
+        }
       }
-    }
-    this.log(result);
-    return null;
-  }
-  toString() {
-    return `log`;
-  }
+      consoleObject[type](...result);
+    },
+    toString() {
+      return `function ${type}() { [native code] }`;
+    },
+  };
 }
 
-export { Log };
+function getGlobalObject(consoleObject: IGlobalConsole) {
+  const console = new ClassInstance();
+  for (const type of consoleTypes) {
+    console.set(type, getConsoleImplement(type, consoleObject));
+  }
+  return {
+    console,
+  };
+}
+
+export { getGlobalObject };

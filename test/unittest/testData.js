@@ -7,19 +7,19 @@ function add(x, y) {
   return x + y;
 }
 var cond = add(1, 2 * 3);
-log(cond);
+console.log(cond);
 if (cond) {
   a = 'b';
 } else {
   a = 'c';
 }
-log(a);
+console.log(a);
 
 function makeCounter() {
   var i = 0;
   function count() {
     i = i + 1;
-    log(i);
+    console.log(i);
   }
 
   return count;
@@ -30,18 +30,18 @@ counter();
 counter();
 var n = 1;
 ++n;
-log(n);
+console.log(n);
 --n;
-log(n);
+console.log(n);
 function fib(n) {
   if (n <= 1) return n;
   return fib(n - 1) + fib(n - 2);
 }
-log(fib(30));
+console.log(fib(30));
 var globalA = 'global';
 {
   function showA() {
-    log(globalA);
+    console.log(globalA);
   }
 
   showA();
@@ -51,16 +51,16 @@ var globalA = 'global';
 class Test {
   b = 5;
   print(a) {
-      log(a);
+      console.log(a);
   }
 }
 var b = new Test();
 b.print(3);
-log(b.b);
+console.log(b.b);
 b.b = '9';
-log(b.b);
+console.log(b.b);
 b.print = '1';
-log(b.print);
+console.log(b.print);
 var c = new Test();
-log(c.b);
+console.log(c.b);
 c.print(4);

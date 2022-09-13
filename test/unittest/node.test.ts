@@ -1,5 +1,5 @@
 import { run } from '../../src/node';
-import { Environment, Log } from '../../src/index';
+import { Environment, getGlobalObject } from '../../src/index';
 import * as fs from 'fs';
 import * as path from 'path';
 import { LiteralType } from '../../src/type';
@@ -13,11 +13,13 @@ describe('node.test.ts', () => {
   test('node interpreter', () => {
     let resultList: LiteralType[][] = [];
     const env = new Environment(null);
-    const log = new Log();
-    log.log = (result: LiteralType[]) => {
-      resultList.push(result);
-    };
-    run(inputData, env, log);
+    const log = getGlobalObject({
+      log(...result: LiteralType[]) {
+        resultList.push(result);
+      },
+      error() {},
+    });
+    run(inputData, env, log.console);
 
     expect(resultList).toEqual([
       [7],

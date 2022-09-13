@@ -8,16 +8,19 @@ interface Jsjs {
   run(): LiteralType;
   register(name: string, value: LiteralType): void;
 }
-interface Log {
-  new (): this;
-  log(result: LiteralType[]): void;
+
+interface IBaseSetGet {
+  get: (name: string) => LiteralType;
+  set: (name: string, value: LiteralType) => void;
 }
 
 interface Window {
   jsjs: {
     Environment: Environment;
     Jsjs: Jsjs;
-    Log: Log;
+    getGlobalObject: (
+      params: Pick<Console, 'log' | 'error'>,
+    ) => Record<string, IBaseSetGet>;
   };
 }
 
@@ -28,16 +31,20 @@ function handleClick() {
   if (!text) {
     return;
   }
-  const { Jsjs, Environment, Log } = window.jsjs;
+  const { Jsjs, Environment, getGlobalObject } = window.jsjs;
   const interpreter = new Jsjs(text, new Environment(null));
-  const log = new Log();
-  log.log = (result) => {
-    console.log(...result);
-    resultDom!.innerHTML += result
-      .map((item) => `<div>log: ${item}</div>`)
-      .join('');
-  };
-  interpreter.register('log', log);
+  const temp = getGlobalObject({
+    log(result: LiteralType[]) {
+      console.log(...result);
+      resultDom!.innerHTML += result
+        .map((item) => `<div>log: ${item}</div>`)
+        .join('');
+    },
+    error() {},
+  });
+  for (const key of Object.keys(temp)) {
+    interpreter.register(key, temp[key]);
+  }
   const result = interpreter.run();
   if (interpreter.errors.length > 0) {
     resultDom!.innerHTML =

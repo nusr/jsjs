@@ -12,3 +12,5 @@ export interface IBaseCallable {
   call: (argumentList: LiteralType[], interpreter: Interpreter) => LiteralType;
   toString: () => string;
 }
+
+export type IGlobalConsole = Pick<Console, 'log' | 'error'>;

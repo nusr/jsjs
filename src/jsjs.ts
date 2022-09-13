@@ -3,7 +3,7 @@ import Parser from './parser';
 import Interpreter from './interpreter';
 import type Environment from './environment';
 import type { LiteralType } from './type';
-import { Log } from './native'
+import { getGlobalObject } from './native';
 
 class Jsjs {
   errors: string[] = [];
@@ -12,10 +12,14 @@ class Jsjs {
   constructor(text: string, environment: Environment) {
     this.text = text;
     this.environment = environment;
-    this.register('log', new Log())
+    const temp = getGlobalObject(console);
+    const keyList = Object.keys(temp) as Array<keyof ReturnType<typeof getGlobalObject>>;
+    for (const key of keyList) {
+      this.register(key, temp[key]);
+    }
   }
   register(name: string, value: LiteralType) {
-    this.environment.define(name, value)
+    this.environment.define(name, value);
   }
   public run(): LiteralType {
     const scanner = new Scanner(this.text);
@@ -31,4 +35,4 @@ class Jsjs {
   }
 }
 
-export default Jsjs
+export default Jsjs;
