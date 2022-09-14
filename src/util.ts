@@ -1,4 +1,4 @@
-import type { LiteralType, IBaseCallable } from './type';
+import type { LiteralType, IBaseCallable, IBaseSetGet } from './type';
 
 export function convertLiteralTypeToString(val: LiteralType): string {
   if (val === null) {
@@ -45,6 +45,6 @@ export function assert(
   }
 }
 
-export function isBaseSetGet(call: any): call is BaseSetGet {
+export function isBaseSetGet(call: any): call is IBaseSetGet {
   return call && isFunction(call.get) && isFunction(call.set);
 }

@@ -11,13 +11,7 @@ class FunctionObject implements IBaseCallable {
     this.closure = closure;
   }
   call(argumentList: LiteralType[], interpreter: Interpreter): LiteralType {
-    const argumentObject: Record<string | number, LiteralType> = [];
-    for (let i = 0; i < argumentList.length; i++) {
-      argumentObject[i] = argumentList[i];
-    }
-    argumentObject['length'] = argumentList.length;
     const env = new Environment(this.closure);
-    env.define('arguments', argumentObject);
     for (let i = 0; i < this.declaration.params.length; i++) {
       env.define(this.declaration.params[i]?.lexeme!, argumentList[i]);
     }

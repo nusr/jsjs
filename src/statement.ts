@@ -11,14 +11,13 @@ export interface StatementVisitor {
   visitVariableStatement: (statement: VariableStatement) => LiteralType;
   visitWhileStatement: (statement: WhileStatement) => LiteralType;
 }
-export abstract class Statement {
-  abstract accept(visitor: StatementVisitor): LiteralType;
-  abstract toString(): string;
+export interface Statement {
+  accept(visitor: StatementVisitor): LiteralType;
+  toString(): string;
 }
-export class BlockStatement extends Statement {
+export class BlockStatement implements Statement {
   readonly statements: Statement[];
   constructor(statements: Statement[]) {
-    super();
     this.statements = statements;
   }
   accept(visitor: StatementVisitor): LiteralType {
@@ -28,7 +27,7 @@ export class BlockStatement extends Statement {
     return `{${this.statements.map((item) => item.toString()).join('')}}`;
   }
 }
-export class ClassStatement extends Statement {
+export class ClassStatement implements Statement {
   readonly name: Token;
   readonly superClass: VariableExpression | null;
   readonly methods: Array<VariableStatement | FunctionStatement>;
@@ -37,7 +36,6 @@ export class ClassStatement extends Statement {
     superClass: VariableExpression | null,
     methods: Array<VariableStatement | FunctionStatement>,
   ) {
-    super();
     this.name = name;
     this.superClass = superClass;
     this.methods = methods;
@@ -55,10 +53,9 @@ export class ClassStatement extends Statement {
       .join('')}}`;
   }
 }
-export class ExpressionStatement extends Statement {
+export class ExpressionStatement implements Statement {
   readonly expression: Expression;
   constructor(expression: Expression) {
-    super();
     this.expression = expression;
   }
   accept(visitor: StatementVisitor): LiteralType {
@@ -68,7 +65,7 @@ export class ExpressionStatement extends Statement {
     return this.expression.toString() + ';';
   }
 }
-export class FunctionStatement extends Statement {
+export class FunctionStatement implements Statement {
   readonly name: Token;
   readonly body: BlockStatement;
   readonly params: Token[];
@@ -79,7 +76,6 @@ export class FunctionStatement extends Statement {
     params: Token[],
     isStatic = false,
   ) {
-    super();
     this.name = name;
     this.body = body;
     this.params = params;
@@ -89,12 +85,14 @@ export class FunctionStatement extends Statement {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `function ${this.static ? 'static ' : ''}${this.name.toString()}(${this.params
+    return `function ${
+      this.static ? 'static ' : ''
+    }${this.name.toString()}(${this.params
       .map((item) => item.toString())
       .join(',')})${this.body.toString()}`;
   }
 }
-export class IfStatement extends Statement {
+export class IfStatement implements Statement {
   readonly condition: Expression;
   readonly thenBranch: Statement;
   readonly elseBranch: Statement | null;
@@ -103,7 +101,6 @@ export class IfStatement extends Statement {
     thenBranch: Statement,
     elseBranch: Statement | null,
   ) {
-    super();
     this.condition = condition;
     this.thenBranch = thenBranch;
     this.elseBranch = elseBranch;
@@ -119,11 +116,10 @@ export class IfStatement extends Statement {
     return `${temp} else ${this.elseBranch.toString()}`;
   }
 }
-export class ReturnStatement extends Statement {
+export class ReturnStatement implements Statement {
   readonly keyword: Token;
   readonly value: Expression | null;
   constructor(keyword: Token, value: Expression | null) {
-    super();
     this.keyword = keyword;
     this.value = value;
   }
@@ -134,12 +130,11 @@ export class ReturnStatement extends Statement {
     return `return ${this.value === null ? '' : this.value.toString()};`;
   }
 }
-export class VariableStatement extends Statement {
+export class VariableStatement implements Statement {
   readonly name: Token;
   readonly initializer: Expression | null;
   readonly static: boolean;
   constructor(name: Token, initializer: Expression | null, isStatic = false) {
-    super();
     this.name = name;
     this.initializer = initializer;
     this.static = isStatic;
@@ -155,11 +150,10 @@ export class VariableStatement extends Statement {
     return `${temp} = ${this.initializer.toString()};`;
   }
 }
-export class WhileStatement extends Statement {
+export class WhileStatement implements Statement {
   readonly condition: Expression;
   readonly body: Statement;
   constructor(condition: Expression, body: Statement) {
-    super();
     this.condition = condition;
     this.body = body;
   }

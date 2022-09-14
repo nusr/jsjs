@@ -28,6 +28,9 @@ export class ClassObject extends ClassInstance implements IBaseCallable {
     const env = new Environment(interpreter.environment);
     env.define('this', instance);
     for (const item of this.statement.methods) {
+      if (item.static) {
+        continue;
+      }
       if (item instanceof FunctionStatement) {
         if (item.name.lexeme === 'constructor') {
           const temp = new FunctionObject(item, env);

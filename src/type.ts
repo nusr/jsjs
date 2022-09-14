@@ -1,7 +1,14 @@
 import type Interpreter from './interpreter';
 
 export type LiteralType = any;
-// string | number | boolean | null;
+// | string
+// | number
+// | boolean
+// | null
+// | ClassInstance
+// | ClassObject
+// | FunctionObject
+// | ReturnValue;
 
 export interface IBaseSetGet {
   get: (name: string) => LiteralType;

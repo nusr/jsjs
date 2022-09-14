@@ -1,6 +1,6 @@
 import type { LiteralType } from './type';
 
-import {
+import type {
   BinaryExpression,
   GroupingExpression,
   LiteralExpression,
@@ -10,13 +10,11 @@ import {
   GetExpression,
   SetExpression,
   LogicalExpression,
-  SuperExpression,
-  ThisExpression,
   Expression,
   ExpressionVisitor,
-  VariableExpression,
   NewExpression,
 } from './expression';
+import { VariableExpression } from './expression';
 import { TokenType } from './tokenType';
 
 import type {
@@ -55,7 +53,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return result;
   };
-  private execute = (statement: Statement) => {
+  private execute = (statement: Statement): LiteralType => {
     return statement.accept(this);
   };
   evaluate = (expr: Expression): LiteralType => {
@@ -219,18 +217,18 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
     if (isBaseSetGet(temp)) {
-      return temp.get(expr.name);
+      return temp.get(expr.name.lexeme);
     }
     throw new Error('error GetExpression');
   };
-  visitSetExpression = (expr: SetExpression) => {
+  visitSetExpression = (expr: SetExpression): LiteralType => {
     const temp = this.evaluate(expr.object.object);
     if (isBaseSetGet(temp)) {
       const value = this.evaluate(expr.value);
-      temp.set(expr.object.name, value);
+      temp.set(expr.object.name.lexeme, value);
       return value;
     }
-    return new Error('error SetExpression');
+    throw new Error('error SetExpression');
   };
   visitLogicalExpression = (expr: LogicalExpression) => {
     const left = this.evaluate(expr.left);
@@ -245,11 +243,11 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return this.evaluate(expr.right);
   };
-  visitSuperExpression = (expr: SuperExpression): LiteralType => {
-    return expr;
+  visitSuperExpression = (): LiteralType => {
+    return null;
   };
-  visitThisExpression = (expr: ThisExpression): LiteralType => {
-    return expr;
+  visitThisExpression = (): LiteralType => {
+    return null;
   };
   visitVariableExpression = (expr: VariableExpression): LiteralType => {
     return this.environment.get(expr.name);
@@ -286,9 +284,6 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return null;
   };
 
-  print = (expr: Expression) => {
-    return expr.accept(this);
-  };
   isTruthy(value: LiteralType) {
     if (value === null) {
       return false;

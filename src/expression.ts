@@ -2,7 +2,7 @@ import type Token from './token';
 import type { LiteralType } from './type';
 import { convertLiteralTypeToString } from './util';
 export interface ExpressionVisitor {
-  visitNewExpression: (Expression: NewExpression) => LiteralType
+  visitNewExpression: (Expression: NewExpression) => LiteralType;
   visitAssignExpression: (expression: AssignExpression) => LiteralType;
   visitBinaryExpression: (expression: BinaryExpression) => LiteralType;
   visitCallExpression: (expression: CallExpression) => LiteralType;
@@ -16,15 +16,14 @@ export interface ExpressionVisitor {
   visitUnaryExpression: (expression: UnaryExpression) => LiteralType;
   visitVariableExpression: (expression: VariableExpression) => LiteralType;
 }
-export abstract class Expression {
-  abstract accept(visitor: ExpressionVisitor): LiteralType;
-  abstract toString(): string;
+export interface Expression {
+  accept(visitor: ExpressionVisitor): LiteralType;
+  toString(): string;
 }
-export class NewExpression extends Expression  {
+export class NewExpression implements Expression {
   readonly keyword: Token;
   readonly name: Expression;
   constructor(keyword: Token, name: Expression) {
-    super();
     this.keyword = keyword;
     this.name = name;
   }
@@ -32,14 +31,13 @@ export class NewExpression extends Expression  {
     return visitor.visitNewExpression(this);
   }
   toString() {
-    return `${this.keyword.toString()} ${this.name.toString()}`
+    return `${this.keyword.toString()} ${this.name.toString()}`;
   }
 }
-export class AssignExpression extends Expression {
+export class AssignExpression implements Expression {
   readonly name: Token;
   readonly value: Expression;
   constructor(name: Token, value: Expression) {
-    super();
     this.name = name;
     this.value = value;
   }
@@ -47,15 +45,14 @@ export class AssignExpression extends Expression {
     return visitor.visitAssignExpression(this);
   }
   toString() {
-    return `${this.name.toString()} = ${this.value.toString()}`
+    return `${this.name.toString()} = ${this.value.toString()}`;
   }
 }
-export class BinaryExpression extends Expression {
+export class BinaryExpression implements Expression {
   readonly left: Expression;
   readonly operator: Token;
   readonly right: Expression;
   constructor(left: Expression, operator: Token, right: Expression) {
-    super();
     this.left = left;
     this.operator = operator;
     this.right = right;
@@ -64,15 +61,14 @@ export class BinaryExpression extends Expression {
     return visitor.visitBinaryExpression(this);
   }
   toString() {
-    return `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`
+    return `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`;
   }
 }
-export class CallExpression extends Expression {
+export class CallExpression implements Expression {
   readonly callee: Expression;
   readonly paren: Token;
   readonly argumentList: Expression[];
   constructor(callee: Expression, paren: Token, argumentList: Expression[]) {
-    super();
     this.callee = callee;
     this.paren = paren;
     this.argumentList = argumentList;
@@ -81,14 +77,15 @@ export class CallExpression extends Expression {
     return visitor.visitCallExpression(this);
   }
   toString() {
-    return `${this.callee.toString()}(${this.argumentList.map(item => item.toString()).join(',')})`
+    return `${this.callee.toString()}(${this.argumentList
+      .map((item) => item.toString())
+      .join(',')})`;
   }
 }
-export class GetExpression extends Expression {
+export class GetExpression implements Expression {
   readonly object: Expression;
   readonly name: Token;
   constructor(object: Expression, name: Token) {
-    super();
     this.object = object;
     this.name = name;
   }
@@ -96,14 +93,13 @@ export class GetExpression extends Expression {
     return visitor.visitGetExpression(this);
   }
   toString() {
-    return `${this.object.toString()}.${this.name.toString()}`
+    return `${this.object.toString()}.${this.name.toString()}`;
   }
 }
-export class SetExpression extends Expression {
+export class SetExpression implements Expression {
   readonly object: GetExpression;
   readonly value: Expression;
   constructor(object: GetExpression, value: Expression) {
-    super();
     this.object = object;
     this.value = value;
   }
@@ -111,26 +107,24 @@ export class SetExpression extends Expression {
     return visitor.visitSetExpression(this);
   }
   toString() {
-    return `${this.object.toString()} = ${this.value.toString()}`
+    return `${this.object.toString()} = ${this.value.toString()}`;
   }
 }
-export class GroupingExpression extends Expression {
+export class GroupingExpression implements Expression {
   readonly expression: Expression;
   constructor(expression: Expression) {
-    super();
     this.expression = expression;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGroupingExpression(this);
   }
   toString() {
-    return `(${this.expression.toString()})`
+    return `(${this.expression.toString()})`;
   }
 }
-export class LiteralExpression extends Expression {
+export class LiteralExpression implements Expression {
   readonly value: LiteralType;
   constructor(value: LiteralType) {
-    super();
     this.value = value;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
@@ -143,12 +137,11 @@ export class LiteralExpression extends Expression {
     return convertLiteralTypeToString(this.value);
   }
 }
-export class LogicalExpression extends Expression {
+export class LogicalExpression implements Expression {
   readonly left: Expression;
   readonly operator: Token;
   readonly right: Expression;
   constructor(left: Expression, operator: Token, right: Expression) {
-    super();
     this.left = left;
     this.operator = operator;
     this.right = right;
@@ -160,11 +153,10 @@ export class LogicalExpression extends Expression {
     return `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`;
   }
 }
-export class SuperExpression extends Expression {
+export class SuperExpression implements Expression {
   readonly keyword: Token;
   readonly value: Expression;
   constructor(keyword: Token, value: Expression) {
-    super();
     this.keyword = keyword;
     this.value = value;
   }
@@ -172,27 +164,25 @@ export class SuperExpression extends Expression {
     return visitor.visitSuperExpression(this);
   }
   toString() {
-    return ''
+    return '';
   }
 }
-export class ThisExpression extends Expression {
+export class ThisExpression implements Expression {
   readonly keyword: Token;
   constructor(keyword: Token) {
-    super();
     this.keyword = keyword;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitThisExpression(this);
   }
   toString() {
-    return ''
+    return '';
   }
 }
-export class UnaryExpression extends Expression {
+export class UnaryExpression implements Expression {
   readonly operator: Token;
   readonly right: Expression;
   constructor(operator: Token, right: Expression) {
-    super();
     this.operator = operator;
     this.right = right;
   }
@@ -203,10 +193,9 @@ export class UnaryExpression extends Expression {
     return `${this.operator.toString()}${this.right.toString()}`;
   }
 }
-export class VariableExpression extends Expression {
+export class VariableExpression implements Expression {
   readonly name: Token;
   constructor(name: Token) {
-    super();
     this.name = name;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
