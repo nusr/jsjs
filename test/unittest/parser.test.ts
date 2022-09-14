@@ -82,8 +82,11 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 10)
-          ),
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 10)),
+            new Token(TokenType.IDENTIFIER, 'log', 10)
+          )
+          ,
           new Token(TokenType.RIGHT_PAREN, ')', 10),
           [
             new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 10)
@@ -92,8 +95,7 @@ describe('parser.test.ts', () => {
         ),
       ),
       new IfStatement(
-        new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 11)
-        ),
+        new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 11)),
         new BlockStatement(
           [
             new ExpressionStatement(
@@ -117,7 +119,10 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 16)),
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 16)),
+            new Token(TokenType.IDENTIFIER, 'log', 16)
+          ),
           new Token(TokenType.RIGHT_PAREN, ')', 16),
           [
             new VariableExpression(
@@ -152,8 +157,9 @@ describe('parser.test.ts', () => {
                   ),
                   new ExpressionStatement(
                     new CallExpression(
-                      new VariableExpression(
-                        new Token(TokenType.IDENTIFIER, 'log', 22),
+                      new GetExpression(
+                        new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 22)),
+                        new Token(TokenType.IDENTIFIER, 'log', 22)
                       ),
                       new Token(TokenType.RIGHT_PAREN, ')', 22),
                       [
@@ -216,7 +222,10 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(new Token(TokenType.IDENTIFIER, 'log', 33)),
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 33)),
+            new Token(TokenType.IDENTIFIER, 'log', 33)
+          ),
           new Token(TokenType.RIGHT_PAREN, ')', 33),
           [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 33))],
         ),
@@ -229,7 +238,8 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 35)),
             new Token(TokenType.IDENTIFIER, 'log', 35)
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 35),
@@ -303,7 +313,8 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 40)),
             new Token(TokenType.IDENTIFIER, 'log', 40)
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 40),
@@ -332,8 +343,9 @@ describe('parser.test.ts', () => {
               [
                 new ExpressionStatement(
                   new CallExpression(
-                    new VariableExpression(
-                      new Token(TokenType.IDENTIFIER, 'log', 44),
+                    new GetExpression(
+                      new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 44)),
+                      new Token(TokenType.IDENTIFIER, 'log', 44)
                     ),
                     new Token(TokenType.RIGHT_PAREN, ')', 44),
                     [
@@ -383,8 +395,9 @@ describe('parser.test.ts', () => {
               [
                 new ExpressionStatement(
                   new CallExpression(
-                    new VariableExpression(
-                      new Token(TokenType.IDENTIFIER, 'log', 54),
+                    new GetExpression(
+                      new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 54)),
+                      new Token(TokenType.IDENTIFIER, 'log', 54)
                     ),
                     new Token(TokenType.RIGHT_PAREN, ')', 54),
                     [
@@ -428,7 +441,8 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 59)),
             new Token(TokenType.IDENTIFIER, 'log', 59)
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 59),
@@ -451,7 +465,8 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 61)),
             new Token(TokenType.IDENTIFIER, 'log', 61)
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 61),
@@ -474,7 +489,8 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 63)),
             new Token(TokenType.IDENTIFIER, 'log', 63)
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 63),
@@ -500,7 +516,8 @@ describe('parser.test.ts', () => {
       ),
       new ExpressionStatement(
         new CallExpression(
-          new VariableExpression(
+          new GetExpression(
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 65)),
             new Token(TokenType.IDENTIFIER, 'log', 65)
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 65),
