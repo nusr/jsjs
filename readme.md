@@ -69,7 +69,7 @@ npm run test
 * [x] Multiplication (*)
 * [ ] Multiplication assignment (*=)
 * [ ] new operator
-* [x] new.target
+* [] new.target
 * [x] null
 * [ ] Nullish coalescing operator (??)
 * [ ] Object initializer
@@ -139,7 +139,7 @@ npm run test
 
 #### Classes
 
-* [x] Class static initialization blocks
+* [] Class static initialization blocks
 * [x] constructor
 * [ ] extends
 * [ ] Private class features
