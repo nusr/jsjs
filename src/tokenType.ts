@@ -19,13 +19,21 @@ export enum TokenType {
   BANG, // !
   BANG_EQUAL, // !=
   BANG_EQUAL_EQUAL, // !==
-  EQUAL, // =
   EQUAL_EQUAL, // ==
   EQUAL_EQUAL_EQUAL, // ===
   GREATER, // >
   GREATER_EQUAL, // >=
   LESS, // <
   LESS_EQUAL, // <=
+  // EQUAL
+  EQUAL, // =
+  PLUS_EQUAL, // +=
+  MINUS_EQUAL, // -=
+  STAR_EQUAL, // *=
+  SLASH_EQUAL, // /=
+  REMAINDER_EQUAL, // %=
+  AND_EQUAL, // &&=
+  OR_EQUAL, // ||=
   // Literals
   IDENTIFIER,
   STRING,

@@ -13,7 +13,7 @@ import {
   VariableExpression,
 } from './expression';
 import { TokenType } from './tokenType';
-import type Token from './token';
+import Token from './token';
 import {
   BlockStatement,
   ClassStatement,
@@ -25,6 +25,17 @@ import {
   VariableStatement,
   WhileStatement,
 } from './statement';
+
+const assignmentMap: Map<TokenType, TokenType> = new Map([
+  [TokenType.PLUS_EQUAL, TokenType.PLUS],
+  [TokenType.PLUS_EQUAL, TokenType.PLUS],
+  [TokenType.MINUS_EQUAL, TokenType.MINUS],
+  [TokenType.STAR_EQUAL, TokenType.STAR],
+  [TokenType.SLASH_EQUAL, TokenType.SLASH],
+  [TokenType.REMAINDER_EQUAL, TokenType.REMAINDER],
+  [TokenType.OR_EQUAL, TokenType.OR],
+  [TokenType.AND_EQUAL, TokenType.AND],
+]);
 
 class Parser {
   private readonly tokens: Token[];
@@ -81,7 +92,10 @@ class Parser {
     this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
     return new VariableStatement(name, initializer, isStatic);
   }
-  private functionDeclaration(name: string, isStatic = false): FunctionStatement {
+  private functionDeclaration(
+    name: string,
+    isStatic = false,
+  ): FunctionStatement {
     const functionName: Token = this.consume(
       TokenType.IDENTIFIER,
       `expect identifier after ${name}`,
@@ -211,9 +225,25 @@ class Parser {
   }
   private assignment(): Expression {
     const expr = this.or();
-    if (this.match(TokenType.EQUAL)) {
+    if (this.match(TokenType.EQUAL, ...assignmentMap.keys())) {
       const equal: Token = this.previous();
-      const value = this.assignment();
+      let value = this.assignment();
+      const temp = assignmentMap.get(equal.type);
+      if (temp) {
+        const operator = new Token(
+          temp,
+          equal.lexeme.replace('=', ''),
+          equal.line,
+        );
+        if (
+          equal.type === TokenType.AND_EQUAL ||
+          equal.type === TokenType.OR_EQUAL
+        ) {
+          value = new LogicalExpression(expr, operator, value);
+        } else {
+          value = new BinaryExpression(expr, operator, value);
+        }
+      }
       if (expr instanceof VariableExpression) {
         const name = expr.name;
         return new AssignExpression(name, value);
@@ -377,9 +407,7 @@ class Parser {
       return new NewExpression(keyword, expr);
     }
 
-    throw new Error(
-      `parser can not handle token: ${this.peek().toString()}`,
-    );
+    throw new Error(`parser can not handle token: ${this.peek().toString()}`);
   }
   private consume(type: TokenType, message: string) {
     if (this.peek().type === type) {

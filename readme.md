@@ -22,7 +22,7 @@ npm run test
 #### Expressions & operators
 
 * [x] Addition (+)
-* [ ] Addition assignment (+=)
+* [x] Addition assignment (+=)
 * [x] Assignment (=)
 * [ ] async function expression
 * [ ] async function* expression
@@ -41,7 +41,7 @@ npm run test
 * [ ] delete operator
 * [ ] Destructuring assignment
 * [x] Division (/)
-* [ ] Division assignment (/=)
+* [x] Division assignment (/=)
 * [x] Equality (==)
 * [ ] Exponentiation (**)
 * [ ] Exponentiation assignment (**=)
@@ -65,11 +65,11 @@ npm run test
 * [x] Logical NOT (!)
 * [ ] Logical nullish assignment (??=)
 * [x] Logical OR (||)
-* [ ] Logical OR assignment (||=)
+* [x] Logical OR assignment (||=)
 * [x] Multiplication (*)
-* [ ] Multiplication assignment (*=)
-* [ ] new operator
-* [] new.target
+* [x] Multiplication assignment (*=)
+* [x] new operator
+* [ ] new.target
 * [x] null
 * [ ] Nullish coalescing operator (??)
 * [ ] Object initializer
@@ -77,14 +77,14 @@ npm run test
 * [ ] Optional chaining (?.)
 * [ ] Property accessors
 * [x] Remainder (%)
-* [ ] Remainder assignment (%=)
+* [x] Remainder assignment (%=)
 * [ ] Right shift (>>)
 * [ ] Right shift assignment (>>=)
 * [ ] Spread syntax (...)
 * [x] Strict equality (===)
 * [x] Strict inequality (!==)
 * [x] Subtraction (-)
-* [ ] Subtraction assignment (-=)
+* [x] Subtraction assignment (-=)
 * [ ] super
 * [x] this
 * [ ] typeof

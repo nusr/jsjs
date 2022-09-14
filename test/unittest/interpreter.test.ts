@@ -41,6 +41,24 @@ describe('interpreter.test.ts', () => {
   });
   const list: Array<{ input: string; expect: LiteralType[]; name: string }> = [
     {
+      name: 'assignment equal',
+      input: `
+      var a = 1;
+      a += 1;
+      console.log(a);
+      a *= 2;
+      console.log(a);
+      a /= 2;
+      console.log(a);
+      a -= 1;
+      console.log(a);
+      a ||= 4;
+      console.log(a);
+      a &&= 0;
+      console.log(a);`,
+      expect: [2, 4, 2, 1, 1, 0],
+    },
+    {
       name: 'if return',
       input: `
       function ifReturn(a) {

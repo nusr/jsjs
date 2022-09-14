@@ -90,24 +90,40 @@ class Scanner {
         if (this.match('-')) {
           this.addOneToken(TokenType.MINUS_MINUS);
         } else {
-          this.addOneToken(TokenType.MINUS);
+          if (this.match('=')) {
+            this.addOneToken(TokenType.MINUS_EQUAL);
+          } else {
+            this.addOneToken(TokenType.MINUS);
+          }
         }
         break;
       case '+':
         if (this.match('+')) {
           this.addOneToken(TokenType.PLUS_PLUS);
         } else {
-          this.addOneToken(TokenType.PLUS);
+          if (this.match('=')) {
+            this.addOneToken(TokenType.PLUS_EQUAL);
+          } else {
+            this.addOneToken(TokenType.PLUS);
+          }
         }
         break;
       case ';':
         this.addOneToken(TokenType.SEMICOLON);
         break;
       case '*':
-        this.addOneToken(TokenType.STAR);
+        if (this.match('=')) {
+          this.addOneToken(TokenType.STAR_EQUAL);
+        } else {
+          this.addOneToken(TokenType.STAR);
+        }
         break;
       case '%':
-        this.addOneToken(TokenType.REMAINDER);
+        if (this.match('=')) {
+          this.addOneToken(TokenType.REMAINDER_EQUAL);
+        } else {
+          this.addOneToken(TokenType.REMAINDER);
+        }
         break;
       case '!':
         if (this.match('=')) {
@@ -165,20 +181,30 @@ class Scanner {
           }
           this.advance(); // skip *
           this.advance(); // skip /
+        } else if (this.match('=')) {
+          this.addOneToken(TokenType.SLASH_EQUAL);
         } else {
           this.addOneToken(TokenType.SLASH);
         }
         break;
       case '|':
         if (this.match('|')) {
-          this.addOneToken(TokenType.OR);
+          if (this.match('=')) {
+            this.addOneToken(TokenType.OR_EQUAL);
+          } else {
+            this.addOneToken(TokenType.OR);
+          }
         } else {
           this.addOneToken(TokenType.BIT_OR);
         }
         break;
       case '&':
         if (this.match('&')) {
-          this.addOneToken(TokenType.AND);
+          if (this.match('=')) {
+            this.addOneToken(TokenType.AND_EQUAL);
+          } else {
+            this.addOneToken(TokenType.AND);
+          }
         } else {
           this.addOneToken(TokenType.BIT_AND);
         }
@@ -208,8 +234,8 @@ class Scanner {
         break;
     }
   }
-  private string(spliter: string) {
-    while (this.peek() !== spliter && !this.isAtEnd()) {
+  private string(splitter: string) {
+    while (this.peek() !== splitter && !this.isAtEnd()) {
       if (this.peek() === '\n') {
         this.line++;
       }
