@@ -1,6 +1,7 @@
 import type Token from './token';
 import type { LiteralType } from './type';
 import { convertLiteralTypeToString } from './util';
+import type { BlockStatement } from './statement';
 export interface ExpressionVisitor {
   visitNewExpression: (Expression: NewExpression) => LiteralType;
   visitAssignExpression: (expression: AssignExpression) => LiteralType;
@@ -15,6 +16,7 @@ export interface ExpressionVisitor {
   visitThisExpression: (expression: ThisExpression) => LiteralType;
   visitUnaryExpression: (expression: UnaryExpression) => LiteralType;
   visitVariableExpression: (expression: VariableExpression) => LiteralType;
+  visitFunctionExpression: (expression: FunctionExpression) => LiteralType;
 }
 export interface Expression {
   accept(visitor: ExpressionVisitor): LiteralType;
@@ -203,5 +205,26 @@ export class VariableExpression implements Expression {
   }
   toString() {
     return this.name.toString();
+  }
+}
+
+export class FunctionExpression implements Expression {
+  readonly name: Token | null;
+  readonly body: BlockStatement;
+  readonly params: Token[];
+  constructor(name: Token | null, body: BlockStatement, params: Token[]) {
+    this.name = name;
+    this.body = body;
+    this.params = params;
+  }
+  accept(visitor: ExpressionVisitor): LiteralType {
+    return visitor.visitFunctionExpression(this);
+  }
+  toString() {
+    return `function ${
+      this.name === null ? '' : this.name.toString()
+    }(${this.params
+      .map((item) => item.toString())
+      .join(',')})${this.body.toString()}`;
   }
 }

@@ -3,6 +3,7 @@ import {
   BinaryExpression,
   CallExpression,
   Expression,
+  FunctionExpression,
   GetExpression,
   GroupingExpression,
   LiteralExpression,
@@ -60,7 +61,7 @@ class Parser {
     }
 
     if (this.match(TokenType.FUNCTION)) {
-      return this.functionDeclaration('function');
+      return this.functionDeclaration('Function');
     }
 
     return this.statement();
@@ -72,7 +73,7 @@ class Parser {
     while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
       const isStatic = this.match(TokenType.STATIC);
       if (this.checkNext(TokenType.LEFT_PAREN)) {
-        methods.push(this.functionDeclaration('method', isStatic));
+        methods.push(this.functionDeclaration('Class', isStatic));
       } else {
         methods.push(this.varDeclaration(isStatic));
       }
@@ -89,7 +90,7 @@ class Parser {
     if (this.match(TokenType.EQUAL)) {
       initializer = this.expression();
     }
-    this.consume(TokenType.SEMICOLON, 'expected ; after declaration');
+    this.match(TokenType.SEMICOLON);
     return new VariableStatement(name, initializer, isStatic);
   }
   private functionDeclaration(
@@ -98,18 +99,9 @@ class Parser {
   ): FunctionStatement {
     const functionName: Token = this.consume(
       TokenType.IDENTIFIER,
-      `expect identifier after ${name}`,
+      `${name} statements require a function name`,
     );
-    this.consume(TokenType.LEFT_PAREN, `expect ( after ${name}`);
-    const params: Token[] = [];
-    if (!this.check(TokenType.RIGHT_PAREN)) {
-      do {
-        params.push(
-          this.consume(TokenType.IDENTIFIER, 'expect parameter name'),
-        );
-      } while (this.match(TokenType.COMMA));
-    }
-    this.consume(TokenType.RIGHT_PAREN, `expect ) after ${name}`);
+    const params = this.getParameters(name);
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
     const block = this.blockStatement();
     return new FunctionStatement(functionName, block, params, isStatic);
@@ -186,7 +178,7 @@ class Parser {
     if (!this.check(TokenType.SEMICOLON)) {
       value = this.expression();
     }
-    this.consume(TokenType.SEMICOLON, 'expect ; after return');
+    this.match(TokenType.SEMICOLON);
     return new ReturnStatement(keyword, value);
   }
   private whileStatement(): WhileStatement {
@@ -373,7 +365,30 @@ class Parser {
     );
     return new CallExpression(callee, paren, params);
   }
+  private getParameters(name: string): Token[] {
+    const params: Token[] = [];
+    this.consume(TokenType.LEFT_PAREN, `expect ( after ${name}`);
+    if (!this.check(TokenType.RIGHT_PAREN)) {
+      do {
+        params.push(
+          this.consume(TokenType.IDENTIFIER, 'expect parameter name'),
+        );
+      } while (this.match(TokenType.COMMA));
+    }
+    this.consume(TokenType.RIGHT_PAREN, `expect ) after ${name}`);
+    return params;
+  }
 
+  private functionExpression(): FunctionExpression {
+    let functionName: Token | null = null;
+    if (this.match(TokenType.IDENTIFIER)) {
+      functionName = this.previous();
+    }
+    const params = this.getParameters('expression');
+    this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
+    const block = this.blockStatement();
+    return new FunctionExpression(functionName, block, params);
+  }
   private primary(): Expression {
     if (this.match(TokenType.TRUE)) {
       return new LiteralExpression(true);
@@ -401,10 +416,8 @@ class Parser {
       );
       return new GroupingExpression(expr);
     }
-    if (this.match(TokenType.NEW)) {
-      const keyword = this.previous();
-      const expr = this.expression();
-      return new NewExpression(keyword, expr);
+    if (this.match(TokenType.FUNCTION)) {
+      return this.functionExpression();
     }
 
     throw new Error(`parser can not handle token: ${this.peek().toString()}`);

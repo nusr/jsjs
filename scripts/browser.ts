@@ -34,7 +34,7 @@ function handleClick() {
   const { Jsjs, Environment, getGlobalObject } = window.jsjs;
   const interpreter = new Jsjs(text, new Environment(null));
   const temp = getGlobalObject({
-    log(result: LiteralType[]) {
+    log(...result: LiteralType[]) {
       console.log(...result);
       resultDom!.innerHTML += result
         .map((item) => `<div>log: ${item}</div>`)

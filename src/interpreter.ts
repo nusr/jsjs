@@ -13,6 +13,7 @@ import type {
   Expression,
   ExpressionVisitor,
   NewExpression,
+  FunctionExpression,
 } from './expression';
 import { VariableExpression } from './expression';
 import { TokenType } from './tokenType';
@@ -29,7 +30,7 @@ import type {
   VariableStatement,
 } from './statement';
 import { FunctionStatement } from './statement';
-import Environment from './environment';
+import type Environment from './environment';
 import { isBaseCallable, assert, isBaseSetGet } from './util';
 import { FunctionObject } from './function';
 import { ReturnValue } from './returnValue';
@@ -68,7 +69,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return this.evaluate(statement.expression);
   };
   visitBlockStatement = (statement: BlockStatement) => {
-    return this.executeBlock(statement, new Environment(this.environment));
+    return this.executeBlock(statement, this.environment);
   };
   executeBlock = (
     statement: BlockStatement,
@@ -123,6 +124,9 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       new FunctionObject(statement, this.environment),
     );
     return null;
+  };
+  visitFunctionExpression = (expression: FunctionExpression) => {
+    return new FunctionObject(expression, this.environment);
   };
   visitCallExpression = (expr: CallExpression): LiteralType => {
     const callee: LiteralType = this.evaluate(expr.callee);

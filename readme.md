@@ -45,7 +45,7 @@ npm run test
 * [x] Equality (==)
 * [ ] Exponentiation (**)
 * [ ] Exponentiation assignment (**=)
-* [ ] Function expression
+* [x] Function expression
 * [ ] function* expression
 * [x] Greater than (>)
 * [x] Greater than or equal (>=)

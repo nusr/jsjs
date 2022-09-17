@@ -41,6 +41,16 @@ describe('interpreter.test.ts', () => {
   });
   const list: Array<{ input: string; expect: LiteralType[]; name: string }> = [
     {
+      name: 'unicode',
+      input: `
+      var 变量 = 2
+      console.log(变量)
+      变量 = "变量"
+      console.log(变量)
+      `,
+      expect: [2, '变量'],
+    },
+    {
       name: 'assignment equal',
       input: `
       var a = 1;
@@ -160,6 +170,26 @@ describe('interpreter.test.ts', () => {
       a.print();
       `,
       expect: [1, 2, 3],
+    },
+    {
+      name: 'function expression',
+      input: `
+      (function add(a){
+        console.log(a)
+      })(3);
+      var add = function(x,y){
+        return x + y;
+      }
+      console.log(add(1,3))`,
+      expect: [3, 4],
+    },
+    {
+      name: 'function expression self',
+      input: `console.log((function fib(n) {
+        if (n <= 1) return n;
+        return fib(n - 1) + fib(n - 2);
+      })(20))`,
+      expect: [6765],
     },
   ];
   for (const item of list) {

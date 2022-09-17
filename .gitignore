@@ -10,3 +10,4 @@ dist
 lib
 assets
 scripts/*.js
+.DS_Store
