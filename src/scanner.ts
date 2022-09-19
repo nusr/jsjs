@@ -226,7 +226,7 @@ class Scanner {
       default:
         if (this.isDigit(c)) {
           this.number();
-        } else if (this.isAlpha(c) || this.isZh(c)) {
+        } else if (this.identifierChar(c)) {
           this.identifier();
         } else {
           this.addError(this.line, `Unexpected character: ${c}`);
@@ -262,13 +262,8 @@ class Scanner {
     this.addOneToken(TokenType.NUMBER);
   }
   private identifier() {
-    while (1) {
-      const c = this.peek();
-      if (this.isAlpha(c) || this.isDigit(c) || this.isZh(c)) {
-        this.advance();
-      } else {
-        break;
-      }
+    while (this.identifierChar(this.peek())) {
+      this.advance();
     }
     const text = this.substr();
     const temp = Scanner.keywordMap.get(text);
@@ -278,11 +273,12 @@ class Scanner {
     }
     this.addOneToken(type);
   }
-  private isZh(c: string) {
-    return c >= '\u4e00' && c <= '\u9fa5';
+  private identifierChar(c: string): boolean {
+    const temp = `()[]{},.=-*/%!&<>|';"`;
+    return !(this.isWhiteSpace(c) || temp.includes(c));
   }
-  private isAlpha(c: string) {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_';
+  private isWhiteSpace(c: string) {
+    return c === ' ' || c === '\r' || c === '\n' || c === '\t';
   }
   private isDigit(char: string) {
     return char >= '0' && char <= '9';

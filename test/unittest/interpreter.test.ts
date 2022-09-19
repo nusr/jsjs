@@ -47,8 +47,12 @@ describe('interpreter.test.ts', () => {
       console.log(变量)
       变量 = "变量"
       console.log(变量)
+      var 變量 = '變量'
+      console.log(變量)
+      var 変数 = '変数'
+      console.log(変数)
       `,
-      expect: [2, '变量'],
+      expect: [2, '变量', '變量', '変数'],
     },
     {
       name: 'assignment equal',
