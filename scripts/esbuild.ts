@@ -125,13 +125,16 @@ function buildHtml() {
       <title>JavaScript interpret JavaScript</title>
       <style>
         #code {
-          width: 600px;
-          height: 300px;
+          width: 100%;
+          height: 400px;
+        }
+        html,body{
+          padding: 0;
+          margin: 0;
         }
       </style>
     </head>
     <body>
-      <div><select id="select"></select></div>
       <div>
         <textarea id="code">
 ${data}
