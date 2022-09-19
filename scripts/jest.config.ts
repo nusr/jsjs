@@ -9,6 +9,7 @@ export default {
   },
   collectCoverageFrom: [
     "**/src/*.ts",
+    "!**/src/type.ts",
   ],
   coverageReporters: [
     "json",

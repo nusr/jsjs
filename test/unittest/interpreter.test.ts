@@ -41,14 +41,53 @@ describe('interpreter.test.ts', () => {
   });
   const list: Array<{ input: string; expect: LiteralType[]; name: string }> = [
     {
+      name: 'primary',
+      input: `
+      console.log(undefined)
+      console.log(null)
+      console.log(1)
+      console.log(1.0)
+      console.log(true)
+      console.log(false)
+      console.log('str')
+      console.log("str")`,
+      expect: [undefined, null, 1, 1.0, true, false, 'str', 'str'],
+    },
+    {
+      name: 'binary operator',
+      input: `
+        console.log((0.1 + 0.2) == 0.3)
+        console.log(undefined == null)
+        console.log(undefined === null)
+        console.log(1 >= 2);
+        console.log(1 <= 2);
+        console.log(3.0 > 2)
+        console.log('a' < 'b')
+      `,
+      expect: [false, true, false, false, true, true, true],
+    },
+    {
+      name: 'logical operator',
+      input: `
+        console.log(true && false)
+        console.log(true && true)
+        console.log(true || false)
+        console.log(false || false)
+      `,
+      expect: [false, true, true, false],
+    },
+    {
       name: 'unicode',
       input: `
       var 变量 = 2
-      console.log(变量)
+      console.log(变量) // chinese
       变量 = "变量"
       console.log(变量)
       var 變量 = '變量'
       console.log(變量)
+      /*
+      japanese
+      */
       var 変数 = '変数'
       console.log(変数)
       `,
@@ -69,8 +108,23 @@ describe('interpreter.test.ts', () => {
       a ||= 4;
       console.log(a);
       a &&= 0;
-      console.log(a);`,
+      console.log(a);
+      `,
       expect: [2, 4, 2, 1, 1, 0],
+    },
+    {
+      name: 'for',
+      input: `
+      for (var a = 1; a <= 3; ++a) {
+        console.log(a)
+      }
+      var i = 4;
+      for (; i < 6; ) {
+        console.log(i);
+        ++i;
+      }
+      `,
+      expect: [1, 2, 3, 4, 5],
     },
     {
       name: 'if return',
@@ -112,6 +166,23 @@ describe('interpreter.test.ts', () => {
         --a;
       } while(a > 0)`,
       expect: [3, 2, 1],
+    },
+    {
+      name: 'function',
+      input: `
+        function add(a,b) {
+          return a + b;
+        }
+        console.log(add('2'))
+        console.log(add(2))
+        console.log(add(1, 2))
+        console.log(add(1, 2, 3))
+        function returnData() {
+          return;
+        }
+        console.log(returnData())
+        `,
+      expect: ['2undefined', NaN, 3, 3, undefined],
     },
     {
       name: 'class',

@@ -396,6 +396,9 @@ class Parser {
     if (this.match(TokenType.FALSE)) {
       return new LiteralExpression(false);
     }
+    if (this.match(TokenType.UNDEFINED)) {
+      return new LiteralExpression(undefined)
+    }
     if (this.match(TokenType.NULL)) {
       return new LiteralExpression(null);
     }

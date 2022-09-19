@@ -1,6 +1,6 @@
 import type Token from './token';
 import type { LiteralType } from './type';
-import { convertLiteralTypeToString } from './util';
+import { convertLiteralTypeToString, isTestEnv } from './util';
 import type { BlockStatement } from './statement';
 export interface ExpressionVisitor {
   visitNewExpression: (Expression: NewExpression) => LiteralType;
@@ -63,7 +63,11 @@ export class BinaryExpression implements Expression {
     return visitor.visitBinaryExpression(this);
   }
   toString() {
-    return `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`;
+    const temp =  `${this.left.toString()} ${this.operator.toString()} ${this.right.toString()}`;
+    if (isTestEnv()) {
+      return `(${temp})`;
+    }
+    return temp;
   }
 }
 export class CallExpression implements Expression {
@@ -192,7 +196,11 @@ export class UnaryExpression implements Expression {
     return visitor.visitUnaryExpression(this);
   }
   toString() {
-    return `${this.operator.toString()}${this.right.toString()}`;
+    const temp = `${this.operator.toString()}${this.right.toString()}`;
+    if (isTestEnv()) {
+      return `(${temp})`;
+    }
+    return temp;
   }
 }
 export class VariableExpression implements Expression {

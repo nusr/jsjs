@@ -4,6 +4,9 @@ export function convertLiteralTypeToString(val: LiteralType): string {
   if (val === null) {
     return 'null';
   }
+  if (val === undefined) {
+    return 'undefined'
+  }
   if (typeof val === 'string') {
     return val;
   }
@@ -30,6 +33,10 @@ export function isBaseCallable(call: any): call is IBaseCallable {
 export function getNodeEnv(): string {
   // @ts-ignore
   return process.env.NODE_ENV;
+}
+
+export function isTestEnv(): boolean {
+  return getNodeEnv() === 'test';
 }
 
 export function assert(

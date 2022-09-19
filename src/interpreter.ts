@@ -155,7 +155,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
 
   visitReturnStatement = (statement: ReturnStatement) => {
-    let result: LiteralType = null;
+    let result: LiteralType = undefined;
     if (statement.value !== null) {
       result = this.evaluate(statement.value);
     }

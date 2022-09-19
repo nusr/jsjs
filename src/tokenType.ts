@@ -60,5 +60,6 @@ export enum TokenType {
   NEW, // new
   STATIC, // static
   CONSTRUCTOR, // constructor
+  UNDEFINED, // undefined
   EOF, // end
 }

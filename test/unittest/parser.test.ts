@@ -32,6 +32,17 @@ beforeAll(() => {
 });
 
 describe('parser.test.ts', () => {
+  const env = process.env;
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...env };
+    process.env.NODE_ENV = 'production';
+  });
+
+  afterEach(() => {
+    process.env = env;
+  });
   test('parser', () => {
     const scanner = new Scanner(inputData);
     const tokens = scanner.scanTokens();
@@ -44,20 +55,16 @@ describe('parser.test.ts', () => {
       ),
       new FunctionStatement(
         new Token(TokenType.IDENTIFIER, 'add', 6),
-        new BlockStatement(
-          [
-            new ReturnStatement(
-              new Token(TokenType.RETURN, 'return', 7),
-              new BinaryExpression(
-                new VariableExpression(new Token(TokenType.IDENTIFIER, 'x', 7)
-                ),
-                new Token(TokenType.PLUS, '+', 7),
-                new VariableExpression(new Token(TokenType.IDENTIFIER, 'y', 7)
-                ),
-              ),
+        new BlockStatement([
+          new ReturnStatement(
+            new Token(TokenType.RETURN, 'return', 7),
+            new BinaryExpression(
+              new VariableExpression(new Token(TokenType.IDENTIFIER, 'x', 7)),
+              new Token(TokenType.PLUS, '+', 7),
+              new VariableExpression(new Token(TokenType.IDENTIFIER, 'y', 7)),
             ),
-          ]
-        ),
+          ),
+        ]),
         [
           new Token(TokenType.IDENTIFIER, 'x', 6),
           new Token(TokenType.IDENTIFIER, 'y', 6),
@@ -66,9 +73,7 @@ describe('parser.test.ts', () => {
       new VariableStatement(
         new Token(TokenType.IDENTIFIER, 'cond', 9),
         new CallExpression(
-          new VariableExpression(
-            new Token(TokenType.IDENTIFIER, 'add', 9)
-          ),
+          new VariableExpression(new Token(TokenType.IDENTIFIER, 'add', 9)),
           new Token(TokenType.RIGHT_PAREN, ')', 9),
           [
             new LiteralExpression(1),
@@ -83,103 +88,94 @@ describe('parser.test.ts', () => {
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 10)),
-            new Token(TokenType.IDENTIFIER, 'log', 10)
-          )
-          ,
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 10),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 10),
+          ),
           new Token(TokenType.RIGHT_PAREN, ')', 10),
-          [
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 10)
-            )
-          ],
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 10))],
         ),
       ),
       new IfStatement(
         new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 11)),
-        new BlockStatement(
-          [
-            new ExpressionStatement(
-              new AssignExpression(
-                new Token(TokenType.IDENTIFIER, 'a', 12),
-                new LiteralExpression('b'),
-              ),
+        new BlockStatement([
+          new ExpressionStatement(
+            new AssignExpression(
+              new Token(TokenType.IDENTIFIER, 'a', 12),
+              new LiteralExpression('b'),
             ),
-          ]
-        ),
-        new BlockStatement(
-          [
-            new ExpressionStatement(
-              new AssignExpression(
-                new Token(TokenType.IDENTIFIER, 'a', 14),
-                new LiteralExpression('c'),
-              ),
+          ),
+        ]),
+        new BlockStatement([
+          new ExpressionStatement(
+            new AssignExpression(
+              new Token(TokenType.IDENTIFIER, 'a', 14),
+              new LiteralExpression('c'),
             ),
-          ]
-        ),
+          ),
+        ]),
       ),
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 16)),
-            new Token(TokenType.IDENTIFIER, 'log', 16)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 16),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 16),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 16),
-          [
-            new VariableExpression(
-              new Token(TokenType.IDENTIFIER, 'a', 16)
-            )
-          ],
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'a', 16))],
         ),
       ),
       new FunctionStatement(
         new Token(TokenType.IDENTIFIER, 'makeCounter', 18),
-        new BlockStatement(
-          [
-            new VariableStatement(
-              new Token(TokenType.IDENTIFIER, 'i', 19),
-              new LiteralExpression(0),
-            ),
-            new FunctionStatement(
-              new Token(TokenType.IDENTIFIER, 'count', 20),
-              new BlockStatement(
-                [
-                  new ExpressionStatement(
-                    new AssignExpression(
+        new BlockStatement([
+          new VariableStatement(
+            new Token(TokenType.IDENTIFIER, 'i', 19),
+            new LiteralExpression(0),
+          ),
+          new FunctionStatement(
+            new Token(TokenType.IDENTIFIER, 'count', 20),
+            new BlockStatement([
+              new ExpressionStatement(
+                new AssignExpression(
+                  new Token(TokenType.IDENTIFIER, 'i', 21),
+                  new BinaryExpression(
+                    new VariableExpression(
                       new Token(TokenType.IDENTIFIER, 'i', 21),
-                      new BinaryExpression(
-                        new VariableExpression(
-                          new Token(TokenType.IDENTIFIER, 'i', 21),
-                        ),
-                        new Token(TokenType.PLUS, '+', 21),
-                        new LiteralExpression(1),
-                      ),
                     ),
+                    new Token(TokenType.PLUS, '+', 21),
+                    new LiteralExpression(1),
                   ),
-                  new ExpressionStatement(
-                    new CallExpression(
-                      new GetExpression(
-                        new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 22)),
-                        new Token(TokenType.IDENTIFIER, 'log', 22)
-                      ),
-                      new Token(TokenType.RIGHT_PAREN, ')', 22),
-                      [
-                        new VariableExpression(
-                          new Token(TokenType.IDENTIFIER, 'i', 22),
-                        ),
-                      ],
+                ),
+              ),
+              new ExpressionStatement(
+                new CallExpression(
+                  new GetExpression(
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'console', 22),
                     ),
+                    new Token(TokenType.IDENTIFIER, 'log', 22),
                   ),
-                ]
+                  new Token(TokenType.RIGHT_PAREN, ')', 22),
+                  [
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'i', 22),
+                    ),
+                  ],
+                ),
               ),
-              [],
+            ]),
+            [],
+          ),
+          new ReturnStatement(
+            new Token(TokenType.RETURN, 'return', 25),
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'count', 25),
             ),
-            new ReturnStatement(
-              new Token(TokenType.RETURN, 'return', 25),
-              new VariableExpression(
-                new Token(TokenType.IDENTIFIER, 'count', 25),
-              ),
-            ),
-          ]),
+          ),
+        ]),
         [],
       ),
       new VariableStatement(
@@ -223,8 +219,10 @@ describe('parser.test.ts', () => {
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 33)),
-            new Token(TokenType.IDENTIFIER, 'log', 33)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 33),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 33),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 33),
           [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 33))],
@@ -239,83 +237,76 @@ describe('parser.test.ts', () => {
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 35)),
-            new Token(TokenType.IDENTIFIER, 'log', 35)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 35),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 35),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 35),
-          [
-            new VariableExpression(
-              new Token(TokenType.IDENTIFIER, 'n', 35)
-            )
-          ],
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 35))],
         ),
       ),
       new FunctionStatement(
         new Token(TokenType.IDENTIFIER, 'fib', 36),
-        new BlockStatement(
-          [
-            new IfStatement(
-              new BinaryExpression(
-                new VariableExpression(
-                  new Token(TokenType.IDENTIFIER, 'n', 37)
-                ),
-                new Token(TokenType.LESS_EQUAL, '<=', 37),
-                new LiteralExpression(1),
-              ),
-              new ReturnStatement(
-                new Token(TokenType.RETURN, 'return', 37),
-                new VariableExpression(
-                  new Token(TokenType.IDENTIFIER, 'n', 37)
-                ),
-              ),
-              null,
+        new BlockStatement([
+          new IfStatement(
+            new BinaryExpression(
+              new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 37)),
+              new Token(TokenType.LESS_EQUAL, '<=', 37),
+              new LiteralExpression(1),
             ),
             new ReturnStatement(
-              new Token(TokenType.RETURN, 'return', 38),
-              new BinaryExpression(
-                new CallExpression(
-                  new VariableExpression(
-                    new Token(TokenType.IDENTIFIER, 'fib', 38),
-                  ),
-                  new Token(TokenType.RIGHT_PAREN, ')', 38),
-                  [
-                    new BinaryExpression(
-                      new VariableExpression(
-                        new Token(TokenType.IDENTIFIER, 'n', 38),
-                      ),
-                      new Token(TokenType.MINUS, '-', 38),
-                      new LiteralExpression(1),
-                    ),
-                  ],
+              new Token(TokenType.RETURN, 'return', 37),
+              new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 37)),
+            ),
+            null,
+          ),
+          new ReturnStatement(
+            new Token(TokenType.RETURN, 'return', 38),
+            new BinaryExpression(
+              new CallExpression(
+                new VariableExpression(
+                  new Token(TokenType.IDENTIFIER, 'fib', 38),
                 ),
-                new Token(TokenType.PLUS, '+', 38),
-                new CallExpression(
-                  new VariableExpression(
-                    new Token(TokenType.IDENTIFIER, 'fib', 38),
-                  ),
-                  new Token(TokenType.RIGHT_PAREN, ')', 38),
-                  [
-                    new BinaryExpression(
-                      new VariableExpression(
-                        new Token(TokenType.IDENTIFIER, 'n', 38),
-                      ),
-                      new Token(TokenType.MINUS, '-', 38),
-                      new LiteralExpression(2),
+                new Token(TokenType.RIGHT_PAREN, ')', 38),
+                [
+                  new BinaryExpression(
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'n', 38),
                     ),
-                  ],
+                    new Token(TokenType.MINUS, '-', 38),
+                    new LiteralExpression(1),
+                  ),
+                ],
+              ),
+              new Token(TokenType.PLUS, '+', 38),
+              new CallExpression(
+                new VariableExpression(
+                  new Token(TokenType.IDENTIFIER, 'fib', 38),
                 ),
+                new Token(TokenType.RIGHT_PAREN, ')', 38),
+                [
+                  new BinaryExpression(
+                    new VariableExpression(
+                      new Token(TokenType.IDENTIFIER, 'n', 38),
+                    ),
+                    new Token(TokenType.MINUS, '-', 38),
+                    new LiteralExpression(2),
+                  ),
+                ],
               ),
             ),
-          ]),
-        [
-          new Token(TokenType.IDENTIFIER, 'n', 36)
-        ],
+          ),
+        ]),
+        [new Token(TokenType.IDENTIFIER, 'n', 36)],
       ),
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 40)),
-            new Token(TokenType.IDENTIFIER, 'log', 40)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 40),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 40),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 40),
           [
@@ -324,9 +315,7 @@ describe('parser.test.ts', () => {
                 new Token(TokenType.IDENTIFIER, 'fib', 40),
               ),
               new Token(TokenType.RIGHT_PAREN, ')', 40),
-              [
-                new LiteralExpression(30)
-              ],
+              [new LiteralExpression(30)],
             ),
           ],
         ),
@@ -335,93 +324,86 @@ describe('parser.test.ts', () => {
         new Token(TokenType.IDENTIFIER, 'globalA', 41),
         new LiteralExpression('global'),
       ),
-      new BlockStatement(
-        [
-          new FunctionStatement(
-            new Token(TokenType.IDENTIFIER, 'showA', 43),
-            new BlockStatement(
-              [
-                new ExpressionStatement(
-                  new CallExpression(
-                    new GetExpression(
-                      new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 44)),
-                      new Token(TokenType.IDENTIFIER, 'log', 44)
-                    ),
-                    new Token(TokenType.RIGHT_PAREN, ')', 44),
-                    [
-                      new VariableExpression(
-                        new Token(TokenType.IDENTIFIER, 'globalA', 44),
-                      ),
-                    ],
+      new BlockStatement([
+        new FunctionStatement(
+          new Token(TokenType.IDENTIFIER, 'showA', 43),
+          new BlockStatement([
+            new ExpressionStatement(
+              new CallExpression(
+                new GetExpression(
+                  new VariableExpression(
+                    new Token(TokenType.IDENTIFIER, 'console', 44),
                   ),
+                  new Token(TokenType.IDENTIFIER, 'log', 44),
                 ),
-              ]),
+                new Token(TokenType.RIGHT_PAREN, ')', 44),
+                [
+                  new VariableExpression(
+                    new Token(TokenType.IDENTIFIER, 'globalA', 44),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+          [],
+        ),
+        new ExpressionStatement(
+          new CallExpression(
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'showA', 47),
+            ),
+            new Token(TokenType.RIGHT_PAREN, ')', 47),
             [],
           ),
-          new ExpressionStatement(
-            new CallExpression(
-              new VariableExpression(
-                new Token(TokenType.IDENTIFIER, 'showA', 47),
-              ),
-              new Token(TokenType.RIGHT_PAREN, ')', 47),
-              [],
+        ),
+        new VariableStatement(
+          new Token(TokenType.IDENTIFIER, 'globalA', 48),
+          new LiteralExpression('block'),
+        ),
+        new ExpressionStatement(
+          new CallExpression(
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'showA', 49),
             ),
+            new Token(TokenType.RIGHT_PAREN, ')', 49),
+            [],
           ),
-          new VariableStatement(
-            new Token(TokenType.IDENTIFIER, 'globalA', 48),
-            new LiteralExpression('block'),
-          ),
-          new ExpressionStatement(
-            new CallExpression(
-              new VariableExpression(
-                new Token(TokenType.IDENTIFIER, 'showA', 49),
-              ),
-              new Token(TokenType.RIGHT_PAREN, ')', 49),
-              [],
-            ),
-          ),
-        ]),
-      new ClassStatement(
-        new Token(TokenType.IDENTIFIER, 'Test', 51),
-        null,
-        [
-          new VariableStatement(
-            new Token(TokenType.IDENTIFIER, 'b', 52),
-            new LiteralExpression(5),
-          ),
-          new FunctionStatement(
-            new Token(TokenType.IDENTIFIER, 'print', 53),
-            new BlockStatement(
-              [
-                new ExpressionStatement(
-                  new CallExpression(
-                    new GetExpression(
-                      new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 54)),
-                      new Token(TokenType.IDENTIFIER, 'log', 54)
-                    ),
-                    new Token(TokenType.RIGHT_PAREN, ')', 54),
-                    [
-                      new VariableExpression(
-                        new Token(TokenType.IDENTIFIER, 'a', 54),
-                      )
-                    ],
+        ),
+      ]),
+      new ClassStatement(new Token(TokenType.IDENTIFIER, 'Test', 51), null, [
+        new VariableStatement(
+          new Token(TokenType.IDENTIFIER, 'b', 52),
+          new LiteralExpression(5),
+        ),
+        new FunctionStatement(
+          new Token(TokenType.IDENTIFIER, 'print', 53),
+          new BlockStatement([
+            new ExpressionStatement(
+              new CallExpression(
+                new GetExpression(
+                  new VariableExpression(
+                    new Token(TokenType.IDENTIFIER, 'console', 54),
                   ),
+                  new Token(TokenType.IDENTIFIER, 'log', 54),
                 ),
-              ]
+                new Token(TokenType.RIGHT_PAREN, ')', 54),
+                [
+                  new VariableExpression(
+                    new Token(TokenType.IDENTIFIER, 'a', 54),
+                  ),
+                ],
+              ),
             ),
-            [
-              new Token(TokenType.IDENTIFIER, 'a', 53),
-            ],
-          ),
-        ]
-      ),
+          ]),
+          [new Token(TokenType.IDENTIFIER, 'a', 53)],
+        ),
+      ]),
       new VariableStatement(
         new Token(TokenType.IDENTIFIER, 'b', 57),
         new NewExpression(
           new Token(TokenType.NEW, 'new', 57),
           new CallExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'Test', 57)
-            ),
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'Test', 57)),
             new Token(TokenType.RIGHT_PAREN, ')', 57),
             [],
           ),
@@ -434,16 +416,16 @@ describe('parser.test.ts', () => {
             new Token(TokenType.IDENTIFIER, 'print', 58),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 58),
-          [
-            new LiteralExpression(3)
-          ],
+          [new LiteralExpression(3)],
         ),
       ),
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 59)),
-            new Token(TokenType.IDENTIFIER, 'log', 59)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 59),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 59),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 59),
           [
@@ -451,8 +433,8 @@ describe('parser.test.ts', () => {
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 59)),
               new Token(TokenType.IDENTIFIER, 'b', 59),
             ),
-          ]
-        )
+          ],
+        ),
       ),
       new ExpressionStatement(
         new SetExpression(
@@ -461,13 +443,15 @@ describe('parser.test.ts', () => {
             new Token(TokenType.IDENTIFIER, 'b', 60),
           ),
           new LiteralExpression('9'),
-        )
+        ),
       ),
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 61)),
-            new Token(TokenType.IDENTIFIER, 'log', 61)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 61),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 61),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 61),
           [
@@ -475,8 +459,8 @@ describe('parser.test.ts', () => {
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 61)),
               new Token(TokenType.IDENTIFIER, 'b', 61),
             ),
-          ]
-        )
+          ],
+        ),
       ),
       new ExpressionStatement(
         new SetExpression(
@@ -485,13 +469,15 @@ describe('parser.test.ts', () => {
             new Token(TokenType.IDENTIFIER, 'print', 62),
           ),
           new LiteralExpression('1'),
-        )
+        ),
       ),
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 63)),
-            new Token(TokenType.IDENTIFIER, 'log', 63)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 63),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 63),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 63),
           [
@@ -499,16 +485,15 @@ describe('parser.test.ts', () => {
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 63)),
               new Token(TokenType.IDENTIFIER, 'print', 63),
             ),
-          ]
-        )
+          ],
+        ),
       ),
       new VariableStatement(
         new Token(TokenType.IDENTIFIER, 'c', 64),
         new NewExpression(
           new Token(TokenType.NEW, 'new', 64),
           new CallExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'Test', 64)
-            ),
+            new VariableExpression(new Token(TokenType.IDENTIFIER, 'Test', 64)),
             new Token(TokenType.RIGHT_PAREN, ')', 64),
             [],
           ),
@@ -517,8 +502,10 @@ describe('parser.test.ts', () => {
       new ExpressionStatement(
         new CallExpression(
           new GetExpression(
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'console', 65)),
-            new Token(TokenType.IDENTIFIER, 'log', 65)
+            new VariableExpression(
+              new Token(TokenType.IDENTIFIER, 'console', 65),
+            ),
+            new Token(TokenType.IDENTIFIER, 'log', 65),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 65),
           [
@@ -526,8 +513,8 @@ describe('parser.test.ts', () => {
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'c', 65)),
               new Token(TokenType.IDENTIFIER, 'b', 65),
             ),
-          ]
-        )
+          ],
+        ),
       ),
       new ExpressionStatement(
         new CallExpression(
@@ -536,15 +523,13 @@ describe('parser.test.ts', () => {
             new Token(TokenType.IDENTIFIER, 'print', 66),
           ),
           new Token(TokenType.RIGHT_PAREN, ')', 66),
-          [
-            new LiteralExpression(4)
-          ],
+          [new LiteralExpression(4)],
         ),
       ),
     ];
     expect(ast).toEqual(expectAst);
   });
-  test('associativity', () => {
+  test('print', () => {
     const scanner = new Scanner(inputData);
     const tokens = scanner.scanTokens();
     const parser = new Parser(tokens);
@@ -583,7 +568,7 @@ describe('parser.test.ts', () => {
       'console.log(b.print);',
       'var c = new Test();',
       'console.log(c.b);',
-      'c.print(4);'
+      'c.print(4);',
     ]);
   });
 });
