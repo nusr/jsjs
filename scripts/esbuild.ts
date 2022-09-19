@@ -8,7 +8,7 @@ const productionMode = 'production';
 const nodeEnv = envConfig['NODE_ENV'] || productionMode;
 const isDev = nodeEnv === 'development';
 const globalName = '__export__';
-const licenseText = '';
+const licenseText = fs.readFileSync(path.join(process.cwd(), 'LICENSE'), 'utf-8')
 
 function getEnv(): Record<string, string> {
   const result: Record<string, string> = {};
@@ -60,7 +60,7 @@ function buildUMD(filePath: string) {
     format: 'iife',
     globalName,
     banner: {
-      js: `${licenseText}\n${umd.header}`,
+      js: `/* \n${licenseText} \n*/${umd.header}`,
     },
     footer: {
       js: umd.footer,
@@ -93,7 +93,7 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
       'process.env.VERSION': JSON.stringify(packageJson.version),
     },
     banner: {
-      js: licenseText,
+      js: `/* \n${licenseText}\n*/`,
     },
     platform: 'browser',
     sourcemap: true,
