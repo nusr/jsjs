@@ -11,8 +11,8 @@ export type LiteralType = any;
 // | ReturnValue;
 
 export interface IBaseSetGet {
-  get: (name: string) => LiteralType;
-  set: (name: string, value: LiteralType) => void;
+  get: (name: LiteralType) => LiteralType;
+  set: (name: LiteralType, value: LiteralType) => void;
 }
 
 export interface IBaseCallable {

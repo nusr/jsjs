@@ -1,4 +1,5 @@
 import {
+  ArrayLiteralExpression,
   AssignExpression,
   BinaryExpression,
   CallExpression,
@@ -6,9 +7,11 @@ import {
   FunctionExpression,
   GetExpression,
   GroupingExpression,
+  IndexExpression,
   LiteralExpression,
   LogicalExpression,
   NewExpression,
+  ObjectLiteralExpression,
   SetExpression,
   UnaryExpression,
   VariableExpression,
@@ -72,7 +75,7 @@ class Parser {
     let methods: Array<VariableStatement | FunctionStatement> = [];
     while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
       const isStatic = this.match(TokenType.STATIC);
-      if (this.checkNext(TokenType.LEFT_PAREN)) {
+      if (this.checkNext(TokenType.LEFT_BRACKET)) {
         methods.push(this.functionDeclaration('Class', isStatic));
       } else {
         methods.push(this.varDeclaration(isStatic));
@@ -101,7 +104,7 @@ class Parser {
       TokenType.IDENTIFIER,
       `${name} statements require a function name`,
     );
-    const params = this.getParameters(name);
+    const params = this.getTokens(name);
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
     const block = this.blockStatement();
     return new FunctionStatement(functionName, block, params, isStatic);
@@ -128,7 +131,7 @@ class Parser {
     return this.expressionStatement();
   }
   private forStatement(): BlockStatement {
-    this.consume(TokenType.LEFT_PAREN, 'expect (');
+    this.consume(TokenType.LEFT_BRACKET, 'expect (');
     var initializer: Statement | null = null;
     if (this.match(TokenType.VAR)) {
       initializer = this.varDeclaration();
@@ -144,10 +147,10 @@ class Parser {
     }
     this.consume(TokenType.SEMICOLON, 'expect ; after for condition');
     let end: Expression | null = null;
-    if (!this.check(TokenType.RIGHT_PAREN)) {
+    if (!this.check(TokenType.RIGHT_BRACKET)) {
       end = this.expression();
     }
-    this.consume(TokenType.RIGHT_PAREN, 'expect )');
+    this.consume(TokenType.RIGHT_BRACKET, 'expect )');
     const body = this.statement();
     const list: Statement[] = [body];
     if (end !== null) {
@@ -166,9 +169,9 @@ class Parser {
     this.consume(TokenType.lEFT_BRACE, 'expect {');
     const body = this.blockStatement();
     this.consume(TokenType.WHILE, 'expect while');
-    this.consume(TokenType.LEFT_PAREN, 'expect (');
+    this.consume(TokenType.LEFT_BRACKET, 'expect (');
     const expr = this.expression();
-    this.consume(TokenType.RIGHT_PAREN, 'expect )');
+    this.consume(TokenType.RIGHT_BRACKET, 'expect )');
     const value = new WhileStatement(expr, body);
     return new BlockStatement([body, value]);
   }
@@ -182,16 +185,16 @@ class Parser {
     return new ReturnStatement(keyword, value);
   }
   private whileStatement(): WhileStatement {
-    this.consume(TokenType.LEFT_PAREN, 'expect ( after while');
+    this.consume(TokenType.LEFT_BRACKET, 'expect ( after while');
     const expression = this.expression();
-    this.consume(TokenType.RIGHT_PAREN, 'expect ) after while');
+    this.consume(TokenType.RIGHT_BRACKET, 'expect ) after while');
     const body = this.statement();
     return new WhileStatement(expression, body);
   }
   private ifStatement(): IfStatement {
-    this.consume(TokenType.LEFT_PAREN, 'expect ( after if');
+    this.consume(TokenType.LEFT_BRACKET, 'expect ( after if');
     const expression = this.expression();
-    this.consume(TokenType.RIGHT_PAREN, 'expect ) after if');
+    this.consume(TokenType.RIGHT_BRACKET, 'expect ) after if');
     const thenBranch: Statement = this.statement();
     let elseBranch: Statement | null = null;
     if (this.match(TokenType.ELSE)) {
@@ -344,7 +347,11 @@ class Parser {
       if (this.match(TokenType.DOT)) {
         const name = this.consume(TokenType.IDENTIFIER, 'expect name');
         expr = new GetExpression(expr, name);
-      } else if (this.match(TokenType.LEFT_PAREN)) {
+      } else if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
+        const value = this.expression();
+        const name = this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
+        expr = new IndexExpression(name, value, expr);
+      } else if (this.match(TokenType.LEFT_BRACKET)) {
         expr = this.finishCall(expr);
       } else {
         break;
@@ -352,30 +359,34 @@ class Parser {
     }
     return expr;
   }
-  private finishCall(callee: Expression): Expression {
+  private getExpressions(tokenType: TokenType) {
     const params: Expression[] = [];
-    if (!this.check(TokenType.RIGHT_PAREN)) {
+    if (!this.check(tokenType)) {
       do {
         params.push(this.expression());
       } while (this.match(TokenType.COMMA));
     }
+    return params;
+  }
+  private finishCall(callee: Expression): Expression {
+    const params = this.getExpressions(TokenType.RIGHT_BRACKET);
     const paren = this.consume(
-      TokenType.RIGHT_PAREN,
+      TokenType.RIGHT_BRACKET,
       'expect ) after arguments',
     );
     return new CallExpression(callee, paren, params);
   }
-  private getParameters(name: string): Token[] {
+  private getTokens(name: string): Token[] {
     const params: Token[] = [];
-    this.consume(TokenType.LEFT_PAREN, `expect ( after ${name}`);
-    if (!this.check(TokenType.RIGHT_PAREN)) {
+    this.consume(TokenType.LEFT_BRACKET, `expect ( after ${name}`);
+    if (!this.check(TokenType.RIGHT_BRACKET)) {
       do {
         params.push(
           this.consume(TokenType.IDENTIFIER, 'expect parameter name'),
         );
       } while (this.match(TokenType.COMMA));
     }
-    this.consume(TokenType.RIGHT_PAREN, `expect ) after ${name}`);
+    this.consume(TokenType.RIGHT_BRACKET, `expect ) after ${name}`);
     return params;
   }
 
@@ -384,7 +395,7 @@ class Parser {
     if (this.match(TokenType.IDENTIFIER)) {
       functionName = this.previous();
     }
-    const params = this.getParameters('expression');
+    const params = this.getTokens('expression');
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
     const block = this.blockStatement();
     return new FunctionExpression(functionName, block, params);
@@ -397,7 +408,7 @@ class Parser {
       return new LiteralExpression(false);
     }
     if (this.match(TokenType.UNDEFINED)) {
-      return new LiteralExpression(undefined)
+      return new LiteralExpression(undefined);
     }
     if (this.match(TokenType.NULL)) {
       return new LiteralExpression(null);
@@ -411,16 +422,37 @@ class Parser {
     if (this.match(TokenType.IDENTIFIER)) {
       return new VariableExpression(this.previous());
     }
-    if (this.match(TokenType.LEFT_PAREN)) {
+    if (this.match(TokenType.LEFT_BRACKET)) {
       const expr: Expression = this.expression();
       this.consume(
-        TokenType.RIGHT_PAREN,
+        TokenType.RIGHT_BRACKET,
         `parser expected: '(',actual: ${this.peek().toString()}`,
       );
       return new GroupingExpression(expr);
     }
     if (this.match(TokenType.FUNCTION)) {
       return this.functionExpression();
+    }
+    if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
+      const value = this.getExpressions(TokenType.RIGHT_SQUARE_BRACKET);
+      const name = this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
+      return new ArrayLiteralExpression(name, value);
+    }
+    if (this.match(TokenType.lEFT_BRACE)) {
+      const valueList: Array<{ key: Expression; value: Expression }> = [];
+      if (!this.check(TokenType.RIGHT_BRACE)) {
+        do {
+          if (this.check(TokenType.RIGHT_BRACE)) {
+            break;
+          }
+          const key = this.primary();
+          this.consume(TokenType.COLON, 'expect :');
+          const value = this.expression();
+          valueList.push({ key, value });
+        } while (this.match(TokenType.COMMA));
+      }
+      const name = this.consume(TokenType.RIGHT_BRACE, 'expect }');
+      return new ObjectLiteralExpression(name, valueList);
     }
 
     throw new Error(`parser can not handle token: ${this.peek().toString()}`);

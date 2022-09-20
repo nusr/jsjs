@@ -1,11 +1,14 @@
 export enum TokenType {
   // single-character tokens
-  LEFT_PAREN, // (
-  RIGHT_PAREN, // )
+  LEFT_BRACKET, // (
+  RIGHT_BRACKET, // )
   lEFT_BRACE, // {
   RIGHT_BRACE, // }
+  LEFT_SQUARE_BRACKET, // [
+  RIGHT_SQUARE_BRACKET, // ]
   COMMA, // ,
   DOT, // .
+  COLON, // 
   MINUS, // -
   MINUS_MINUS, // --
   PLUS, // +

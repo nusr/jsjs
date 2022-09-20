@@ -6,13 +6,13 @@ import Environment from './environment';
 
 export class ClassInstance implements IBaseSetGet {
   private readonly methods: Record<string, LiteralType> = {};
-  get(name: string): LiteralType {
+  get(name: LiteralType): LiteralType {
     if (name in this.methods) {
       return this.methods[name];
     }
-    throw new Error(`not defined property ${name}`);
+    return undefined;
   }
-  set(name: string, value: LiteralType): void {
+  set(name: LiteralType, value: LiteralType): void {
     this.methods[name] = value;
   }
 }

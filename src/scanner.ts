@@ -69,16 +69,25 @@ class Scanner {
     const c = this.advance();
     switch (c) {
       case '(':
-        this.addOneToken(TokenType.LEFT_PAREN);
+        this.addOneToken(TokenType.LEFT_BRACKET);
         break;
       case ')':
-        this.addOneToken(TokenType.RIGHT_PAREN);
+        this.addOneToken(TokenType.RIGHT_BRACKET);
         break;
       case '{':
         this.addOneToken(TokenType.lEFT_BRACE);
         break;
       case '}':
         this.addOneToken(TokenType.RIGHT_BRACE);
+        break;
+      case '[':
+        this.addOneToken(TokenType.LEFT_SQUARE_BRACKET);
+        break;
+      case ']':
+        this.addOneToken(TokenType.RIGHT_SQUARE_BRACKET);
+        break;
+      case ':':
+        this.addOneToken(TokenType.COLON);
         break;
       case ',':
         this.addOneToken(TokenType.COMMA);
@@ -274,7 +283,7 @@ class Scanner {
     this.addOneToken(type);
   }
   private identifierChar(c: string): boolean {
-    const temp = `()[]{},.=-*/%!&<>|';"`;
+    const temp = `()[]{},.=-*/%!&<>|';":`;
     return !(this.isWhiteSpace(c) || temp.includes(c));
   }
   private isWhiteSpace(c: string) {

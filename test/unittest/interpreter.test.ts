@@ -168,6 +168,28 @@ describe('interpreter.test.ts', () => {
       expect: [3, 2, 1],
     },
     {
+      name: 'array',
+      input: `
+      var arr = function() {
+        return [1,2,3.0, 'test']
+      }
+      console.log(arr()[0])
+      console.log(arr()[2])
+      `,
+      expect: [1, 3.0],
+    },
+    {
+      name: 'object',
+      input: `
+        var obj = {}
+        console.log(obj.a)
+        obj.a = 4
+        console.log(obj['a'])
+        console.log(obj.a)
+      `,
+      expect: [undefined, 4, 4],
+    },
+    {
       name: 'function',
       input: `
         function add(a,b) {

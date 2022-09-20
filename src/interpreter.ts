@@ -14,6 +14,9 @@ import type {
   ExpressionVisitor,
   NewExpression,
   FunctionExpression,
+  ArrayLiteralExpression,
+  IndexExpression,
+  ObjectLiteralExpression,
 } from './expression';
 import { VariableExpression } from './expression';
 import { TokenType } from './tokenType';
@@ -35,6 +38,7 @@ import { isBaseCallable, assert, isBaseSetGet } from './util';
 import { FunctionObject } from './function';
 import { ReturnValue } from './returnValue';
 import { ClassObject, ClassInstance } from './class';
+import { ArrayObject } from './array';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   environment: Environment;
@@ -293,6 +297,30 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       return false;
     }
     return Boolean(value);
+  }
+  visitArrayLiteralExpression = (expression: ArrayLiteralExpression) => {
+    const value = expression.value.map((item) => this.evaluate(item));
+    return new ArrayObject(value);
+  };
+  visitIndexExpression = (expression: IndexExpression) => {
+    const callee = this.evaluate(expression.value);
+    const index = this.evaluate(expression.index);
+    if (callee instanceof ArrayObject) {
+      return callee.value[index]
+    }
+    if (callee instanceof ClassInstance) {
+      return callee.get(index);
+    }
+    return undefined;
+  };
+  visitObjectLiteralExpression = (expression: ObjectLiteralExpression) => {
+    const instance = new ClassInstance();
+    for (const item of expression.value) {
+      const key = this.evaluate(item.key);
+      const value = this.evaluate(item.value);
+      instance.set(key.toString(), value);
+    }
+    return instance;
   }
 }
 

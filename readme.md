@@ -72,10 +72,10 @@ npm run test
 * [ ] new.target
 * [x] null
 * [ ] Nullish coalescing operator (??)
-* [ ] Object initializer
+* [x] Object initializer
 * [x] Operator precedence
 * [ ] Optional chaining (?.)
-* [ ] Property accessors
+* [x] Property accessors
 * [x] Remainder (%)
 * [x] Remainder assignment (%=)
 * [ ] Right shift (>>)
