@@ -176,13 +176,12 @@ class Parser {
     return new BlockStatement([body, value]);
   }
   private returnStatement(): ReturnStatement {
-    const keyword = this.previous();
     let value: Expression | null = null;
     if (!this.check(TokenType.SEMICOLON)) {
       value = this.expression();
     }
     this.match(TokenType.SEMICOLON);
-    return new ReturnStatement(keyword, value);
+    return new ReturnStatement(value);
   }
   private whileStatement(): WhileStatement {
     this.consume(TokenType.LEFT_BRACKET, 'expect ( after while');
@@ -337,7 +336,7 @@ class Parser {
   }
   private newExpression(): Expression {
     if (this.match(TokenType.NEW)) {
-      return new NewExpression(this.previous(), this.call());
+      return new NewExpression(this.call());
     }
     return this.call();
   }
@@ -349,8 +348,8 @@ class Parser {
         expr = new GetExpression(expr, name);
       } else if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
         const value = this.expression();
-        const name = this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
-        expr = new IndexExpression(name, value, expr);
+        this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
+        expr = new IndexExpression(expr, value);
       } else if (this.match(TokenType.LEFT_BRACKET)) {
         expr = this.finishCall(expr);
       } else {
@@ -370,11 +369,11 @@ class Parser {
   }
   private finishCall(callee: Expression): Expression {
     const params = this.getExpressions(TokenType.RIGHT_BRACKET);
-    const paren = this.consume(
+    this.consume(
       TokenType.RIGHT_BRACKET,
       'expect ) after arguments',
     );
-    return new CallExpression(callee, paren, params);
+    return new CallExpression(callee, params);
   }
   private getTokens(name: string): Token[] {
     const params: Token[] = [];
@@ -435,8 +434,8 @@ class Parser {
     }
     if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
       const value = this.getExpressions(TokenType.RIGHT_SQUARE_BRACKET);
-      const name = this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
-      return new ArrayLiteralExpression(name, value);
+      this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
+      return new ArrayLiteralExpression(value);
     }
     if (this.match(TokenType.lEFT_BRACE)) {
       const valueList: Array<{ key: Expression; value: Expression }> = [];
@@ -451,8 +450,8 @@ class Parser {
           valueList.push({ key, value });
         } while (this.match(TokenType.COMMA));
       }
-      const name = this.consume(TokenType.RIGHT_BRACE, 'expect }');
-      return new ObjectLiteralExpression(name, valueList);
+      this.consume(TokenType.RIGHT_BRACE, 'expect }');
+      return new ObjectLiteralExpression(valueList);
     }
 
     throw new Error(`parser can not handle token: ${this.peek().toString()}`);
