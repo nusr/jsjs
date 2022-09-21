@@ -85,11 +85,10 @@ export class FunctionStatement implements Statement {
     return visitor.visitFunctionStatement(this);
   }
   toString() {
-    return `function ${
-      this.static ? 'static ' : ''
-    }${this.name.toString()}(${this.params
-      .map((item) => item.toString())
-      .join(',')})${this.body.toString()}`;
+    return `function ${this.static ? 'static ' : ''
+      }${this.name.toString()}(${this.params
+        .map((item) => item.toString())
+        .join(',')})${this.body.toString()}`;
   }
 }
 export class IfStatement implements Statement {
@@ -117,17 +116,15 @@ export class IfStatement implements Statement {
   }
 }
 export class ReturnStatement implements Statement {
-  readonly keyword: Token;
-  readonly value: Expression | null;
-  constructor(keyword: Token, value: Expression | null) {
-    this.keyword = keyword;
-    this.value = value;
+  readonly argument: Expression | null;
+  constructor(argument: Expression | null) {
+    this.argument = argument;
   }
   accept(visitor: StatementVisitor): LiteralType {
     return visitor.visitReturnStatement(this);
   }
   toString() {
-    return `return ${this.value === null ? '' : this.value.toString()};`;
+    return `return ${this.argument === null ? '' : this.argument.toString()};`;
   }
 }
 export class VariableStatement implements Statement {
