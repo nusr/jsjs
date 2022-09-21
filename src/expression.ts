@@ -30,31 +30,29 @@ export interface Expression {
   toString(): string;
 }
 export class NewExpression implements Expression {
-  readonly keyword: Token;
-  readonly name: Expression;
-  constructor(keyword: Token, name: Expression) {
-    this.keyword = keyword;
-    this.name = name;
+  readonly callee: Expression;
+  constructor(callee: Expression) {
+    this.callee = callee;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitNewExpression(this);
   }
   toString() {
-    return `${this.keyword.toString()} ${this.name.toString()}`;
+    return `new ${this.callee.toString()}`;
   }
 }
 export class AssignExpression implements Expression {
-  readonly name: Token;
-  readonly value: Expression;
-  constructor(name: Token, value: Expression) {
-    this.name = name;
-    this.value = value;
+  readonly left: Token;
+  readonly right: Expression;
+  constructor(left: Token, right: Expression) {
+    this.left = left;
+    this.right = right;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitAssignExpression(this);
   }
   toString() {
-    return `${this.name.toString()} = ${this.value.toString()}`;
+    return `${this.left.toString()} = ${this.right.toString()}`;
   }
 }
 export class BinaryExpression implements Expression {
@@ -79,11 +77,9 @@ export class BinaryExpression implements Expression {
 }
 export class CallExpression implements Expression {
   readonly callee: Expression;
-  readonly paren: Token;
   readonly argumentList: Expression[];
-  constructor(callee: Expression, paren: Token, argumentList: Expression[]) {
+  constructor(callee: Expression, argumentList: Expression[]) {
     this.callee = callee;
-    this.paren = paren;
     this.argumentList = argumentList;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
@@ -97,16 +93,16 @@ export class CallExpression implements Expression {
 }
 export class GetExpression implements Expression {
   readonly object: Expression;
-  readonly name: Token;
-  constructor(object: Expression, name: Token) {
+  readonly property: Token;
+  constructor(object: Expression, property: Token) {
     this.object = object;
-    this.name = name;
+    this.property = property;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGetExpression(this);
   }
   toString() {
-    return `${this.object.toString()}.${this.name.toString()}`;
+    return `${this.object.toString()}.${this.property.toString()}`;
   }
 }
 export class SetExpression implements Expression {
@@ -236,60 +232,52 @@ export class FunctionExpression implements Expression {
     return visitor.visitFunctionExpression(this);
   }
   toString() {
-    return `function ${
-      this.name === null ? '' : this.name.toString()
-    }(${this.params
-      .map((item) => item.toString())
-      .join(',')})${this.body.toString()}`;
+    return `function ${this.name === null ? '' : this.name.toString()
+      }(${this.params
+        .map((item) => item.toString())
+        .join(',')})${this.body.toString()}`;
   }
 }
 
 export class ArrayLiteralExpression implements Expression {
-  readonly name: Token;
-  readonly value: Expression[];
-  constructor(name: Token, value: Expression[]) {
-    this.name = name;
-    this.value = value;
+  readonly elements: Expression[];
+  constructor(elements: Expression[]) {
+    this.elements = elements;
   }
   accept(visitor: ExpressionVisitor) {
     return visitor.visitArrayLiteralExpression(this);
   }
   toString(): string {
-    return `[${this.value.map((item) => item.toString()).join(',')}]`;
+    return `[${this.elements.map((item) => item.toString()).join(',')}]`;
   }
 }
 export class IndexExpression implements Expression {
-  readonly name: Token;
-  readonly index: Expression;
-  readonly value: Expression;
-  constructor(name: Token, index: Expression, value: Expression) {
-    this.name = name;
-    this.index = index;
-    this.value = value;
+  readonly property: Expression;
+  readonly object: Expression;
+  constructor(object: Expression, property: Expression) {
+    this.property = property;
+    this.object = object;
   }
   accept(visitor: ExpressionVisitor) {
     return visitor.visitIndexExpression(this);
   }
   toString(): string {
-    return `${this.value.toString()}[${this.index.toString()}]`;
+    return `${this.object.toString()}[${this.property.toString()}]`;
   }
 }
 
 export class ObjectLiteralExpression implements Expression {
-  readonly name: Token;
-  readonly value: Array<{ key: Expression; value: Expression }>;
+  readonly properties: Array<{ key: Expression; value: Expression }>;
   constructor(
-    name: Token,
-    value: Array<{ key: Expression; value: Expression }>,
+    properties: Array<{ key: Expression; value: Expression }>,
   ) {
-    this.name = name;
-    this.value = value;
+    this.properties = properties;
   }
   accept(visitor: ExpressionVisitor) {
     return visitor.visitObjectLiteralExpression(this);
   }
   toString(): string {
-    return `{${this.value.map(
+    return `{${this.properties.map(
       (item) => `${item.key.toString()}:${item.value.toString()}`,
     )}}`;
   }
