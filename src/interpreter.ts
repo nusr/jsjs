@@ -115,10 +115,10 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return null;
   };
   visitNewExpression = (expression: NewExpression) => {
-    const classObject = this.evaluate(expression.name);
+    const classObject = this.evaluate(expression.callee);
     assert(
       classObject instanceof ClassInstance,
-      `Class constructor ${expression.name.toString()} cannot be invoked without 'new'`,
+      `Class constructor ${expression.callee.toString()} cannot be invoked without 'new'`,
     );
     return classObject;
   };
@@ -140,7 +140,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     if (!isBaseCallable(callee)) {
       throw new Error(
-        `can only call functions ${expr.paren.type} ${expr.paren.lexeme}`,
+        'can only call functions',
       );
     }
     return callee.call(argumentList, this);
@@ -160,8 +160,8 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
 
   visitReturnStatement = (statement: ReturnStatement) => {
     let result: LiteralType = undefined;
-    if (statement.value !== null) {
-      result = this.evaluate(statement.value);
+    if (statement.argument !== null) {
+      result = this.evaluate(statement.argument);
     }
     return new ReturnValue(result);
   };
@@ -184,8 +184,8 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
 
   visitAssignExpression = (expr: AssignExpression) => {
-    const temp: LiteralType = this.evaluate(expr.value);
-    this.environment.assign(expr.name, temp);
+    const temp: LiteralType = this.evaluate(expr.right);
+    this.environment.assign(expr.left, temp);
     return temp;
   };
   visitBinaryExpression = (expr: BinaryExpression): LiteralType => {
@@ -225,7 +225,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
     if (isBaseSetGet(temp)) {
-      return temp.get(expr.name.lexeme);
+      return temp.get(expr.property.lexeme);
     }
     throw new Error('error GetExpression');
   };
@@ -233,7 +233,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     const temp = this.evaluate(expr.object.object);
     if (isBaseSetGet(temp)) {
       const value = this.evaluate(expr.value);
-      temp.set(expr.object.name.lexeme, value);
+      temp.set(expr.object.property.lexeme, value);
       return value;
     }
     throw new Error('error SetExpression');
@@ -299,12 +299,12 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return Boolean(value);
   }
   visitArrayLiteralExpression = (expression: ArrayLiteralExpression) => {
-    const value = expression.value.map((item) => this.evaluate(item));
+    const value = expression.elements.map((item) => this.evaluate(item));
     return new ArrayObject(value);
   };
   visitIndexExpression = (expression: IndexExpression) => {
-    const callee = this.evaluate(expression.value);
-    const index = this.evaluate(expression.index);
+    const callee = this.evaluate(expression.object);
+    const index = this.evaluate(expression.property);
     if (callee instanceof ArrayObject) {
       return callee.value[index]
     }
@@ -315,7 +315,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
   visitObjectLiteralExpression = (expression: ObjectLiteralExpression) => {
     const instance = new ClassInstance();
-    for (const item of expression.value) {
+    for (const item of expression.properties) {
       const key = this.evaluate(item.key);
       const value = this.evaluate(item.value);
       instance.set(key.toString(), value);
