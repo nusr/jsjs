@@ -23,6 +23,7 @@ export interface ExpressionVisitor {
   visitObjectLiteralExpression: (
     expression: ObjectLiteralExpression,
   ) => LiteralType;
+  visitTokenExpression: (expression: TokenExpression) => LiteralType;
 }
 export interface Expression {
   accept(visitor: ExpressionVisitor): LiteralType;
@@ -93,15 +94,12 @@ export class CallExpression implements Expression {
 export class GetExpression implements Expression {
   readonly object: Expression;
   readonly property: Expression;
-  readonly isIndex: boolean;
   constructor(
     object: Expression,
     property: Expression,
-    isIndex: boolean = false,
   ) {
     this.object = object;
     this.property = property;
-    this.isIndex = isIndex;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGetExpression(this);
@@ -269,5 +267,17 @@ export class ObjectLiteralExpression implements Expression {
     return `{${this.properties.map(
       (item) => `${item.key.toString()}:${item.value.toString()}`,
     )}}`;
+  }
+}
+export class TokenExpression implements Expression {
+  readonly token: Token;
+  constructor(token: Token) {
+    this.token = token;
+  }
+  accept(visitor: ExpressionVisitor) {
+    return visitor.visitTokenExpression(this);
+  }
+  toString(): string {
+    return this.token.toString();
   }
 }

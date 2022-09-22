@@ -175,8 +175,12 @@ describe('interpreter.test.ts', () => {
       }
       console.log(arr()[0])
       console.log(arr()[2])
+      console.log(arr().length)
+      var arr2 = []
+      arr2.push('test')
+      // console.log(arr2[0])
       `,
-      expect: [1, 3.0],
+      expect: [1, 3.0, 4],
     },
     {
       name: 'object',
@@ -245,8 +249,14 @@ describe('interpreter.test.ts', () => {
       }
       console.log(Test.a);
       Test.print(2);
+      Test.a = 'test';
+      console.log(Test.a);
+      Test.a = function () {
+        console.log('print')
+      }
+      Test.a();
       `,
-      expect: [1, 2],
+      expect: [1, 2, 'test', 'print'],
     },
     {
       name: 'class this',

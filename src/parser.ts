@@ -12,6 +12,7 @@ import {
   NewExpression,
   ObjectLiteralExpression,
   SetExpression,
+  TokenExpression,
   UnaryExpression,
   VariableExpression,
 } from './expression';
@@ -342,15 +343,15 @@ class Parser {
   private call(): Expression {
     let expr: Expression = this.primary();
     while (true) {
-      if (this.match(TokenType.DOT)) {
-        const name = this.expression();
-        expr = new GetExpression(expr, name, false);
-      } else if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
-        const value = this.expression();
-        this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
-        expr = new GetExpression(expr, value, true);
-      } else if (this.match(TokenType.LEFT_BRACKET)) {
+      if (this.match(TokenType.LEFT_BRACKET)) {
         expr = this.finishCall(expr);
+      } else if (this.match(TokenType.DOT)) {
+        const property = this.consume(TokenType.IDENTIFIER, 'expect name');
+        expr = new GetExpression(expr, new TokenExpression(property));
+      } else if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
+        const property = this.expression();
+        this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
+        expr = new GetExpression(expr, property);
       } else {
         break;
       }
@@ -368,10 +369,7 @@ class Parser {
   }
   private finishCall(callee: Expression): Expression {
     const params = this.getExpressions(TokenType.RIGHT_BRACKET);
-    this.consume(
-      TokenType.RIGHT_BRACKET,
-      'expect ) after arguments',
-    );
+    this.consume(TokenType.RIGHT_BRACKET, 'expect ) after arguments');
     return new CallExpression(callee, params);
   }
   private getTokens(name: string): Token[] {

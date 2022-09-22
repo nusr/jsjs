@@ -16,6 +16,7 @@ import type {
   FunctionExpression,
   ArrayLiteralExpression,
   ObjectLiteralExpression,
+  TokenExpression,
 } from './expression';
 import { VariableExpression } from './expression';
 import { TokenType } from './tokenType';
@@ -217,14 +218,14 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
 
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
-    const key = this.evaluate(expr.property)
+    const key = this.evaluate(expr.property);
     return temp[key];
   };
   visitSetExpression = (expr: SetExpression): LiteralType => {
     const temp = this.evaluate(expr.object.object);
     if (isObject(temp)) {
       const value = this.evaluate(expr.value);
-      const key = this.evaluate(expr.object.property)
+      const key = this.evaluate(expr.object.property);
       temp[key] = value;
       return value;
     }
@@ -303,6 +304,9 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return instance;
   };
+  visitTokenExpression = (expression: TokenExpression) => {
+    return expression.token.lexeme;
+  }
 }
 
 export default Interpreter;

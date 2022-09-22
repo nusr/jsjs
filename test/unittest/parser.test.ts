@@ -22,6 +22,7 @@ import {
   LiteralExpression,
   NewExpression,
   SetExpression,
+  TokenExpression,
   UnaryExpression,
   VariableExpression,
 } from '../../src/expression';
@@ -89,7 +90,7 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 10),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 10),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 10)),
           ),
           [new VariableExpression(new Token(TokenType.IDENTIFIER, 'cond', 10))],
         ),
@@ -119,7 +120,7 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 16),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 16),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 16)),
           ),
           [new VariableExpression(new Token(TokenType.IDENTIFIER, 'a', 16))],
         ),
@@ -152,7 +153,9 @@ describe('parser.test.ts', () => {
                     new VariableExpression(
                       new Token(TokenType.IDENTIFIER, 'console', 22),
                     ),
-                    new Token(TokenType.IDENTIFIER, 'log', 22),
+                    new TokenExpression(
+                      new Token(TokenType.IDENTIFIER, 'log', 22),
+                    ),
                   ),
                   [
                     new VariableExpression(
@@ -213,11 +216,9 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 33),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 33),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 33)),
           ),
-          [
-            new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 33))
-          ],
+          [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 33))],
         ),
       ),
       new ExpressionStatement(
@@ -232,7 +233,7 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 35),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 35),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 35)),
           ),
           [new VariableExpression(new Token(TokenType.IDENTIFIER, 'n', 35))],
         ),
@@ -293,7 +294,7 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 40),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 40),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 40)),
           ),
           [
             new CallExpression(
@@ -319,7 +320,9 @@ describe('parser.test.ts', () => {
                   new VariableExpression(
                     new Token(TokenType.IDENTIFIER, 'console', 44),
                   ),
-                  new Token(TokenType.IDENTIFIER, 'log', 44),
+                  new TokenExpression(
+                    new Token(TokenType.IDENTIFIER, 'log', 44),
+                  ),
                 ),
                 [
                   new VariableExpression(
@@ -366,7 +369,9 @@ describe('parser.test.ts', () => {
                   new VariableExpression(
                     new Token(TokenType.IDENTIFIER, 'console', 54),
                   ),
-                  new Token(TokenType.IDENTIFIER, 'log', 54),
+                  new TokenExpression(
+                    new Token(TokenType.IDENTIFIER, 'log', 54),
+                  ),
                 ),
                 [
                   new VariableExpression(
@@ -392,7 +397,7 @@ describe('parser.test.ts', () => {
         new CallExpression(
           new GetExpression(
             new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 58)),
-            new Token(TokenType.IDENTIFIER, 'print', 58),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'print', 58)),
           ),
           [new LiteralExpression(3)],
         ),
@@ -403,12 +408,12 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 59),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 59),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 59)),
           ),
           [
             new GetExpression(
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 59)),
-              new Token(TokenType.IDENTIFIER, 'b', 59),
+              new TokenExpression(new Token(TokenType.IDENTIFIER, 'b', 59)),
             ),
           ],
         ),
@@ -417,7 +422,7 @@ describe('parser.test.ts', () => {
         new SetExpression(
           new GetExpression(
             new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 60)),
-            new Token(TokenType.IDENTIFIER, 'b', 60),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'b', 60)),
           ),
           new LiteralExpression('9'),
         ),
@@ -428,12 +433,12 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 61),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 61),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 61)),
           ),
           [
             new GetExpression(
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 61)),
-              new Token(TokenType.IDENTIFIER, 'b', 61),
+              new TokenExpression(new Token(TokenType.IDENTIFIER, 'b', 61)),
             ),
           ],
         ),
@@ -442,7 +447,7 @@ describe('parser.test.ts', () => {
         new SetExpression(
           new GetExpression(
             new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 62)),
-            new Token(TokenType.IDENTIFIER, 'print', 62),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'print', 62)),
           ),
           new LiteralExpression('1'),
         ),
@@ -453,12 +458,12 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 63),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 63),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 63)),
           ),
           [
             new GetExpression(
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'b', 63)),
-              new Token(TokenType.IDENTIFIER, 'print', 63),
+              new TokenExpression(new Token(TokenType.IDENTIFIER, 'print', 63)),
             ),
           ],
         ),
@@ -478,12 +483,12 @@ describe('parser.test.ts', () => {
             new VariableExpression(
               new Token(TokenType.IDENTIFIER, 'console', 65),
             ),
-            new Token(TokenType.IDENTIFIER, 'log', 65),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'log', 65)),
           ),
           [
             new GetExpression(
               new VariableExpression(new Token(TokenType.IDENTIFIER, 'c', 65)),
-              new Token(TokenType.IDENTIFIER, 'b', 65),
+              new TokenExpression(new Token(TokenType.IDENTIFIER, 'b', 65)),
             ),
           ],
         ),
@@ -492,7 +497,7 @@ describe('parser.test.ts', () => {
         new CallExpression(
           new GetExpression(
             new VariableExpression(new Token(TokenType.IDENTIFIER, 'c', 66)),
-            new Token(TokenType.IDENTIFIER, 'print', 66),
+            new TokenExpression(new Token(TokenType.IDENTIFIER, 'print', 66)),
           ),
           [new LiteralExpression(4)],
         ),
