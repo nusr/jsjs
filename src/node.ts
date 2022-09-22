@@ -3,8 +3,7 @@ import fs from 'fs';
 import readline from 'readline';
 import Jsjs from './jsjs';
 import Environment from './environment';
-import type { LiteralType } from './type';
-import type { ClassInstance } from './class';
+import type { LiteralType, ObjectType } from './type';
 
 export function init() {
   const args = process.argv;
@@ -21,7 +20,7 @@ export function init() {
 export function run(
   data: string,
   env: Environment,
-  log: ClassInstance | null = null,
+  log: ObjectType | null = null,
 ): LiteralType {
   const instance = new Jsjs(data, env);
   if (log !== null) {

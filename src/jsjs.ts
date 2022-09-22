@@ -6,7 +6,6 @@ import type { LiteralType } from './type';
 import { getGlobalObject } from './native';
 
 class Jsjs {
-  errors: string[] = [];
   private readonly text: string;
   private readonly environment: Environment;
   constructor(text: string, environment: Environment) {
@@ -24,10 +23,6 @@ class Jsjs {
   public run(): LiteralType {
     const scanner = new Scanner(this.text);
     const tokens = scanner.scanTokens();
-    if (scanner.errors.length > 0) {
-      this.errors = scanner.errors;
-      return null;
-    }
     const parser = new Parser(tokens);
     const statements = parser.parse();
     const interpreter = new Interpreter(statements, this.environment);

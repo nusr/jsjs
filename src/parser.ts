@@ -7,7 +7,6 @@ import {
   FunctionExpression,
   GetExpression,
   GroupingExpression,
-  IndexExpression,
   LiteralExpression,
   LogicalExpression,
   NewExpression,
@@ -344,12 +343,12 @@ class Parser {
     let expr: Expression = this.primary();
     while (true) {
       if (this.match(TokenType.DOT)) {
-        const name = this.consume(TokenType.IDENTIFIER, 'expect name');
-        expr = new GetExpression(expr, name);
+        const name = this.expression();
+        expr = new GetExpression(expr, name, false);
       } else if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
         const value = this.expression();
         this.consume(TokenType.RIGHT_SQUARE_BRACKET, 'expect ]');
-        expr = new IndexExpression(expr, value);
+        expr = new GetExpression(expr, value, true);
       } else if (this.match(TokenType.LEFT_BRACKET)) {
         expr = this.finishCall(expr);
       } else {

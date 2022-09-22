@@ -4,14 +4,8 @@ interface Environment {
 }
 interface Jsjs {
   new (text: string, env: Environment): this;
-  errors: string[];
   run(): LiteralType;
   register(name: string, value: LiteralType): void;
-}
-
-interface IBaseSetGet {
-  get: (name: string) => LiteralType;
-  set: (name: string, value: LiteralType) => void;
 }
 
 interface Window {
@@ -20,7 +14,7 @@ interface Window {
     Jsjs: Jsjs;
     getGlobalObject: (
       params: Pick<Console, 'log' | 'error'>,
-    ) => Record<string, IBaseSetGet>;
+    ) => Record<string, Record<LiteralType, LiteralType>>;
   };
 }
 
@@ -46,13 +40,7 @@ function handleClick() {
     interpreter.register(key, temp[key]);
   }
   const result = interpreter.run();
-  if (interpreter.errors.length > 0) {
-    resultDom!.innerHTML =
-      interpreter.errors.map((item) => `<div>error: ${item}</div>`).join('') +
-      resultDom!.innerHTML;
-  } else {
-    console.log(result);
-  }
+  console.log(result);
 }
 window.onload = function () {
   const buttonDom = document.querySelector('#run');

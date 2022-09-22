@@ -11,7 +11,7 @@ beforeAll(() => {
 
 describe('scanner.test.ts', () => {
   test('scan tokens', () => {
-    const exepctTokens: Token[] = [
+    const expectTokens: Token[] = [
       new Token(TokenType.VAR, 'var', 1),
       new Token(TokenType.IDENTIFIER, 'a', 1),
       new Token(TokenType.EQUAL, '=', 1),
@@ -368,6 +368,6 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.EOF, '', 67),
     ];
 
-    expect(new Scanner(inputData).scanTokens()).toEqual(exepctTokens);
+    expect(new Scanner(inputData).scanTokens()).toEqual(expectTokens);
   });
 });

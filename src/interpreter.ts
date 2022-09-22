@@ -1,4 +1,4 @@
-import type { LiteralType } from './type';
+import type { LiteralType, ObjectType } from './type';
 
 import type {
   BinaryExpression,
@@ -15,7 +15,6 @@ import type {
   NewExpression,
   FunctionExpression,
   ArrayLiteralExpression,
-  IndexExpression,
   ObjectLiteralExpression,
 } from './expression';
 import { VariableExpression } from './expression';
@@ -34,16 +33,14 @@ import type {
 } from './statement';
 import { FunctionStatement } from './statement';
 import type Environment from './environment';
-import { isBaseCallable, assert, isBaseSetGet } from './util';
+import { isBaseCallable, assert, isObject } from './util';
 import { FunctionObject } from './function';
 import { ReturnValue } from './returnValue';
-import { ClassObject, ClassInstance } from './class';
-import { ArrayObject } from './array';
+import { ClassObject } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   environment: Environment;
   private readonly statements: Statement[];
-  errors: string[] = [];
   constructor(statements: Statement[], environment: Environment) {
     this.environment = environment;
     this.statements = statements;
@@ -96,18 +93,16 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     const instance = new ClassObject(statement);
     for (const item of statement.methods) {
       if (item.static) {
+        let temp: LiteralType = null;
         if (item instanceof FunctionStatement) {
-          instance.set(
-            item.name.lexeme,
-            new FunctionObject(item, this.environment),
-          );
+          temp = new FunctionObject(item, this.environment);
         } else {
-          let temp: LiteralType = null;
           if (item.initializer != null) {
             temp = this.evaluate(item.initializer);
           }
-          instance.set(item.name.lexeme, temp);
         }
+        // @ts-ignore
+        instance[item.name.lexeme] = temp;
       }
     }
 
@@ -117,7 +112,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   visitNewExpression = (expression: NewExpression) => {
     const classObject = this.evaluate(expression.callee);
     assert(
-      classObject instanceof ClassInstance,
+      isObject(classObject),
       `Class constructor ${expression.callee.toString()} cannot be invoked without 'new'`,
     );
     return classObject;
@@ -139,9 +134,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       argumentList.push(this.evaluate(item));
     }
     if (!isBaseCallable(callee)) {
-      throw new Error(
-        'can only call functions',
-      );
+      throw new Error('can only call functions');
     }
     return callee.call(argumentList, this);
   };
@@ -224,16 +217,15 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
 
   visitGetExpression = (expr: GetExpression) => {
     const temp = this.evaluate(expr.object);
-    if (isBaseSetGet(temp)) {
-      return temp.get(expr.property.lexeme);
-    }
-    throw new Error('error GetExpression');
+    const key = this.evaluate(expr.property)
+    return temp[key];
   };
   visitSetExpression = (expr: SetExpression): LiteralType => {
     const temp = this.evaluate(expr.object.object);
-    if (isBaseSetGet(temp)) {
+    if (isObject(temp)) {
       const value = this.evaluate(expr.value);
-      temp.set(expr.object.property.lexeme, value);
+      const key = this.evaluate(expr.object.property)
+      temp[key] = value;
       return value;
     }
     throw new Error('error SetExpression');
@@ -300,28 +292,17 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   }
   visitArrayLiteralExpression = (expression: ArrayLiteralExpression) => {
     const value = expression.elements.map((item) => this.evaluate(item));
-    return new ArrayObject(value);
-  };
-  visitIndexExpression = (expression: IndexExpression) => {
-    const callee = this.evaluate(expression.object);
-    const index = this.evaluate(expression.property);
-    if (callee instanceof ArrayObject) {
-      return callee.value[index]
-    }
-    if (callee instanceof ClassInstance) {
-      return callee.get(index);
-    }
-    return undefined;
+    return value;
   };
   visitObjectLiteralExpression = (expression: ObjectLiteralExpression) => {
-    const instance = new ClassInstance();
+    const instance: ObjectType = {};
     for (const item of expression.properties) {
       const key = this.evaluate(item.key);
       const value = this.evaluate(item.value);
-      instance.set(key.toString(), value);
+      instance[key.toString()] = value;
     }
     return instance;
-  }
+  };
 }
 
 export default Interpreter;

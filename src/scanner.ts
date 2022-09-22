@@ -25,7 +25,7 @@ class Scanner {
   };
   private addError = (line: number, message: string) => {
     const msg = `line: ${line},scanner error : ${message} `;
-    this.errors.push(msg);
+    throw new Error(msg)
   };
   private isAtEnd() {
     return this.current >= this.source.length;

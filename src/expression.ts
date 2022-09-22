@@ -20,7 +20,6 @@ export interface ExpressionVisitor {
   visitArrayLiteralExpression: (
     expression: ArrayLiteralExpression,
   ) => LiteralType;
-  visitIndexExpression: (expression: IndexExpression) => LiteralType;
   visitObjectLiteralExpression: (
     expression: ObjectLiteralExpression,
   ) => LiteralType;
@@ -93,10 +92,16 @@ export class CallExpression implements Expression {
 }
 export class GetExpression implements Expression {
   readonly object: Expression;
-  readonly property: Token;
-  constructor(object: Expression, property: Token) {
+  readonly property: Expression;
+  readonly isIndex: boolean;
+  constructor(
+    object: Expression,
+    property: Expression,
+    isIndex: boolean = false,
+  ) {
     this.object = object;
     this.property = property;
+    this.isIndex = isIndex;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitGetExpression(this);
@@ -232,10 +237,11 @@ export class FunctionExpression implements Expression {
     return visitor.visitFunctionExpression(this);
   }
   toString() {
-    return `function ${this.name === null ? '' : this.name.toString()
-      }(${this.params
-        .map((item) => item.toString())
-        .join(',')})${this.body.toString()}`;
+    return `function ${
+      this.name === null ? '' : this.name.toString()
+    }(${this.params
+      .map((item) => item.toString())
+      .join(',')})${this.body.toString()}`;
   }
 }
 
@@ -251,26 +257,9 @@ export class ArrayLiteralExpression implements Expression {
     return `[${this.elements.map((item) => item.toString()).join(',')}]`;
   }
 }
-export class IndexExpression implements Expression {
-  readonly property: Expression;
-  readonly object: Expression;
-  constructor(object: Expression, property: Expression) {
-    this.property = property;
-    this.object = object;
-  }
-  accept(visitor: ExpressionVisitor) {
-    return visitor.visitIndexExpression(this);
-  }
-  toString(): string {
-    return `${this.object.toString()}[${this.property.toString()}]`;
-  }
-}
-
 export class ObjectLiteralExpression implements Expression {
   readonly properties: Array<{ key: Expression; value: Expression }>;
-  constructor(
-    properties: Array<{ key: Expression; value: Expression }>,
-  ) {
+  constructor(properties: Array<{ key: Expression; value: Expression }>) {
     this.properties = properties;
   }
   accept(visitor: ExpressionVisitor) {

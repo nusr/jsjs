@@ -1,6 +1,10 @@
-import type { LiteralType, IBaseCallable, IGlobalConsole } from './type';
+import type {
+  LiteralType,
+  IBaseCallable,
+  ObjectType,
+  IGlobalConsole,
+} from './type';
 import { isBaseCallable } from './util';
-import { ClassInstance } from './class';
 
 const consoleTypes = ['log', 'error'] as const;
 type ConsoleType = typeof consoleTypes[number];
@@ -28,12 +32,12 @@ function getConsoleImplement(
 }
 
 function getGlobalObject(consoleObject: IGlobalConsole) {
-  const console = new ClassInstance();
+  const consoleInstance: ObjectType = {};
   for (const type of consoleTypes) {
-    console.set(type, getConsoleImplement(type, consoleObject));
+    consoleInstance[type] = getConsoleImplement(type, consoleObject);
   }
   return {
-    console,
+    console: consoleInstance,
   };
 }
 
