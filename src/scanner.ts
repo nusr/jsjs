@@ -15,7 +15,7 @@ class Scanner {
     // unicode split
     this.source = [...text];
   }
-  scanTokens = () => {
+  scan = () => {
     while (!this.isAtEnd()) {
       this.start = this.current;
       this.scanToken();

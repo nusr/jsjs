@@ -46,7 +46,7 @@ describe('parser.test.ts', () => {
   });
   test('parser', () => {
     const scanner = new Scanner(inputData);
-    const tokens = scanner.scanTokens();
+    const tokens = scanner.scan();
     const parser = new Parser(tokens);
     const ast = parser.parse();
     const expectAst: Statement[] = [
@@ -507,7 +507,7 @@ describe('parser.test.ts', () => {
   });
   test('print', () => {
     const scanner = new Scanner(inputData);
-    const tokens = scanner.scanTokens();
+    const tokens = scanner.scan();
     const parser = new Parser(tokens);
     const statements = parser.parse();
     const result: string[] = [];

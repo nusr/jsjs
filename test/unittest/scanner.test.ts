@@ -368,6 +368,6 @@ describe('scanner.test.ts', () => {
       new Token(TokenType.EOF, '', 67),
     ];
 
-    expect(new Scanner(inputData).scanTokens()).toEqual(expectTokens);
+    expect(new Scanner(inputData).scan()).toEqual(expectTokens);
   });
 });

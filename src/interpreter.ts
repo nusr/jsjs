@@ -36,7 +36,7 @@ import { FunctionStatement } from './statement';
 import type Environment from './environment';
 import { isBaseCallable, assert, isObject } from './util';
 import { FunctionObject } from './function';
-import { ReturnValue } from './returnValue';
+import { ReturnValue } from './return';
 import { ClassObject } from './class';
 
 class Interpreter implements ExpressionVisitor, StatementVisitor {

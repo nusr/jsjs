@@ -22,7 +22,7 @@ class Jsjs {
   }
   public run(): LiteralType {
     const scanner = new Scanner(this.text);
-    const tokens = scanner.scanTokens();
+    const tokens = scanner.scan();
     const parser = new Parser(tokens);
     const statements = parser.parse();
     const interpreter = new Interpreter(statements, this.environment);
