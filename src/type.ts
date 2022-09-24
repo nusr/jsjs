@@ -11,7 +11,7 @@ export type LiteralType = any;
 // | ReturnValue;
 
 export interface IBaseCallable {
-  call: (argumentList: LiteralType[], interpreter: Interpreter) => LiteralType;
+  call: (interpreter: Interpreter, argumentList: LiteralType[]) => LiteralType;
   toString: () => string;
 }
 

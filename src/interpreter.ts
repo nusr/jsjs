@@ -92,6 +92,16 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
   visitClassStatement = (statement: ClassStatement) => {
     const instance = new ClassObject(statement);
+    if (statement.superClass !== null) {
+      const temp = this.evaluate(statement.superClass);
+      if (temp instanceof ClassObject) {
+        for (const key of Object.keys(temp.staticMethods)) {
+          instance.staticMethods[key] = temp.staticMethods[key];
+        }
+      }else {
+        throw new Error(`Class extends value ${temp} is not a constructor or null`)
+      }
+    }
     for (const item of statement.methods) {
       if (item.static) {
         let temp: LiteralType = null;
@@ -102,8 +112,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
             temp = this.evaluate(item.initializer);
           }
         }
-        // @ts-ignore
-        instance[item.name.lexeme] = temp;
+        instance.staticMethods[item.name.lexeme] = temp;
       }
     }
 
@@ -137,7 +146,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     if (!isBaseCallable(callee)) {
       throw new Error('can only call functions');
     }
-    return callee.call(argumentList, this);
+    return callee.call(this, argumentList);
   };
   visitIfStatement = (statement: IfStatement) => {
     let result: LiteralType = null;
@@ -217,16 +226,23 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
 
   visitGetExpression = (expr: GetExpression) => {
-    const temp = this.evaluate(expr.object);
+    const callee = this.evaluate(expr.object);
     const key = this.evaluate(expr.property);
-    return temp[key];
+    if (callee instanceof ClassObject && key in callee.staticMethods) {
+      return callee.staticMethods[key];
+    }
+    return callee[key];
   };
   visitSetExpression = (expr: SetExpression): LiteralType => {
-    const temp = this.evaluate(expr.object.object);
-    if (isObject(temp)) {
+    const callee = this.evaluate(expr.object.object);
+    if (isObject(callee)) {
       const value = this.evaluate(expr.value);
       const key = this.evaluate(expr.object.property);
-      temp[key] = value;
+      if (callee instanceof ClassObject && key in callee.staticMethods) {
+        callee.staticMethods[key] = value;
+      } else {
+        callee[key] = value;
+      }
       return value;
     }
     throw new Error('error SetExpression');
@@ -306,7 +322,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
   visitTokenExpression = (expression: TokenExpression) => {
     return expression.token.lexeme;
-  }
+  };
 }
 
 export default Interpreter;

@@ -14,7 +14,7 @@ function getConsoleImplement(
   consoleObject: IGlobalConsole,
 ): IBaseCallable {
   return {
-    call(argumentList: LiteralType[]) {
+    call(_, argumentList: LiteralType[]) {
       const result: LiteralType[] = [];
       for (const item of argumentList) {
         if (isBaseCallable(item)) {

@@ -9,7 +9,7 @@ export const KEYWORD_MAP: Map<string, TokenType> = new Map([
   ['if', TokenType.IF],
   ['null', TokenType.NULL],
   ['return', TokenType.RETURN],
-  ['super', TokenType.SUPER],
+  // ['super', TokenType.SUPER],
   // ['this', TokenType.THIS],
   ['true', TokenType.TRUE],
   ['var', TokenType.VAR],
@@ -17,7 +17,8 @@ export const KEYWORD_MAP: Map<string, TokenType> = new Map([
   ['do', TokenType.DO_WHILE],
   ['new', TokenType.NEW],
   ['static', TokenType.STATIC],
-  ['undefined', TokenType.UNDEFINED]
+  ['undefined', TokenType.UNDEFINED],
+  ['extends', TokenType.EXTENDS]
 ])
 
 export const EMPTY_DATA = '\0';

@@ -71,6 +71,11 @@ class Parser {
   }
   private classDeclaration(): ClassStatement {
     const name = this.consume(TokenType.IDENTIFIER, 'expect class name');
+    let superClass: VariableExpression | null = null;
+    if (this.match(TokenType.EXTENDS)) {
+      const name = this.consume(TokenType.IDENTIFIER, 'expect class');
+      superClass = new VariableExpression(name)
+    }
     this.consume(TokenType.lEFT_BRACE, 'expect {');
     let methods: Array<VariableStatement | FunctionStatement> = [];
     while (!this.isAtEnd() && !this.check(TokenType.RIGHT_BRACE)) {
@@ -82,7 +87,7 @@ class Parser {
       }
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect }');
-    return new ClassStatement(name, null, methods);
+    return new ClassStatement(name, superClass, methods);
   }
   private varDeclaration(isStatic = false): VariableStatement {
     const name: Token = this.consume(

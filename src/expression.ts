@@ -94,10 +94,7 @@ export class CallExpression implements Expression {
 export class GetExpression implements Expression {
   readonly object: Expression;
   readonly property: Expression;
-  constructor(
-    object: Expression,
-    property: Expression,
-  ) {
+  constructor(object: Expression, property: Expression) {
     this.object = object;
     this.property = property;
   }
@@ -166,11 +163,9 @@ export class LogicalExpression implements Expression {
   }
 }
 export class SuperExpression implements Expression {
-  readonly keyword: Token;
-  readonly value: Expression;
-  constructor(keyword: Token, value: Expression) {
-    this.keyword = keyword;
-    this.value = value;
+  readonly argumentList: Expression[];
+  constructor(argumentList: Expression[]) {
+    this.argumentList = argumentList;
   }
   accept(visitor: ExpressionVisitor): LiteralType {
     return visitor.visitSuperExpression(this);

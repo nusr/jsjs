@@ -11,7 +11,7 @@ class FunctionObject implements IBaseCallable {
     this.declaration = declaration;
     this.closure = closure;
   }
-  call(argumentList: LiteralType[], interpreter: Interpreter): LiteralType {
+  call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
     const env = new Environment(this.closure);
     if (this.declaration instanceof FunctionExpression && this.declaration.name !== null) {
       env.define(this.declaration.name.lexeme, this);

@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Node 16 + Strictest",
   "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
     "module": "UMD",
     "target": "ES6",
     "strict": true,
@@ -23,7 +24,7 @@
     "checkJs": true,
     "outDir": "lib",
     "sourceMap": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "declaration": true
   },
   "include": ["src"]

@@ -141,7 +141,7 @@ npm run test
 
 * [ ] Class static initialization blocks
 * [x] constructor
-* [ ] extends
+* [x] extends
 * [ ] Private class features
 * [x] Public class fields
 * [x] static

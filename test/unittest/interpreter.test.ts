@@ -279,6 +279,36 @@ describe('interpreter.test.ts', () => {
       expect: [1, 2, 3],
     },
     {
+      name: 'class extends',
+      input: `
+      class Animal {
+        constructor(name) {
+          this.name = name;
+        }
+        getName() {
+          return this.name;
+        }
+      }
+      
+      class Dog extends Animal{
+        constructor(name) {
+          super(name);
+        }
+        getName() {
+          return 'dog ' + this.name;
+        }
+      }
+      
+      var dog = new Dog("steve")
+      var animal = new Animal('dog')
+      console.log(dog.getName())
+      console.log(animal.getName())
+      console.log(animal.name)
+      console.log(dog.name)
+      `,
+      expect: ['dog steve', 'dog', 'dog', 'steve'],
+    },
+    {
       name: 'function expression',
       input: `
       (function add(a){

@@ -6,12 +6,34 @@ import Environment from './environment';
 
 export class ClassObject implements IBaseCallable {
   private readonly statement: ClassStatement;
+  readonly staticMethods: ObjectType = {};
   constructor(statement: ClassStatement) {
     this.statement = statement;
   }
-  call(argumentList: LiteralType[], interpreter: Interpreter): LiteralType {
+  call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
     const instance: ObjectType = {};
     const env = new Environment(interpreter.environment);
+    if (this.statement.superClass !== null) {
+      const temp = interpreter.evaluate(this.statement.superClass);
+      if (temp instanceof ClassObject) {
+        const superData: IBaseCallable = {
+          call(interpreter: Interpreter, argumentList: LiteralType[]) {
+            const originInstance = temp.call(interpreter, argumentList);
+            for (const key of Object.keys(originInstance)) {
+              instance[key] = originInstance[key];
+            }
+          },
+          toString() {
+            return 'super';
+          },
+        };
+        env.define('super', superData);
+      } else {
+        throw new Error(
+          `Class extends value ${temp} is not a constructor or null`,
+        );
+      }
+    }
     env.define('this', instance);
     for (const item of this.statement.methods) {
       if (item.static) {
@@ -20,7 +42,7 @@ export class ClassObject implements IBaseCallable {
       if (item instanceof FunctionStatement) {
         if (item.name.lexeme === 'constructor') {
           const temp = new FunctionObject(item, env);
-          temp.call(argumentList, interpreter);
+          temp.call(interpreter, argumentList);
         } else {
           instance[item.name.lexeme] = new FunctionObject(item, env);
         }

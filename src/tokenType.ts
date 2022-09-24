@@ -64,5 +64,6 @@ export enum TokenType {
   STATIC, // static
   CONSTRUCTOR, // constructor
   UNDEFINED, // undefined
+  EXTENDS, // extends
   EOF, // end
 }
