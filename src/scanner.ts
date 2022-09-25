@@ -6,7 +6,6 @@ class Scanner {
   readonly source: string[];
   readonly tokens: Token[] = [];
   readonly errors: string[] = [];
-  static readonly keywordMap = KEYWORD_MAP;
   private start = 0;
   private current = 0;
   private line = 1;
@@ -25,7 +24,7 @@ class Scanner {
   };
   private addError = (line: number, message: string) => {
     const msg = `line: ${line},scanner error : ${message} `;
-    throw new Error(msg)
+    throw new Error(msg);
   };
   private isAtEnd() {
     return this.current >= this.source.length;
@@ -157,14 +156,40 @@ class Scanner {
         }
         break;
       case '>':
-        this.addOneToken(
-          this.match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER,
-        );
+        if (this.match('=')) {
+          this.addOneToken(TokenType.GREATER_EQUAL);
+        } else {
+          if (this.match('>')) {
+            if (this.match('>')) {
+              if (this.match('=')) {
+                this.addOneToken(TokenType.UNSIGNED_RIGHT_SHIFT_EQUAL);
+              } else {
+                this.addOneToken(TokenType.UNSIGNED_RIGHT_SHIFT);
+              }
+            } else if (this.match('=')) {
+              this.addOneToken(TokenType.RIGHT_SHIFT_EQUAL);
+            } else {
+              this.addOneToken(TokenType.RIGHT_SHIFT);
+            }
+          } else {
+            this.addOneToken(TokenType.GREATER);
+          }
+        }
         break;
       case '<':
-        this.addOneToken(
-          this.match('=') ? TokenType.LESS_EQUAL : TokenType.LESS,
-        );
+        if (this.match('=')) {
+          this.addOneToken(TokenType.LESS_EQUAL);
+        } else {
+          if (this.match('<')) {
+            if (this.match('=')) {
+              this.addOneToken(TokenType.LEFT_SHIFT_EQUAL);
+            } else {
+              this.addOneToken(TokenType.LEFT_SHIFT);
+            }
+          } else {
+            this.addOneToken(TokenType.LESS);
+          }
+        }
         break;
       case '/':
         // single line comment
@@ -275,7 +300,7 @@ class Scanner {
       this.advance();
     }
     const text = this.substr();
-    const temp = Scanner.keywordMap.get(text);
+    const temp = KEYWORD_MAP.get(text);
     let type: TokenType = TokenType.IDENTIFIER;
     if (temp !== undefined) {
       type = temp;

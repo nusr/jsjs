@@ -56,8 +56,8 @@ npm run test
 * [x] Increment (++)
 * [x] Inequality (!=)
 * [ ] instanceof
-* [ ] Left shift (<<)
-* [ ] Left shift assignment (<<=)
+* [x] Left shift (<<)
+* [x] Left shift assignment (<<=)
 * [x] Less than (<)
 * [x] Less than or equal (<=)
 * [x] Logical AND (&&)
@@ -78,8 +78,8 @@ npm run test
 * [x] Property accessors
 * [x] Remainder (%)
 * [x] Remainder assignment (%=)
-* [ ] Right shift (>>)
-* [ ] Right shift assignment (>>=)
+* [x] Right shift (>>)
+* [x] Right shift assignment (>>=)
 * [ ] Spread syntax (...)
 * [x] Strict equality (===)
 * [x] Strict inequality (!==)
@@ -90,8 +90,8 @@ npm run test
 * [ ] typeof
 * [x] Unary negation (-)
 * [x] Unary plus (+)
-* [ ] Unsigned right shift (>>>)
-* [ ] Unsigned right shift assignment (>>>=)
+* [x] Unsigned right shift (>>>)
+* [x] Unsigned right shift assignment (>>>=)
 * [ ] void operator
 * [ ] yield
 * [ ] yield*

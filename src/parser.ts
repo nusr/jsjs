@@ -37,6 +37,9 @@ const assignmentMap: Map<TokenType, TokenType> = new Map([
   [TokenType.STAR_EQUAL, TokenType.STAR],
   [TokenType.SLASH_EQUAL, TokenType.SLASH],
   [TokenType.REMAINDER_EQUAL, TokenType.REMAINDER],
+  [TokenType.LEFT_SHIFT_EQUAL, TokenType.LEFT_SHIFT],
+  [TokenType.RIGHT_SHIFT_EQUAL, TokenType.RIGHT_SHIFT],
+  [TokenType.UNSIGNED_RIGHT_SHIFT_EQUAL, TokenType.UNSIGNED_RIGHT_SHIFT],
   [TokenType.OR_EQUAL, TokenType.OR],
   [TokenType.AND_EQUAL, TokenType.AND],
 ]);
@@ -74,7 +77,7 @@ class Parser {
     let superClass: VariableExpression | null = null;
     if (this.match(TokenType.EXTENDS)) {
       const name = this.consume(TokenType.IDENTIFIER, 'expect class');
-      superClass = new VariableExpression(name)
+      superClass = new VariableExpression(name);
     }
     this.consume(TokenType.lEFT_BRACE, 'expect {');
     let methods: Array<VariableStatement | FunctionStatement> = [];
@@ -291,13 +294,28 @@ class Parser {
     return expr;
   }
   private comparison(): Expression {
-    let term: Expression = this.term();
+    let bitwiseShift: Expression = this.bitwiseShift();
     while (
       this.match(
         TokenType.GREATER,
         TokenType.GREATER_EQUAL,
         TokenType.LESS,
         TokenType.LESS_EQUAL,
+      )
+    ) {
+      const operator: Token = this.previous();
+      const right: Expression = this.bitwiseShift();
+      bitwiseShift = new BinaryExpression(bitwiseShift, operator, right);
+    }
+    return bitwiseShift;
+  }
+  private bitwiseShift(): Expression {
+    let term: Expression = this.term();
+    while (
+      this.match(
+        TokenType.LEFT_SHIFT,
+        TokenType.RIGHT_SHIFT,
+        TokenType.UNSIGNED_RIGHT_SHIFT,
       )
     ) {
       const operator: Token = this.previous();

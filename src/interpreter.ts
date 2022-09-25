@@ -98,8 +98,10 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         for (const key of Object.keys(temp.staticMethods)) {
           instance.staticMethods[key] = temp.staticMethods[key];
         }
-      }else {
-        throw new Error(`Class extends value ${temp} is not a constructor or null`)
+      } else {
+        throw new Error(
+          `Class extends value ${temp} is not a constructor or null`,
+        );
       }
     }
     for (const item of statement.methods) {
@@ -221,6 +223,12 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         return left == right;
       case TokenType.EQUAL_EQUAL_EQUAL:
         return left === right;
+      case TokenType.LEFT_SHIFT:
+        return left << right;
+      case TokenType.RIGHT_SHIFT:
+        return left >> right;
+      case TokenType.UNSIGNED_RIGHT_SHIFT:
+        return left >>> right;
     }
     return null;
   };

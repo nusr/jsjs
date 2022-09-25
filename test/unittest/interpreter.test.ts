@@ -67,6 +67,15 @@ describe('interpreter.test.ts', () => {
       expect: [false, true, false, false, true, true, true],
     },
     {
+      name: 'bitwise shift',
+      input: `
+        console.log(2 << 5)
+        console.log(2323 >> 2)
+        console.log(-9 >>> 2)
+      `,
+      expect: [eval('2 << 5'), eval('2323 >> 2'), eval('-9 >>> 2')],
+    },
+    {
       name: 'logical operator',
       input: `
         console.log(true && false)
@@ -109,8 +118,15 @@ describe('interpreter.test.ts', () => {
       console.log(a);
       a &&= 0;
       console.log(a);
+      a = 1;
+      a <<= 3;
+      console.log(a);
+      a >>= 1;
+      console.log(a);
+      a >>>= 1;
+      console.log(a);
       `,
-      expect: [2, 4, 2, 1, 1, 0],
+      expect: [2, 4, 2, 1, 1, 0, 8, 4, 2],
     },
     {
       name: 'for',

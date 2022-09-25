@@ -8,7 +8,7 @@ export enum TokenType {
   RIGHT_SQUARE_BRACKET, // ]
   COMMA, // ,
   DOT, // .
-  COLON, // 
+  COLON, //
   MINUS, // -
   MINUS_MINUS, // --
   PLUS, // +
@@ -35,6 +35,9 @@ export enum TokenType {
   STAR_EQUAL, // *=
   SLASH_EQUAL, // /=
   REMAINDER_EQUAL, // %=
+  LEFT_SHIFT_EQUAL, // <<=
+  RIGHT_SHIFT_EQUAL, // >>=
+  UNSIGNED_RIGHT_SHIFT_EQUAL, // >>>=
   AND_EQUAL, // &&=
   OR_EQUAL, // ||=
   // Literals
@@ -65,5 +68,8 @@ export enum TokenType {
   CONSTRUCTOR, // constructor
   UNDEFINED, // undefined
   EXTENDS, // extends
+  LEFT_SHIFT, // <<
+  RIGHT_SHIFT, // >>
+  UNSIGNED_RIGHT_SHIFT, // >>>
   EOF, // end
 }
