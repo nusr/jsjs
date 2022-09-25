@@ -16,6 +16,7 @@ export enum TokenType {
   SEMICOLON, // ;
   SLASH, // /
   STAR, // *
+  STAR_STAR, // **
   REMAINDER, // %
 
   // one or two character tokens

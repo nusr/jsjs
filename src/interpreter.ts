@@ -229,6 +229,8 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         return left >> right;
       case TokenType.UNSIGNED_RIGHT_SHIFT:
         return left >>> right;
+      case TokenType.STAR_STAR:
+        return left ** right;
     }
     return null;
   };

@@ -67,13 +67,21 @@ describe('interpreter.test.ts', () => {
       expect: [false, true, false, false, true, true, true],
     },
     {
+      name: 'exponentiation',
+      input: `
+      console.log(2 ** 3 ** 2)
+      console.log((2 ** 3) ** 2)
+      `,
+      expect: [512, 64],
+    },
+    {
       name: 'bitwise shift',
       input: `
         console.log(2 << 5)
         console.log(2323 >> 2)
         console.log(-9 >>> 2)
       `,
-      expect: [eval('2 << 5'), eval('2323 >> 2'), eval('-9 >>> 2')],
+      expect: [64, 580, 1073741821],
     },
     {
       name: 'logical operator',

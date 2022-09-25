@@ -334,14 +334,23 @@ class Parser {
     return factor;
   }
   private factor(): Expression {
-    let unary: Expression = this.unary();
+    let exponentiation: Expression = this.exponentiation();
     while (this.match(TokenType.STAR, TokenType.SLASH, TokenType.REMAINDER)) {
+      const operator: Token = this.previous();
+      const right: Expression = this.exponentiation();
+      exponentiation = new BinaryExpression(exponentiation, operator, right);
+    }
+    return exponentiation;
+  }
+  private exponentiation(): Expression {
+    let unary: Expression = this.unary();
+    while (this.match(TokenType.STAR_STAR)) {
       const operator: Token = this.previous();
       const right: Expression = this.unary();
       unary = new BinaryExpression(unary, operator, right);
     }
     return unary;
-  }
+  } 
   private unary(): Expression {
     if (
       this.match(

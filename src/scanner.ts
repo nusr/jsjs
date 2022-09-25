@@ -122,6 +122,8 @@ class Scanner {
       case '*':
         if (this.match('=')) {
           this.addOneToken(TokenType.STAR_EQUAL);
+        } else if (this.match('*')) {
+          this.addOneToken(TokenType.STAR_STAR);
         } else {
           this.addOneToken(TokenType.STAR);
         }
