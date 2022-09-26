@@ -366,6 +366,23 @@ describe('interpreter.test.ts', () => {
       expect: ['dog steve', 'dog', 'dog', 'steve'],
     },
     {
+      name: 'class expression',
+      input: `
+      var Rectangle = class {
+        constructor(height, width) {
+          this.height = height;
+          this.width = width;
+        }
+        area() {
+          return this.height * this.width;
+        }
+      };
+      var instance = new Rectangle(5, 8);
+      console.log(instance.area());
+      `,
+      expect: [40],
+    },
+    {
       name: 'function expression',
       input: `
       (function add(a){

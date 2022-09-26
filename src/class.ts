@@ -3,16 +3,24 @@ import { ClassStatement, FunctionStatement } from './statement';
 import type Interpreter from './interpreter';
 import { FunctionObject } from './function';
 import Environment from './environment';
+import { ClassExpression } from './expression';
 
 export class ClassObject implements IBaseCallable {
-  private readonly statement: ClassStatement;
+  private readonly statement: ClassStatement | ClassExpression;
   readonly staticMethods: ObjectType = {};
-  constructor(statement: ClassStatement) {
+  constructor(statement: ClassStatement | ClassExpression) {
     this.statement = statement;
   }
   call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
     const instance: ObjectType = {};
     const env = new Environment(interpreter.environment);
+
+    if (
+      this.statement instanceof ClassExpression &&
+      this.statement.name !== null
+    ) {
+      env.define(this.statement.name.lexeme, this);
+    }
     if (this.statement.superClass !== null) {
       const temp = interpreter.evaluate(this.statement.superClass);
       if (temp instanceof ClassObject) {

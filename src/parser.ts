@@ -3,6 +3,7 @@ import {
   AssignExpression,
   BinaryExpression,
   CallExpression,
+  ClassExpression,
   Expression,
   FunctionExpression,
   GetExpression,
@@ -67,7 +68,9 @@ class Parser {
     }
 
     if (this.match(TokenType.CLASS)) {
-      return this.classDeclaration();
+      const className = this.consume(TokenType.IDENTIFIER, 'expect class name');
+      const { superClass, methods } = this.getClassBody();
+      return new ClassStatement(className, superClass, methods);
     }
 
     if (this.match(TokenType.FUNCTION)) {
@@ -76,8 +79,10 @@ class Parser {
 
     return this.statement();
   }
-  private classDeclaration(): ClassStatement {
-    const name = this.consume(TokenType.IDENTIFIER, 'expect class name');
+  private getClassBody(): {
+    superClass: VariableExpression | null;
+    methods: Array<VariableStatement | FunctionStatement>;
+  } {
     let superClass: VariableExpression | null = null;
     if (this.match(TokenType.EXTENDS)) {
       const name = this.consume(TokenType.IDENTIFIER, 'expect class');
@@ -94,7 +99,10 @@ class Parser {
       }
     }
     this.consume(TokenType.RIGHT_BRACE, 'expect }');
-    return new ClassStatement(name, superClass, methods);
+    return {
+      superClass,
+      methods,
+    };
   }
   private varDeclaration(isStatic = false): VariableStatement {
     const name: Token = this.consume(
@@ -464,6 +472,14 @@ class Parser {
     const block = this.blockStatement();
     return new FunctionExpression(functionName, block, params);
   }
+  private classExpression(): ClassExpression {
+    let name: Token | null = null;
+    if (this.match(TokenType.IDENTIFIER)) {
+      name = this.previous();
+    }
+    const { superClass, methods } = this.getClassBody();
+    return new ClassExpression(name, superClass, methods);
+  }
   private primary(): Expression {
     if (this.match(TokenType.TRUE)) {
       return new LiteralExpression(true);
@@ -496,6 +512,9 @@ class Parser {
     }
     if (this.match(TokenType.FUNCTION)) {
       return this.functionExpression();
+    }
+    if (this.match(TokenType.CLASS)) {
+      return this.classExpression();
     }
     if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
       const value = this.getExpressions(TokenType.RIGHT_SQUARE_BRACKET);

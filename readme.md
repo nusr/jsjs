@@ -34,7 +34,7 @@ npm run test
 * [x] Bitwise OR assignment (|=)
 * [x] Bitwise XOR (^)
 * [x] Bitwise XOR assignment (^=)
-* [ ] class expression
+* [x] class expression
 * [ ] Comma operator (,)
 * [ ] Conditional (ternary) operator
 * [x] Decrement (--)
@@ -85,7 +85,7 @@ npm run test
 * [x] Strict inequality (!==)
 * [x] Subtraction (-)
 * [x] Subtraction assignment (-=)
-* [ ] super
+* [x] super
 * [x] this
 * [ ] typeof
 * [x] Unary negation (-)

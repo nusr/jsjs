@@ -1,7 +1,11 @@
 import type Token from './token';
 import type { LiteralType } from './type';
 import { convertLiteralTypeToString, isTestEnv } from './util';
-import type { BlockStatement } from './statement';
+import type {
+  BlockStatement,
+  VariableStatement,
+  FunctionStatement,
+} from './statement';
 export interface ExpressionVisitor {
   visitNewExpression: (Expression: NewExpression) => LiteralType;
   visitAssignExpression: (expression: AssignExpression) => LiteralType;
@@ -24,6 +28,7 @@ export interface ExpressionVisitor {
     expression: ObjectLiteralExpression,
   ) => LiteralType;
   visitTokenExpression: (expression: TokenExpression) => LiteralType;
+  visitClassExpression: (expression: ClassExpression) => LiteralType;
 }
 export interface Expression {
   accept(visitor: ExpressionVisitor): LiteralType;
@@ -274,5 +279,34 @@ export class TokenExpression implements Expression {
   }
   toString(): string {
     return this.token.toString();
+  }
+}
+
+export class ClassExpression implements Expression {
+  readonly name: Token | null;
+  readonly superClass: VariableExpression | null;
+  readonly methods: Array<VariableStatement | FunctionStatement>;
+  constructor(
+    name: Token | null,
+    superClass: VariableExpression | null,
+    methods: Array<VariableStatement | FunctionStatement>,
+  ) {
+    this.name = name;
+    this.superClass = superClass;
+    this.methods = methods;
+  }
+  accept(visitor: ExpressionVisitor): LiteralType {
+    return visitor.visitClassExpression(this);
+  }
+  toString() {
+    return `class ${
+      this.name === null ? '' : this.name.toString()
+    }{${this.methods
+      .map((item) => {
+        const temp = item.toString();
+        const index = temp.indexOf(' ');
+        return temp.slice(index + 1);
+      })
+      .join('')}}`;
   }
 }

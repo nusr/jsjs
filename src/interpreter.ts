@@ -17,6 +17,7 @@ import type {
   ArrayLiteralExpression,
   ObjectLiteralExpression,
   TokenExpression,
+  ClassExpression,
 } from './expression';
 import { VariableExpression } from './expression';
 import { TokenType } from './tokenType';
@@ -68,6 +69,37 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     }
     return result;
   };
+  private visitClass = (
+    expression: ClassExpression | ClassStatement,
+  ): ClassObject => {
+    const instance = new ClassObject(expression);
+    if (expression.superClass !== null) {
+      const temp = this.evaluate(expression.superClass);
+      if (temp instanceof ClassObject) {
+        for (const key of Object.keys(temp.staticMethods)) {
+          instance.staticMethods[key] = temp.staticMethods[key];
+        }
+      } else {
+        throw new Error(
+          `Class extends value ${temp} is not a constructor or null`,
+        );
+      }
+    }
+    for (const item of expression.methods) {
+      if (item.static) {
+        let temp: LiteralType = null;
+        if (item instanceof FunctionStatement) {
+          temp = new FunctionObject(item, this.environment);
+        } else {
+          if (item.initializer != null) {
+            temp = this.evaluate(item.initializer);
+          }
+        }
+        instance.staticMethods[item.name.lexeme] = temp;
+      }
+    }
+    return instance;
+  };
 
   visitExpressionStatement = (statement: ExpressionStatement) => {
     return this.evaluate(statement.expression);
@@ -93,33 +125,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return result;
   };
   visitClassStatement = (statement: ClassStatement) => {
-    const instance = new ClassObject(statement);
-    if (statement.superClass !== null) {
-      const temp = this.evaluate(statement.superClass);
-      if (temp instanceof ClassObject) {
-        for (const key of Object.keys(temp.staticMethods)) {
-          instance.staticMethods[key] = temp.staticMethods[key];
-        }
-      } else {
-        throw new Error(
-          `Class extends value ${temp} is not a constructor or null`,
-        );
-      }
-    }
-    for (const item of statement.methods) {
-      if (item.static) {
-        let temp: LiteralType = null;
-        if (item instanceof FunctionStatement) {
-          temp = new FunctionObject(item, this.environment);
-        } else {
-          if (item.initializer != null) {
-            temp = this.evaluate(item.initializer);
-          }
-        }
-        instance.staticMethods[item.name.lexeme] = temp;
-      }
-    }
-
+    const instance = this.visitClass(statement);
     this.environment.define(statement.name.lexeme, instance);
     return null;
   };
@@ -347,6 +353,9 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
   visitTokenExpression = (expression: TokenExpression) => {
     return expression.token.lexeme;
+  };
+  visitClassExpression = (expression: ClassExpression) => {
+    return this.visitClass(expression);
   };
 }
 
