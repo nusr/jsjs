@@ -11,6 +11,14 @@ describe('associativity.test.ts', () => {
       input: `1 + 2 - 3`,
       expect: '((1 + 2) - 3)',
     },
+    {
+      input: `2 ** 3 ** 4`,
+      expect: '(2 ** (3 ** 4))'
+    },
+    {
+      input: `~-3`,
+      expect: '(~(-3))'
+    },
   ];
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
