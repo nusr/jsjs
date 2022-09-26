@@ -42,6 +42,8 @@ import { ClassObject } from './class';
 class Interpreter implements ExpressionVisitor, StatementVisitor {
   environment: Environment;
   private readonly statements: Statement[];
+  private calleeKey: string = '';
+  private calleeValue: ObjectType | undefined = undefined;
   constructor(statements: Statement[], environment: Environment) {
     this.environment = environment;
     this.statements = statements;
@@ -231,6 +233,12 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         return left >>> right;
       case TokenType.STAR_STAR:
         return left ** right;
+      case TokenType.BIT_AND:
+        return left & right;
+      case TokenType.BIT_OR:
+        return left | right;
+      case TokenType.BIT_X_OR:
+        return left ^ right;
     }
     return null;
   };
@@ -238,21 +246,24 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   visitGetExpression = (expr: GetExpression) => {
     const callee = this.evaluate(expr.object);
     const key = this.evaluate(expr.property);
+    this.calleeKey = key;
     if (callee instanceof ClassObject && key in callee.staticMethods) {
+      this.calleeValue = callee.staticMethods;
       return callee.staticMethods[key];
     }
+    this.calleeValue = callee;
     return callee[key];
   };
   visitSetExpression = (expr: SetExpression): LiteralType => {
-    const callee = this.evaluate(expr.object.object);
-    if (isObject(callee)) {
-      const value = this.evaluate(expr.value);
-      const key = this.evaluate(expr.object.property);
-      if (callee instanceof ClassObject && key in callee.staticMethods) {
-        callee.staticMethods[key] = value;
-      } else {
-        callee[key] = value;
-      }
+    this.calleeKey = '';
+    this.calleeValue = undefined;
+    this.evaluate(expr.object);
+    const key = this.calleeKey;
+    const callee: ObjectType | undefined = this.calleeValue;
+    const value = this.evaluate(expr.value);
+    if (callee && isObject(callee)) {
+      // @ts-ignore
+      callee[key] = value;
       return value;
     }
     throw new Error('error SetExpression');
@@ -290,6 +301,10 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     switch (expr.operator.type) {
       case TokenType.MINUS:
         return -right;
+      case TokenType.PLUS:
+        return right;
+      case TokenType.BIT_NOT:
+        return ~right;
       case TokenType.BANG:
         return !this.isTruthy(right);
       case TokenType.PLUS_PLUS:
@@ -326,7 +341,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     for (const item of expression.properties) {
       const key = this.evaluate(item.key);
       const value = this.evaluate(item.value);
-      instance[key.toString()] = value;
+      instance[key] = value;
     }
     return instance;
   };

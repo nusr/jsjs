@@ -75,6 +75,24 @@ describe('interpreter.test.ts', () => {
       expect: [512, 64],
     },
     {
+      name: 'unary',
+      input: `
+      console.log(~3)
+      console.log(~-3)
+      console.log(~~3.2)
+      `,
+      expect: [-4, 2, 3],
+    },
+    {
+      name: 'bitwise',
+      input: `
+      console.log(3 | 5)
+      console.log(3 & 5)
+      console.log(3 ^ 5)
+      `,
+      expect: [7, 1, 6],
+    },
+    {
       name: 'bitwise shift',
       input: `
         console.log(2 << 5)
@@ -133,8 +151,16 @@ describe('interpreter.test.ts', () => {
       console.log(a);
       a >>>= 1;
       console.log(a);
+      a **= 2
+      console.log(a)
+      a |= 3
+      console.log(a)
+      a ^= 2
+      console.log(a)
+      a &= 4
+      console.log(a)
       `,
-      expect: [2, 4, 2, 1, 1, 0, 8, 4, 2],
+      expect: [2, 4, 2, 1, 1, 0, 8, 4, 2, 4, 7, 5, 4],
     },
     {
       name: 'for',
@@ -200,11 +226,9 @@ describe('interpreter.test.ts', () => {
       console.log(arr()[0])
       console.log(arr()[2])
       console.log(arr().length)
-      var arr2 = []
-      arr2.push('test')
-      // console.log(arr2[0])
+      console.log([4,5,6][1])
       `,
-      expect: [1, 3.0, 4],
+      expect: [1, 3.0, 4, 5],
     },
     {
       name: 'object',
@@ -214,8 +238,17 @@ describe('interpreter.test.ts', () => {
         obj.a = 4
         console.log(obj['a'])
         console.log(obj.a)
+        var obj2 = {
+          a: {
+            c: 1,
+          },
+          b: 2,
+        }
+        console.log(obj2.a.c)
+        obj2.a.c = obj2.b
+        console.log(obj2.a.c)
       `,
-      expect: [undefined, 4, 4],
+      expect: [undefined, 4, 4, 1, 2],
     },
     {
       name: 'function',

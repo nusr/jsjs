@@ -123,7 +123,11 @@ class Scanner {
         if (this.match('=')) {
           this.addOneToken(TokenType.STAR_EQUAL);
         } else if (this.match('*')) {
-          this.addOneToken(TokenType.STAR_STAR);
+          if (this.match('=')) {
+            this.addOneToken(TokenType.STAR_STAR_EQUAL);
+          } else {
+            this.addOneToken(TokenType.STAR_STAR);
+          }
         } else {
           this.addOneToken(TokenType.STAR);
         }
@@ -160,37 +164,33 @@ class Scanner {
       case '>':
         if (this.match('=')) {
           this.addOneToken(TokenType.GREATER_EQUAL);
-        } else {
+        } else if (this.match('>')) {
           if (this.match('>')) {
-            if (this.match('>')) {
-              if (this.match('=')) {
-                this.addOneToken(TokenType.UNSIGNED_RIGHT_SHIFT_EQUAL);
-              } else {
-                this.addOneToken(TokenType.UNSIGNED_RIGHT_SHIFT);
-              }
-            } else if (this.match('=')) {
-              this.addOneToken(TokenType.RIGHT_SHIFT_EQUAL);
+            if (this.match('=')) {
+              this.addOneToken(TokenType.UNSIGNED_RIGHT_SHIFT_EQUAL);
             } else {
-              this.addOneToken(TokenType.RIGHT_SHIFT);
+              this.addOneToken(TokenType.UNSIGNED_RIGHT_SHIFT);
             }
+          } else if (this.match('=')) {
+            this.addOneToken(TokenType.RIGHT_SHIFT_EQUAL);
           } else {
-            this.addOneToken(TokenType.GREATER);
+            this.addOneToken(TokenType.RIGHT_SHIFT);
           }
+        } else {
+          this.addOneToken(TokenType.GREATER);
         }
         break;
       case '<':
         if (this.match('=')) {
           this.addOneToken(TokenType.LESS_EQUAL);
-        } else {
-          if (this.match('<')) {
-            if (this.match('=')) {
-              this.addOneToken(TokenType.LEFT_SHIFT_EQUAL);
-            } else {
-              this.addOneToken(TokenType.LEFT_SHIFT);
-            }
+        } else if (this.match('<')) {
+          if (this.match('=')) {
+            this.addOneToken(TokenType.LEFT_SHIFT_EQUAL);
           } else {
-            this.addOneToken(TokenType.LESS);
+            this.addOneToken(TokenType.LEFT_SHIFT);
           }
+        } else {
+          this.addOneToken(TokenType.LESS);
         }
         break;
       case '/':
@@ -230,9 +230,21 @@ class Scanner {
           } else {
             this.addOneToken(TokenType.OR);
           }
+        } else if (this.match('=')) {
+          this.addOneToken(TokenType.BIT_OR_EQUAL);
         } else {
           this.addOneToken(TokenType.BIT_OR);
         }
+        break;
+      case '^':
+        if (this.match('=')) {
+          this.addOneToken(TokenType.BIT_X_OR_EQUAL);
+        } else {
+          this.addOneToken(TokenType.BIT_X_OR);
+        }
+        break;
+      case '~':
+        this.addOneToken(TokenType.BIT_NOT);
         break;
       case '&':
         if (this.match('&')) {
@@ -241,6 +253,8 @@ class Scanner {
           } else {
             this.addOneToken(TokenType.AND);
           }
+        } else if (this.match('=')) {
+          this.addOneToken(TokenType.BIT_AND_EQUAL);
         } else {
           this.addOneToken(TokenType.BIT_AND);
         }

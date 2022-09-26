@@ -1,11 +1,11 @@
-import type { LiteralType, IBaseCallable } from './type';
+import type { LiteralType, IBaseCallable, ObjectType } from './type';
 
 export function convertLiteralTypeToString(val: LiteralType): string {
   if (val === null) {
     return 'null';
   }
   if (val === undefined) {
-    return 'undefined'
+    return 'undefined';
   }
   if (typeof val === 'string') {
     return val;
@@ -52,7 +52,6 @@ export function assert(
   }
 }
 
-
-export function isObject(obj: any): obj is Object {
+export function isObject(obj: any): obj is ObjectType {
   return obj && typeof obj === 'object';
 }

@@ -35,10 +35,14 @@ export enum TokenType {
   MINUS_EQUAL, // -=
   STAR_EQUAL, // *=
   SLASH_EQUAL, // /=
+  STAR_STAR_EQUAL, // **=
   REMAINDER_EQUAL, // %=
   LEFT_SHIFT_EQUAL, // <<=
   RIGHT_SHIFT_EQUAL, // >>=
   UNSIGNED_RIGHT_SHIFT_EQUAL, // >>>=
+  BIT_AND_EQUAL, // &=
+  BIT_X_OR_EQUAL, // ^=
+  BIT_OR_EQUAL, // |=
   AND_EQUAL, // &&=
   OR_EQUAL, // ||=
   // Literals
@@ -56,8 +60,10 @@ export enum TokenType {
   NULL, // null
   AND,
   OR,
-  BIT_AND,
-  BIT_OR,
+  BIT_AND, // &
+  BIT_OR, // |
+  BIT_X_OR, // ^
+  BIT_NOT, // ~
   RETURN,
   SUPER,
   THIS,

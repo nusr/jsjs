@@ -27,13 +27,13 @@ npm run test
 * [ ] async function expression
 * [ ] async function* expression
 * [ ] await
-* [ ] Bitwise AND (&)
-* [ ] Bitwise AND assignment (&=)
-* [ ] Bitwise NOT (~)
-* [ ] Bitwise OR (|)
-* [ ] Bitwise OR assignment (|=)
-* [ ] Bitwise XOR (^)
-* [ ] Bitwise XOR assignment (^=)
+* [x] Bitwise AND (&)
+* [x] Bitwise AND assignment (&=)
+* [x] Bitwise NOT (~)
+* [x] Bitwise OR (|)
+* [x] Bitwise OR assignment (|=)
+* [x] Bitwise XOR (^)
+* [x] Bitwise XOR assignment (^=)
 * [ ] class expression
 * [ ] Comma operator (,)
 * [ ] Conditional (ternary) operator
@@ -43,8 +43,8 @@ npm run test
 * [x] Division (/)
 * [x] Division assignment (/=)
 * [x] Equality (==)
-* [ ] Exponentiation (**)
-* [ ] Exponentiation assignment (**=)
+* [x] Exponentiation (**)
+* [x] Exponentiation assignment (**=)
 * [x] Function expression
 * [ ] function* expression
 * [x] Greater than (>)

@@ -34,12 +34,16 @@ const assignmentMap: Map<TokenType, TokenType> = new Map([
   [TokenType.PLUS_EQUAL, TokenType.PLUS],
   [TokenType.PLUS_EQUAL, TokenType.PLUS],
   [TokenType.MINUS_EQUAL, TokenType.MINUS],
+  [TokenType.STAR_STAR_EQUAL, TokenType.STAR_STAR],
   [TokenType.STAR_EQUAL, TokenType.STAR],
   [TokenType.SLASH_EQUAL, TokenType.SLASH],
   [TokenType.REMAINDER_EQUAL, TokenType.REMAINDER],
   [TokenType.LEFT_SHIFT_EQUAL, TokenType.LEFT_SHIFT],
   [TokenType.RIGHT_SHIFT_EQUAL, TokenType.RIGHT_SHIFT],
   [TokenType.UNSIGNED_RIGHT_SHIFT_EQUAL, TokenType.UNSIGNED_RIGHT_SHIFT],
+  [TokenType.BIT_AND_EQUAL, TokenType.BIT_AND],
+  [TokenType.BIT_X_OR_EQUAL, TokenType.BIT_X_OR],
+  [TokenType.BIT_OR_EQUAL, TokenType.BIT_OR],
   [TokenType.OR_EQUAL, TokenType.OR],
   [TokenType.AND_EQUAL, TokenType.AND],
 ]);
@@ -268,11 +272,41 @@ class Parser {
   }
 
   private and(): Expression {
-    let expr = this.equality();
+    let expr = this.bitOr();
     while (this.match(TokenType.AND)) {
       const operator = this.previous();
-      const right = this.equality();
+      const right = this.bitOr();
       expr = new LogicalExpression(expr, operator, right);
+    }
+    return expr;
+  }
+
+  private bitOr(): Expression {
+    let expr = this.bitXOr();
+    while (this.match(TokenType.BIT_OR)) {
+      const operator = this.previous();
+      const right = this.bitXOr();
+      expr = new BinaryExpression(expr, operator, right);
+    }
+    return expr;
+  }
+
+  private bitXOr(): Expression {
+    let expr = this.bitAnd();
+    while (this.match(TokenType.BIT_X_OR)) {
+      const operator = this.previous();
+      const right = this.bitAnd();
+      expr = new BinaryExpression(expr, operator, right);
+    }
+    return expr;
+  }
+
+  private bitAnd(): Expression {
+    let expr = this.equality();
+    while (this.match(TokenType.BIT_AND)) {
+      const operator = this.previous();
+      const right = this.equality();
+      expr = new BinaryExpression(expr, operator, right);
     }
     return expr;
   }
@@ -346,18 +380,20 @@ class Parser {
     let unary: Expression = this.unary();
     while (this.match(TokenType.STAR_STAR)) {
       const operator: Token = this.previous();
-      const right: Expression = this.unary();
+      const right: Expression = this.exponentiation();
       unary = new BinaryExpression(unary, operator, right);
     }
     return unary;
-  } 
+  }
   private unary(): Expression {
     if (
       this.match(
+        TokenType.BANG,
+        TokenType.BIT_NOT,
+        TokenType.MINUS,
+        TokenType.PLUS,
         TokenType.PLUS_PLUS,
         TokenType.MINUS_MINUS,
-        TokenType.MINUS,
-        TokenType.BANG,
       )
     ) {
       const operator: Token = this.previous();
@@ -473,10 +509,10 @@ class Parser {
           if (this.check(TokenType.RIGHT_BRACE)) {
             break;
           }
-          const key = this.primary();
+          const key = this.consume(TokenType.IDENTIFIER, 'expect key');
           this.consume(TokenType.COLON, 'expect :');
           const value = this.expression();
-          valueList.push({ key, value });
+          valueList.push({ key: new TokenExpression(key), value });
         } while (this.match(TokenType.COMMA));
       }
       this.consume(TokenType.RIGHT_BRACE, 'expect }');
