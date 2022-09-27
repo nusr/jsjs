@@ -30,6 +30,7 @@ import {
   VariableStatement,
   WhileStatement,
 } from './statement';
+import { KEYWORD_MAP } from './constant';
 
 const assignmentMap: Map<TokenType, TokenType> = new Map([
   [TokenType.PLUS_EQUAL, TokenType.PLUS],
@@ -117,13 +118,17 @@ class Parser {
     return new VariableStatement(name, initializer, isStatic);
   }
   private functionDeclaration(
-    name: string,
+    name: 'Function' | 'Class',
     isStatic = false,
   ): FunctionStatement {
-    const functionName: Token = this.consume(
-      TokenType.IDENTIFIER,
-      `${name} statements require a function name`,
-    );
+    const message = `${name} statements require a function name`;
+    let functionName: Token;
+    if (name === 'Function') {
+      functionName = this.consume(TokenType.IDENTIFIER, message);
+    } else {
+      functionName = this.consumeName(message);
+    }
+
     const params = this.getTokens(name);
     this.consume(TokenType.lEFT_BRACE, 'expect { after function parameters');
     const block = this.blockStatement();
@@ -422,7 +427,7 @@ class Parser {
       if (this.match(TokenType.LEFT_BRACKET)) {
         expr = this.finishCall(expr);
       } else if (this.match(TokenType.DOT)) {
-        const property = this.consume(TokenType.IDENTIFIER, 'expect name');
+        const property = this.consumeName('expect name');
         expr = new GetExpression(expr, new TokenExpression(property));
       } else if (this.match(TokenType.LEFT_SQUARE_BRACKET)) {
         const property = this.expression();
@@ -528,7 +533,7 @@ class Parser {
           if (this.check(TokenType.RIGHT_BRACE)) {
             break;
           }
-          const key = this.consume(TokenType.IDENTIFIER, 'expect key');
+          const key = this.consumeName('expect key');
           this.consume(TokenType.COLON, 'expect :');
           const value = this.expression();
           valueList.push({ key: new TokenExpression(key), value });
@@ -542,6 +547,19 @@ class Parser {
   }
   private consume(type: TokenType, message: string) {
     if (this.peek().type === type) {
+      this.advance();
+      return this.previous();
+    }
+    throw new Error(message);
+  }
+  private consumeName(message: string) {
+    const list = Array.from(KEYWORD_MAP.values());
+    list.push(TokenType.IDENTIFIER);
+    return this.consumes(message, ...list);
+  }
+  private consumes(message: string, ...types: TokenType[]) {
+    const type = this.peek().type;
+    if (types.some((v) => v === type)) {
       this.advance();
       return this.previous();
     }

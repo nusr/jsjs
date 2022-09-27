@@ -243,12 +243,14 @@ describe('interpreter.test.ts', () => {
             c: 1,
           },
           b: 2,
+          true: true
         }
         console.log(obj2.a.c)
         obj2.a.c = obj2.b
         console.log(obj2.a.c)
+        console.log(obj2.true)
       `,
-      expect: [undefined, 4, 4, 1, 2],
+      expect: [undefined, 4, 4, 1, 2, true],
     },
     {
       name: 'function',
@@ -279,6 +281,9 @@ describe('interpreter.test.ts', () => {
         print(a) {
             console.log(a);
         }
+        true() {
+          console.log(1)
+        }
       }
       var a = new Test();
       a.print(3);
@@ -289,8 +294,10 @@ describe('interpreter.test.ts', () => {
       console.log(a.print);
       var c = new Test();
       console.log(c.b);
-      c.print(4);`,
-      expect: ['test', 3, 5, '9', '1', 'test', 5, 4],
+      c.print(4);
+      c.true();
+      `,
+      expect: ['test', 3, 5, '9', '1', 'test', 5, 4, 1],
     },
     {
       name: 'class static',
