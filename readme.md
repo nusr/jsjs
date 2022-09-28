@@ -38,7 +38,7 @@ npm run test
 * [ ] Comma operator (,)
 * [ ] Conditional (ternary) operator
 * [x] Decrement (--)
-* [ ] delete operator
+* [x] delete operator
 * [ ] Destructuring assignment
 * [x] Division (/)
 * [x] Division assignment (/=)
@@ -52,7 +52,7 @@ npm run test
 * [x] Grouping operator ( )
 * [ ] import
 * [ ] import.meta
-* [ ] in operator
+* [x] in operator
 * [x] Increment (++)
 * [x] Inequality (!=)
 * [ ] instanceof
@@ -87,12 +87,12 @@ npm run test
 * [x] Subtraction assignment (-=)
 * [x] super
 * [x] this
-* [ ] typeof
+* [x] typeof
 * [x] Unary negation (-)
 * [x] Unary plus (+)
 * [x] Unsigned right shift (>>>)
 * [x] Unsigned right shift assignment (>>>=)
-* [ ] void operator
+* [x] void operator
 * [ ] yield
 * [ ] yield*
 

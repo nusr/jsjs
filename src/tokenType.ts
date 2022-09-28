@@ -78,5 +78,10 @@ export enum TokenType {
   LEFT_SHIFT, // <<
   RIGHT_SHIFT, // >>
   UNSIGNED_RIGHT_SHIFT, // >>>
+  TYPEOF, // typeof
+  DELETE, // delete
+  VOID, // void
+  IN, // in
+  INSTANCE_OF, // instanceof
   EOF, // end
 }

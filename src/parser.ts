@@ -348,6 +348,8 @@ class Parser {
         TokenType.GREATER_EQUAL,
         TokenType.LESS,
         TokenType.LESS_EQUAL,
+        TokenType.IN,
+        TokenType.INSTANCE_OF,
       )
     ) {
       const operator: Token = this.previous();
@@ -407,6 +409,9 @@ class Parser {
         TokenType.PLUS,
         TokenType.PLUS_PLUS,
         TokenType.MINUS_MINUS,
+        TokenType.TYPEOF,
+        TokenType.VOID,
+        TokenType.DELETE,
       )
     ) {
       const operator: Token = this.previous();

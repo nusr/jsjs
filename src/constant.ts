@@ -18,7 +18,12 @@ export const KEYWORD_MAP: Map<string, TokenType> = new Map([
   ['new', TokenType.NEW],
   ['static', TokenType.STATIC],
   ['undefined', TokenType.UNDEFINED],
-  ['extends', TokenType.EXTENDS]
-])
+  ['extends', TokenType.EXTENDS],
+  ['typeof', TokenType.TYPEOF],
+  ['delete', TokenType.DELETE],
+  ['void', TokenType.VOID],
+  ['in', TokenType.IN],
+  ['instanceof', TokenType.INSTANCE_OF],
+]);
 
 export const EMPTY_DATA = '\0';

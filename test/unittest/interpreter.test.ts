@@ -80,8 +80,39 @@ describe('interpreter.test.ts', () => {
       console.log(~3)
       console.log(~-3)
       console.log(~~3.2)
+      console.log(typeof a);
+      console.log(typeof 1)
+      var a = {
+        b: 1,
+      }
+      console.log(delete a.b);
+      console.log(a.b)
+      console.log(void 1)
+      void function iife() {
+        console.log('iife is executed');
+      }();
+
+      var car = { make: 'Honda' }
+      console.log('make' in car)
+      delete car.make
+      if ('make' in car === false) {
+        car.make = 'Suzuki';
+      }
+      console.log(car.make);
       `,
-      expect: [-4, 2, 3],
+      expect: [
+        -4,
+        2,
+        3,
+        'undefined',
+        'number',
+        true,
+        undefined,
+        undefined,
+        'iife is executed',
+        true,
+        'Suzuki',
+      ],
     },
     {
       name: 'bitwise',

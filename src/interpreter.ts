@@ -245,6 +245,10 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         return left | right;
       case TokenType.BIT_X_OR:
         return left ^ right;
+      case TokenType.IN:
+        return left in right;
+      case TokenType.INSTANCE_OF:
+        return left instanceof right;
     }
     return null;
   };
@@ -303,6 +307,11 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return expr.value;
   };
   visitUnaryExpression = (expr: UnaryExpression): LiteralType => {
+    const isDelete = expr.operator.type === TokenType.DELETE;
+    if (isDelete) {
+      this.calleeKey = '';
+      this.calleeValue = undefined;
+    }
     const right: LiteralType = this.evaluate(expr.right);
     switch (expr.operator.type) {
       case TokenType.MINUS:
@@ -313,6 +322,16 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         return ~right;
       case TokenType.BANG:
         return !this.isTruthy(right);
+      case TokenType.TYPEOF:
+        return typeof right;
+      case TokenType.DELETE: {
+        if (this.calleeValue === undefined) {
+          throw new ReferenceError('is not defined');
+        }
+        return delete this.calleeValue[this.calleeKey];
+      }
+      case TokenType.VOID:
+        return undefined;
       case TokenType.PLUS_PLUS:
       case TokenType.MINUS_MINUS: {
         assert(

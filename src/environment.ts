@@ -13,7 +13,7 @@ class Environment {
     if (this.parent !== null) {
       return this.parent.get(name);
     }
-    throw new Error(`${name.lexeme} is not defined`);
+    return undefined
   }
   define(name: string, value: LiteralType) {
     this.values.set(name, value);
@@ -27,7 +27,7 @@ class Environment {
       this.parent.assign(name, value);
       return;
     }
-    throw new Error(`${name.lexeme} is not defined`);
+    this.values.set(name.lexeme, value)
   }
 }
 
