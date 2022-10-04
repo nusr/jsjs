@@ -40,6 +40,7 @@ export enum TokenType {
   LEFT_SHIFT_EQUAL, // <<=
   RIGHT_SHIFT_EQUAL, // >>=
   UNSIGNED_RIGHT_SHIFT_EQUAL, // >>>=
+  NULLISH_COALESCING_EQUAL, // ??=
   BIT_AND_EQUAL, // &=
   BIT_X_OR_EQUAL, // ^=
   BIT_OR_EQUAL, // |=
@@ -83,5 +84,7 @@ export enum TokenType {
   VOID, // void
   IN, // in
   INSTANCE_OF, // instanceof
+  QUESTION_MARK, // ?
+  NULLISH_COALESCING, // ??
   EOF, // end
 }

@@ -63,7 +63,7 @@ npm run test
 * [x] Logical AND (&&)
 * [x] Logical AND assignment (&&=)
 * [x] Logical NOT (!)
-* [ ] Logical nullish assignment (??=)
+* [X] Logical nullish assignment (??=)
 * [x] Logical OR (||)
 * [x] Logical OR assignment (||=)
 * [x] Multiplication (*)
@@ -71,7 +71,7 @@ npm run test
 * [x] new operator
 * [ ] new.target
 * [x] null
-* [ ] Nullish coalescing operator (??)
+* [X] Nullish coalescing operator (??)
 * [x] Object initializer
 * [x] Operator precedence
 * [ ] Optional chaining (?.)

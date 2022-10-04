@@ -161,6 +161,17 @@ class Scanner {
           this.addOneToken(TokenType.EQUAL);
         }
         break;
+      case '?':
+        if (this.match('?')) {
+          if (this.match('=')) {
+            this.addOneToken(TokenType.NULLISH_COALESCING_EQUAL);
+          } else {
+            this.addOneToken(TokenType.NULLISH_COALESCING);
+          }
+        } else {
+          this.addOneToken(TokenType.QUESTION_MARK);
+        }
+        break;
       case '>':
         if (this.match('=')) {
           this.addOneToken(TokenType.GREATER_EQUAL);

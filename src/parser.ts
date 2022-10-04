@@ -48,6 +48,7 @@ const assignmentMap: Map<TokenType, TokenType> = new Map([
   [TokenType.BIT_OR_EQUAL, TokenType.BIT_OR],
   [TokenType.OR_EQUAL, TokenType.OR],
   [TokenType.AND_EQUAL, TokenType.AND],
+  [TokenType.NULLISH_COALESCING_EQUAL, TokenType.NULLISH_COALESCING],
 ]);
 
 class Parser {
@@ -256,7 +257,8 @@ class Parser {
         );
         if (
           equal.type === TokenType.AND_EQUAL ||
-          equal.type === TokenType.OR_EQUAL
+          equal.type === TokenType.OR_EQUAL ||
+          equal.type === TokenType.NULLISH_COALESCING_EQUAL
         ) {
           value = new LogicalExpression(expr, operator, value);
         } else {
@@ -276,7 +278,7 @@ class Parser {
 
   private or(): Expression {
     let expr = this.and();
-    while (this.match(TokenType.OR)) {
+    while (this.match(TokenType.OR, TokenType.NULLISH_COALESCING)) {
       const operator = this.previous();
       const right = this.and();
       expr = new LogicalExpression(expr, operator, right);

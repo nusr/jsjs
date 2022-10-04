@@ -284,10 +284,18 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
       if (this.isTruthy(left)) {
         return left;
       }
-    } else {
+    } else if (expr.operator.type === TokenType.AND) {
       if (!this.isTruthy(left)) {
         return left;
       }
+    } else if (expr.operator.type === TokenType.NULLISH_COALESCING) {
+      if (left !== null && left !== undefined) {
+        return left;
+      }
+    } else {
+      throw new Error(
+        `can no handle logic operator: ${expr.operator.toString()}`,
+      );
     }
     return this.evaluate(expr.right);
   };

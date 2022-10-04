@@ -139,8 +139,11 @@ describe('interpreter.test.ts', () => {
         console.log(true && true)
         console.log(true || false)
         console.log(false || false)
+        console.log(null ?? 1)
+        console.log(undefined ?? 2)
+        console.log(0 ?? 2)
       `,
-      expect: [false, true, true, false],
+      expect: [false, true, true, false, 1, 2, 0],
     },
     {
       name: 'unicode',
@@ -190,8 +193,13 @@ describe('interpreter.test.ts', () => {
       console.log(a)
       a &= 4
       console.log(a)
+      a ??= 0
+      console.log(a)
+      a = null
+      a ??= 'default value'
+      console.log(a)
       `,
-      expect: [2, 4, 2, 1, 1, 0, 8, 4, 2, 4, 7, 5, 4],
+      expect: [2, 4, 2, 1, 1, 0, 8, 4, 2, 4, 7, 5, 4, 4, 'default value'],
     },
     {
       name: 'for',
@@ -206,6 +214,27 @@ describe('interpreter.test.ts', () => {
       }
       `,
       expect: [1, 2, 3, 4, 5],
+    },
+    {
+      name: 'else if',
+      input: `
+      function judge(a) {
+        if (a == 100) {
+          console.log('满分');
+        } else if (a >= 90) {
+          console.log('优秀');
+        } else if (a >= 60) {
+          console.log('及格');
+        } else {
+          console.log('不及格');
+        }
+      }
+      judge(100)
+      judge(91)
+      judge(60)
+      judge(33)
+      `,
+      expect: ['满分', '优秀', '及格', '不及格'],
     },
     {
       name: 'if return',
