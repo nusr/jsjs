@@ -8,11 +8,14 @@ const productionMode = 'production';
 const nodeEnv = envConfig['NODE_ENV'] || productionMode;
 const isDev = nodeEnv === 'development';
 const globalName = '__export__';
-const licenseText = fs.readFileSync(path.join(process.cwd(), 'LICENSE'), 'utf-8')
+const licenseText = fs.readFileSync(
+  path.join(process.cwd(), 'LICENSE'),
+  'utf-8',
+);
 
 function getEnv(): Record<string, string> {
   const result: Record<string, string> = {};
-  const [, , ...rest] = process.argv;
+  const rest = process.argv.slice(2);
   return rest.reduce((prev, current = '') => {
     const [key = '', value = ''] = current.trim().split('=');
     const t = key.trim();
@@ -83,7 +86,7 @@ function buildNode(filePath: string) {
 
 async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
   const minify = !!options.outfile?.includes('.min.');
-  const result = await build({
+  const realOptions: BuildOptions = {
     bundle: true,
     watch: isDev,
     entryPoints: ['src/index.ts'],
@@ -99,8 +102,9 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
     sourcemap: true,
     minify: minify,
     metafile: minify,
-    ...options,
-  });
+  };
+  Object.assign(realOptions, options);
+  const result = await build(realOptions);
   if (result.metafile) {
     const text = await analyzeMetafile(result.metafile, { verbose: true });
     console.log(text);
@@ -168,8 +172,7 @@ async function main() {
   if (isDev) {
     return buildUMD(startPath);
   }
-  buildHtml();
-  return await Promise.all([
+  const list = await Promise.all([
     buildUMD(startPath),
     buildESM(packageJson.module),
     buildUMD(packageJson.main),
@@ -178,6 +181,8 @@ async function main() {
     buildNode(packageJson.main.replace('umd', 'node')),
     buildNode(packageJson.main.replace('umd', 'node.min')),
   ]);
+  buildHtml();
+  return list;
 }
 
 main().then(() => {
