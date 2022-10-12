@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 npm run build
-cd assets
+cd dist
 rm -rf .git
 git init
 git add .
