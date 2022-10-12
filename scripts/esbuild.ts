@@ -100,8 +100,8 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
       js: `/* \n${licenseText}\n*/`,
     },
     platform: 'browser',
-    sourcemap: true,
-    minify: minify,
+    sourcemap: isDev,
+    minify: !isDev,
     metafile: minify,
   };
   Object.assign(realOptions, options);
@@ -115,15 +115,12 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
 
 function buildEditor(minify: boolean) {
   const workerEntryPoints = [
-    'vs/language/json/json.worker.js',
-    'vs/language/css/css.worker.js',
-    'vs/language/html/html.worker.js',
     'vs/language/typescript/ts.worker.js',
     'vs/editor/editor.worker.js',
   ];
   const commonOptions: BuildOptions = {
     tsconfig: 'tsconfig.json',
-    sourcemap: true,
+    sourcemap: isDev,
     bundle: true,
     format: 'iife',
     outdir: distDir,
@@ -174,6 +171,7 @@ function deleteDir(dir: string) {
 
 async function main() {
   deleteDir('lib');
+  deleteDir('dist');
   const startPath = path.join(distDir, 'jsjs.umd.js')
   if (isDev) {
     return buildUMD(startPath);
@@ -186,7 +184,7 @@ async function main() {
     buildUMD(packageJson.main.replace('.js', '.min.js')),
     buildNode(packageJson.main.replace('umd', 'node')),
     buildNode(packageJson.main.replace('umd', 'node.min')),
-    buildEditor(false),
+    buildEditor(true),
   ]);
   buildHtml();
   return list;
