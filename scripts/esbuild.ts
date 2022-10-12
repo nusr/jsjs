@@ -12,6 +12,7 @@ const licenseText = fs.readFileSync(
   path.join(process.cwd(), 'LICENSE'),
   'utf-8',
 );
+const distDir = path.join(process.cwd(), 'dist');
 
 function getEnv(): Record<string, string> {
   const result: Record<string, string> = {};
@@ -112,63 +113,68 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
   return result;
 }
 
+function buildEditor(minify: boolean) {
+  const workerEntryPoints = [
+    'vs/language/json/json.worker.js',
+    'vs/language/css/css.worker.js',
+    'vs/language/html/html.worker.js',
+    'vs/language/typescript/ts.worker.js',
+    'vs/editor/editor.worker.js',
+  ];
+  const commonOptions: BuildOptions = {
+    tsconfig: 'tsconfig.json',
+    sourcemap: true,
+    bundle: true,
+    format: 'iife',
+    outdir: distDir,
+    minify,
+  };
+  const list: Promise<BuildResult>[] = [];
+  const editorDir = path.join(process.cwd(), 'node_modules/monaco-editor/esm/');
+  list.push(
+    build({
+      ...commonOptions,
+      entryPoints: workerEntryPoints.map((entry) => `${editorDir}${entry}`),
+      outbase: editorDir,
+    }),
+  );
+
+  list.push(
+    build({
+      ...commonOptions,
+      entryPoints: [path.join(__dirname, 'editor.ts')],
+      loader: {
+        '.ttf': 'file',
+      },
+    }),
+  );
+  return Promise.all(list);
+}
+
 function buildHtml() {
-  const browser = fs.readFileSync(
-    path.join(process.cwd(), 'scripts/browser.js'),
+  const htmlData = fs.readFileSync(
+    path.join(__dirname, 'index.html'),
     'utf-8',
   );
   const data = fs.readFileSync(
     path.join(process.cwd(), 'test/unittest/testData.js'),
     'utf-8',
   );
-  const html = `<!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>JavaScript interpret JavaScript</title>
-      <style>
-        #code {
-          width: 100%;
-          height: 400px;
-        }
-        html,body{
-          padding: 0;
-          margin: 0;
-        }
-      </style>
-    </head>
-    <body>
-      <div>
-        <textarea id="code">
-${data}
-        </textarea>
-      </div>
-      <div>
-        <button id="run">run</button>
-      </div>
-      <div id="result"></div>
-      <script src="./jsjs.umd.js"></script>
-      <script>
-          ${browser}
-      </script>
-    </body>
-  </html>
-  `;
-  fs.writeFileSync(
-    path.join(process.cwd(), 'assets/index.html'),
-    html,
-    'utf-8',
-  );
+  const realHtmlData = htmlData.replace('// originEditorData', `var originEditorData=\`${data}\``)
+  fs.writeFileSync(path.join(distDir, 'index.html'), realHtmlData, 'utf-8')
 }
 
-async function main() {
-  fs.rm(path.join(process.cwd(), 'lib'), { recursive: true }, (error) => {
+function deleteDir(dir: string) {
+  fs.rm(path.join(process.cwd(), dir), { recursive: true }, (error) => {
     if (error) {
       console.log(error);
     }
   });
-  const startPath = 'assets/jsjs.umd.js';
+}
+
+async function main() {
+  deleteDir('lib');
+  const startPath = path.join(distDir, 'jsjs.umd.js')
   if (isDev) {
     return buildUMD(startPath);
   }
@@ -180,6 +186,7 @@ async function main() {
     buildUMD(packageJson.main.replace('.js', '.min.js')),
     buildNode(packageJson.main.replace('umd', 'node')),
     buildNode(packageJson.main.replace('umd', 'node.min')),
+    buildEditor(false),
   ]);
   buildHtml();
   return list;

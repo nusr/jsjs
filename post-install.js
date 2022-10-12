@@ -20,6 +20,7 @@ function init() {
           entryPoints: [filePath],
           outfile: temp,
           format: 'cjs',
+          target: "node14"
         });
       } else if (ext === '.js') {
         fs.unlink(filePath, () => {});
