@@ -153,12 +153,14 @@ function buildHtml() {
     path.join(__dirname, 'index.html'),
     'utf-8',
   );
-  const data = fs.readFileSync(
+  fs.copyFileSync(
     path.join(process.cwd(), 'test/unittest/testData.js'),
-    'utf-8',
+    path.join(distDir, 'testData.js'),
   );
-  const realHtmlData = htmlData.replace('// originEditorData', `var originEditorData=\`${data}\``)
-  fs.writeFileSync(path.join(distDir, 'index.html'), realHtmlData, 'utf-8')
+  fs.copyFileSync(
+    path.join(__dirname, 'index.html'),
+    path.join(distDir, 'index.html'),
+  );
 }
 
 function deleteDir(dir: string) {
