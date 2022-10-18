@@ -1,12 +1,10 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Test And Deploy
-
+name: CI
 on:
   - push
   - pull_request
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,19 +13,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-
-      - name: Test 
+      - name: Test
         run: |
           npm install
           npm run coverage
           npx tsc
-      
-      - name: Build
-        run: npm run build
-      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
       # - name: Deploy
-        # uses: peaceiris/actions-gh-pages@v3
-        # if: ${{ github.ref == 'refs/heads/main' }}
-        # with:
-          # github_token: ${{ secrets.GITHUB_TOKEN }}
-          # publish_dir: ./assets
+      # uses: peaceiris/actions-gh-pages@v3
+      # if: ${{ github.ref == 'refs/heads/main' }}
+      # with:
+      # github_token: ${{ secrets.GITHUB_TOKEN }}
+      # publish_dir: ./assets
