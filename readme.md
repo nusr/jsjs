@@ -1,5 +1,8 @@
 # JavaScript interpret JavaScript.
 
+[![ci status](https://github.com/nusr/jsjs/actions/workflows/main.yml/badge.svg)](https://github.com/nusr/jsjs/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/nusr/jsjs/branch/main/graph/badge.svg?token=ZOC8RHD3Z1)](https://codecov.io/gh/nusr/jsjs)
+
 Zero dependencies.
 
 ## Start
