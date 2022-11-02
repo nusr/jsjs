@@ -149,14 +149,6 @@ function buildEditor(minify: boolean) {
 }
 
 function buildHtml() {
-  const htmlData = fs.readFileSync(
-    path.join(__dirname, 'index.html'),
-    'utf-8',
-  );
-  fs.copyFileSync(
-    path.join(process.cwd(), 'test/unittest/testData.js'),
-    path.join(distDir, 'testData.js'),
-  );
   fs.copyFileSync(
     path.join(__dirname, 'index.html'),
     path.join(distDir, 'index.html'),
@@ -174,7 +166,7 @@ function deleteDir(dir: string) {
 async function main() {
   deleteDir('lib');
   deleteDir('dist');
-  const startPath = path.join(distDir, 'jsjs.umd.js')
+  const startPath = path.join(distDir, 'jsjs.umd.js');
   if (isDev) {
     return buildUMD(startPath);
   }

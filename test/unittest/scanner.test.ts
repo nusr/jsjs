@@ -1,373 +1,493 @@
 import Scanner from '../../src/scanner';
 import Token from '../../src/token';
 import { TokenType } from '../../src/tokenType';
-import * as fs from 'fs';
-import * as path from 'path';
 
-let inputData = '';
-beforeAll(() => {
-  inputData = fs.readFileSync(path.join(__dirname, 'testData.js'), 'utf-8');
+const inputData = `var a = 'a';
+/**
+ * @param {number} x
+ * @param {number} y
+ */
+function add(x, y) {
+  return x + y;
+}
+var cond = add(1, 2 * 3);
+console.log(cond);
+if (cond) {
+  a = 'b';
+} else {
+  a = 'c';
+}
+console.log(a);
+
+function makeCounter() {
+  var i = 0;
+  function count() {
+    i = i + 1;
+    console.log(i);
+  }
+
+  return count;
+}
+
+var counter = makeCounter();
+counter();
+counter();
+var n = 1;
+++n;
+console.log(n);
+--n;
+console.log(n);
+function fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+console.log(fib(30));
+var globalA = 'global';
+{
+  function showA() {
+    console.log(globalA);
+  }
+
+  showA();
+  var globalA = 'block';
+  showA();
+}
+class Test {
+  b = 5;
+  print(a) {
+      console.log(a);
+  }
+}
+var b = new Test();
+b.print(3);
+console.log(b.b);
+b.b = '9';
+console.log(b.b);
+b.print = '1';
+console.log(b.print);
+var c = new Test();
+console.log(c.b);
+c.print(4);
+1==2
+1===2
+b ??= 1
+1 <= 2
+1 < 2
+1 ^ 2.2
+1 ^= 2.2
+1 > 2
+1 >= 2
+`;
+
+type TokenItem = {
+  type: TokenType;
+  lexeme: string;
+};
+
+const getToken = (type: TokenType, lexeme: string): TokenItem => ({
+  type,
+  lexeme,
 });
 
 describe('scanner.test.ts', () => {
   test('scan tokens', () => {
-    const expectTokens: Token[] = [
-      new Token(TokenType.VAR, 'var', 1),
-      new Token(TokenType.IDENTIFIER, 'a', 1),
-      new Token(TokenType.EQUAL, '=', 1),
-      new Token(TokenType.STRING, 'a', 1),
-      new Token(TokenType.SEMICOLON, ';', 1),
+    const expectTokens: TokenItem[] = [
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'a'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, 'a'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.FUNCTION, 'function', 6),
-      new Token(TokenType.IDENTIFIER, 'add', 6),
-      new Token(TokenType.LEFT_BRACKET, '(', 6),
-      new Token(TokenType.IDENTIFIER, 'x', 6),
-      new Token(TokenType.COMMA, ',', 6),
-      new Token(TokenType.IDENTIFIER, 'y', 6),
-      new Token(TokenType.RIGHT_BRACKET, ')', 6),
-      new Token(TokenType.lEFT_BRACE, '{', 6),
-      new Token(TokenType.RETURN, 'return', 7),
-      new Token(TokenType.IDENTIFIER, 'x', 7),
-      new Token(TokenType.PLUS, '+', 7),
-      new Token(TokenType.IDENTIFIER, 'y', 7),
-      new Token(TokenType.SEMICOLON, ';', 7),
-      new Token(TokenType.RIGHT_BRACE, '}', 8),
+      getToken(TokenType.FUNCTION, 'function'),
+      getToken(TokenType.IDENTIFIER, 'add'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'x'),
+      getToken(TokenType.COMMA, ','),
+      getToken(TokenType.IDENTIFIER, 'y'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
+      getToken(TokenType.RETURN, 'return'),
+      getToken(TokenType.IDENTIFIER, 'x'),
+      getToken(TokenType.PLUS, '+'),
+      getToken(TokenType.IDENTIFIER, 'y'),
+      getToken(TokenType.SEMICOLON, ';'),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.VAR, 'var', 9),
-      new Token(TokenType.IDENTIFIER, 'cond', 9),
-      new Token(TokenType.EQUAL, '=', 9),
-      new Token(TokenType.IDENTIFIER, 'add', 9),
-      new Token(TokenType.LEFT_BRACKET, '(', 9),
-      new Token(TokenType.NUMBER, '1', 9),
-      new Token(TokenType.COMMA, ',', 9),
-      new Token(TokenType.NUMBER, '2', 9),
-      new Token(TokenType.STAR, '*', 9),
-      new Token(TokenType.NUMBER, '3', 9),
-      new Token(TokenType.RIGHT_BRACKET, ')', 9),
-      new Token(TokenType.SEMICOLON, ';', 9),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'cond'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.IDENTIFIER, 'add'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.COMMA, ','),
+      getToken(TokenType.NUMBER, '2'),
+      getToken(TokenType.STAR, '*'),
+      getToken(TokenType.NUMBER, '3'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 10),
-      new Token(TokenType.DOT, '.', 10),
-      new Token(TokenType.IDENTIFIER, 'log', 10),
-      new Token(TokenType.LEFT_BRACKET, '(', 10),
-      new Token(TokenType.IDENTIFIER, 'cond', 10),
-      new Token(TokenType.RIGHT_BRACKET, ')', 10),
-      new Token(TokenType.SEMICOLON, ';', 10),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'cond'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IF, 'if', 11),
-      new Token(TokenType.LEFT_BRACKET, '(', 11),
-      new Token(TokenType.IDENTIFIER, 'cond', 11),
-      new Token(TokenType.RIGHT_BRACKET, ')', 11),
-      new Token(TokenType.lEFT_BRACE, '{', 11),
-      new Token(TokenType.IDENTIFIER, 'a', 12),
-      new Token(TokenType.EQUAL, '=', 12),
-      new Token(TokenType.STRING, 'b', 12),
-      new Token(TokenType.SEMICOLON, ';', 12),
-      new Token(TokenType.RIGHT_BRACE, '}', 13),
-      new Token(TokenType.ELSE, 'else', 13),
-      new Token(TokenType.lEFT_BRACE, '{', 13),
-      new Token(TokenType.IDENTIFIER, 'a', 14),
-      new Token(TokenType.EQUAL, '=', 14),
-      new Token(TokenType.STRING, 'c', 14),
-      new Token(TokenType.SEMICOLON, ';', 14),
-      new Token(TokenType.RIGHT_BRACE, '}', 15),
+      getToken(TokenType.IF, 'if'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'cond'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
+      getToken(TokenType.IDENTIFIER, 'a'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, 'b'),
+      getToken(TokenType.SEMICOLON, ';'),
+      getToken(TokenType.RIGHT_BRACE, '}'),
+      getToken(TokenType.ELSE, 'else'),
+      getToken(TokenType.lEFT_BRACE, '{'),
+      getToken(TokenType.IDENTIFIER, 'a'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, 'c'),
+      getToken(TokenType.SEMICOLON, ';'),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 16),
-      new Token(TokenType.DOT, '.', 16),
-      new Token(TokenType.IDENTIFIER, 'log', 16),
-      new Token(TokenType.LEFT_BRACKET, '(', 16),
-      new Token(TokenType.IDENTIFIER, 'a', 16),
-      new Token(TokenType.RIGHT_BRACKET, ')', 16),
-      new Token(TokenType.SEMICOLON, ';', 16),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'a'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.FUNCTION, 'function', 18),
-      new Token(TokenType.IDENTIFIER, 'makeCounter', 18),
-      new Token(TokenType.LEFT_BRACKET, '(', 18),
-      new Token(TokenType.RIGHT_BRACKET, ')', 18),
-      new Token(TokenType.lEFT_BRACE, '{', 18),
-      new Token(TokenType.VAR, 'var', 19),
-      new Token(TokenType.IDENTIFIER, 'i', 19),
-      new Token(TokenType.EQUAL, '=', 19),
-      new Token(TokenType.NUMBER, '0', 19),
-      new Token(TokenType.SEMICOLON, ';', 19),
+      getToken(TokenType.FUNCTION, 'function'),
+      getToken(TokenType.IDENTIFIER, 'makeCounter'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'i'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.NUMBER, '0'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.FUNCTION, 'function', 20),
-      new Token(TokenType.IDENTIFIER, 'count', 20),
-      new Token(TokenType.LEFT_BRACKET, '(', 20),
-      new Token(TokenType.RIGHT_BRACKET, ')', 20),
-      new Token(TokenType.lEFT_BRACE, '{', 20),
-      new Token(TokenType.IDENTIFIER, 'i', 21),
-      new Token(TokenType.EQUAL, '=', 21),
-      new Token(TokenType.IDENTIFIER, 'i', 21),
-      new Token(TokenType.PLUS, '+', 21),
-      new Token(TokenType.NUMBER, '1', 21),
-      new Token(TokenType.SEMICOLON, ';', 21),
+      getToken(TokenType.FUNCTION, 'function'),
+      getToken(TokenType.IDENTIFIER, 'count'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
+      getToken(TokenType.IDENTIFIER, 'i'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.IDENTIFIER, 'i'),
+      getToken(TokenType.PLUS, '+'),
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 22),
-      new Token(TokenType.DOT, '.', 22),
-      new Token(TokenType.IDENTIFIER, 'log', 22),
-      new Token(TokenType.LEFT_BRACKET, '(', 22),
-      new Token(TokenType.IDENTIFIER, 'i', 22),
-      new Token(TokenType.RIGHT_BRACKET, ')', 22),
-      new Token(TokenType.SEMICOLON, ';', 22),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'i'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.RIGHT_BRACE, '}', 23),
-      new Token(TokenType.RETURN, 'return', 25),
-      new Token(TokenType.IDENTIFIER, 'count', 25),
-      new Token(TokenType.SEMICOLON, ';', 25),
-      new Token(TokenType.RIGHT_BRACE, '}', 26),
+      getToken(TokenType.RIGHT_BRACE, '}'),
+      getToken(TokenType.RETURN, 'return'),
+      getToken(TokenType.IDENTIFIER, 'count'),
+      getToken(TokenType.SEMICOLON, ';'),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.VAR, 'var', 28),
-      new Token(TokenType.IDENTIFIER, 'counter', 28),
-      new Token(TokenType.EQUAL, '=', 28),
-      new Token(TokenType.IDENTIFIER, 'makeCounter', 28),
-      new Token(TokenType.LEFT_BRACKET, '(', 28),
-      new Token(TokenType.RIGHT_BRACKET, ')', 28),
-      new Token(TokenType.SEMICOLON, ';', 28),
-      new Token(TokenType.IDENTIFIER, 'counter', 29),
-      new Token(TokenType.LEFT_BRACKET, '(', 29),
-      new Token(TokenType.RIGHT_BRACKET, ')', 29),
-      new Token(TokenType.SEMICOLON, ';', 29),
-      new Token(TokenType.IDENTIFIER, 'counter', 30),
-      new Token(TokenType.LEFT_BRACKET, '(', 30),
-      new Token(TokenType.RIGHT_BRACKET, ')', 30),
-      new Token(TokenType.SEMICOLON, ';', 30),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'counter'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.IDENTIFIER, 'makeCounter'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
+      getToken(TokenType.IDENTIFIER, 'counter'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
+      getToken(TokenType.IDENTIFIER, 'counter'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.VAR, 'var', 31),
-      new Token(TokenType.IDENTIFIER, 'n', 31),
-      new Token(TokenType.EQUAL, '=', 31),
-      new Token(TokenType.NUMBER, '1', 31),
-      new Token(TokenType.SEMICOLON, ';', 31),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.PLUS_PLUS, '++', 32),
-      new Token(TokenType.IDENTIFIER, 'n', 32),
-      new Token(TokenType.SEMICOLON, ';', 32),
+      getToken(TokenType.PLUS_PLUS, '++'),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 33),
-      new Token(TokenType.DOT, '.', 33),
-      new Token(TokenType.IDENTIFIER, 'log', 33),
-      new Token(TokenType.LEFT_BRACKET, '(', 33),
-      new Token(TokenType.IDENTIFIER, 'n', 33),
-      new Token(TokenType.RIGHT_BRACKET, ')', 33),
-      new Token(TokenType.SEMICOLON, ';', 33),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.MINUS_MINUS, '--', 34),
-      new Token(TokenType.IDENTIFIER, 'n', 34),
-      new Token(TokenType.SEMICOLON, ';', 34),
+      getToken(TokenType.MINUS_MINUS, '--'),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 35),
-      new Token(TokenType.DOT, '.', 35),
-      new Token(TokenType.IDENTIFIER, 'log', 35),
-      new Token(TokenType.LEFT_BRACKET, '(', 35),
-      new Token(TokenType.IDENTIFIER, 'n', 35),
-      new Token(TokenType.RIGHT_BRACKET, ')', 35),
-      new Token(TokenType.SEMICOLON, ';', 35),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.FUNCTION, 'function', 36),
-      new Token(TokenType.IDENTIFIER, 'fib', 36),
-      new Token(TokenType.LEFT_BRACKET, '(', 36),
-      new Token(TokenType.IDENTIFIER, 'n', 36),
-      new Token(TokenType.RIGHT_BRACKET, ')', 36),
-      new Token(TokenType.lEFT_BRACE, '{', 36),
+      getToken(TokenType.FUNCTION, 'function'),
+      getToken(TokenType.IDENTIFIER, 'fib'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
 
-      new Token(TokenType.IF, 'if', 37),
-      new Token(TokenType.LEFT_BRACKET, '(', 37),
-      new Token(TokenType.IDENTIFIER, 'n', 37),
-      new Token(TokenType.LESS_EQUAL, '<=', 37),
-      new Token(TokenType.NUMBER, '1', 37),
-      new Token(TokenType.RIGHT_BRACKET, ')', 37),
-      new Token(TokenType.RETURN, 'return', 37),
-      new Token(TokenType.IDENTIFIER, 'n', 37),
-      new Token(TokenType.SEMICOLON, ';', 37),
+      getToken(TokenType.IF, 'if'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.LESS_EQUAL, '<='),
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.RETURN, 'return'),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.RETURN, 'return', 38),
-      new Token(TokenType.IDENTIFIER, 'fib', 38),
-      new Token(TokenType.LEFT_BRACKET, '(', 38),
-      new Token(TokenType.IDENTIFIER, 'n', 38),
-      new Token(TokenType.MINUS, '-', 38),
-      new Token(TokenType.NUMBER, '1', 38),
-      new Token(TokenType.RIGHT_BRACKET, ')', 38),
-      new Token(TokenType.PLUS, '+', 38),
-      new Token(TokenType.IDENTIFIER, 'fib', 38),
-      new Token(TokenType.LEFT_BRACKET, '(', 38),
-      new Token(TokenType.IDENTIFIER, 'n', 38),
-      new Token(TokenType.MINUS, '-', 38),
-      new Token(TokenType.NUMBER, '2', 38),
-      new Token(TokenType.RIGHT_BRACKET, ')', 38),
-      new Token(TokenType.SEMICOLON, ';', 38),
+      getToken(TokenType.RETURN, 'return'),
+      getToken(TokenType.IDENTIFIER, 'fib'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.MINUS, '-'),
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.PLUS, '+'),
+      getToken(TokenType.IDENTIFIER, 'fib'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'n'),
+      getToken(TokenType.MINUS, '-'),
+      getToken(TokenType.NUMBER, '2'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.RIGHT_BRACE, '}', 39),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 40),
-      new Token(TokenType.DOT, '.', 40),
-      new Token(TokenType.IDENTIFIER, 'log', 40),
-      new Token(TokenType.LEFT_BRACKET, '(', 40),
-      new Token(TokenType.IDENTIFIER, 'fib', 40),
-      new Token(TokenType.LEFT_BRACKET, '(', 40),
-      new Token(TokenType.NUMBER, '30', 40),
-      new Token(TokenType.RIGHT_BRACKET, ')', 40),
-      new Token(TokenType.RIGHT_BRACKET, ')', 40),
-      new Token(TokenType.SEMICOLON, ';', 40),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'fib'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.NUMBER, '30'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.VAR, 'var', 41),
-      new Token(TokenType.IDENTIFIER, 'globalA', 41),
-      new Token(TokenType.EQUAL, '=', 41),
-      new Token(TokenType.STRING, 'global', 41),
-      new Token(TokenType.SEMICOLON, ';', 41),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'globalA'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, 'global'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.lEFT_BRACE, '{', 42),
+      getToken(TokenType.lEFT_BRACE, '{'),
 
-      new Token(TokenType.FUNCTION, 'function', 43),
-      new Token(TokenType.IDENTIFIER, 'showA', 43),
-      new Token(TokenType.LEFT_BRACKET, '(', 43),
-      new Token(TokenType.RIGHT_BRACKET, ')', 43),
-      new Token(TokenType.lEFT_BRACE, '{', 43),
+      getToken(TokenType.FUNCTION, 'function'),
+      getToken(TokenType.IDENTIFIER, 'showA'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 44),
-      new Token(TokenType.DOT, '.', 44),
-      new Token(TokenType.IDENTIFIER, 'log', 44),
-      new Token(TokenType.LEFT_BRACKET, '(', 44),
-      new Token(TokenType.IDENTIFIER, 'globalA', 44),
-      new Token(TokenType.RIGHT_BRACKET, ')', 44),
-      new Token(TokenType.SEMICOLON, ';', 44),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'globalA'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.RIGHT_BRACE, '}', 45),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.IDENTIFIER, 'showA', 47),
-      new Token(TokenType.LEFT_BRACKET, '(', 47),
-      new Token(TokenType.RIGHT_BRACKET, ')', 47),
-      new Token(TokenType.SEMICOLON, ';', 47),
+      getToken(TokenType.IDENTIFIER, 'showA'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.VAR, 'var', 48),
-      new Token(TokenType.IDENTIFIER, 'globalA', 48),
-      new Token(TokenType.EQUAL, '=', 48),
-      new Token(TokenType.STRING, 'block', 48),
-      new Token(TokenType.SEMICOLON, ';', 48),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'globalA'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, 'block'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'showA', 49),
-      new Token(TokenType.LEFT_BRACKET, '(', 49),
-      new Token(TokenType.RIGHT_BRACKET, ')', 49),
-      new Token(TokenType.SEMICOLON, ';', 49),
+      getToken(TokenType.IDENTIFIER, 'showA'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.RIGHT_BRACE, '}', 50),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.CLASS, 'class', 51),
-      new Token(TokenType.IDENTIFIER, 'Test', 51),
-      new Token(TokenType.lEFT_BRACE, '{', 51),
+      getToken(TokenType.CLASS, 'class'),
+      getToken(TokenType.IDENTIFIER, 'Test'),
+      getToken(TokenType.lEFT_BRACE, '{'),
 
-      new Token(TokenType.IDENTIFIER, 'b', 52),
-      new Token(TokenType.EQUAL, '=', 52),
-      new Token(TokenType.NUMBER, '5', 52),
-      new Token(TokenType.SEMICOLON, ';', 52),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.NUMBER, '5'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'print', 53),
-      new Token(TokenType.LEFT_BRACKET, '(', 53),
-      new Token(TokenType.IDENTIFIER, 'a', 53),
-      new Token(TokenType.RIGHT_BRACKET, ')', 53),
-      new Token(TokenType.lEFT_BRACE, '{', 53),
+      getToken(TokenType.IDENTIFIER, 'print'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'a'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.lEFT_BRACE, '{'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 54),
-      new Token(TokenType.DOT, '.', 54),
-      new Token(TokenType.IDENTIFIER, 'log', 54),
-      new Token(TokenType.LEFT_BRACKET, '(', 54),
-      new Token(TokenType.IDENTIFIER, 'a', 54),
-      new Token(TokenType.RIGHT_BRACKET, ')', 54),
-      new Token(TokenType.SEMICOLON, ';', 54),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'a'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.RIGHT_BRACE, '}', 55),
-      new Token(TokenType.RIGHT_BRACE, '}', 56),
+      getToken(TokenType.RIGHT_BRACE, '}'),
+      getToken(TokenType.RIGHT_BRACE, '}'),
 
-      new Token(TokenType.VAR, 'var', 57),
-      new Token(TokenType.IDENTIFIER, 'b', 57),
-      new Token(TokenType.EQUAL, '=', 57),
-      new Token(TokenType.NEW, 'new', 57),
-      new Token(TokenType.IDENTIFIER, 'Test', 57),
-      new Token(TokenType.LEFT_BRACKET, '(', 57),
-      new Token(TokenType.RIGHT_BRACKET, ')', 57),
-      new Token(TokenType.SEMICOLON, ';', 57),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.NEW, 'new'),
+      getToken(TokenType.IDENTIFIER, 'Test'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'b', 58),
-      new Token(TokenType.DOT, '.', 58),
-      new Token(TokenType.IDENTIFIER, 'print', 58),
-      new Token(TokenType.LEFT_BRACKET, '(', 58),
-      new Token(TokenType.NUMBER, '3', 58),
-      new Token(TokenType.RIGHT_BRACKET, ')', 58),
-      new Token(TokenType.SEMICOLON, ';', 58),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'print'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.NUMBER, '3'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 59),
-      new Token(TokenType.DOT, '.', 59),
-      new Token(TokenType.IDENTIFIER, 'log', 59),
-      new Token(TokenType.LEFT_BRACKET, '(', 59),
-      new Token(TokenType.IDENTIFIER, 'b', 59),
-      new Token(TokenType.DOT, '.', 59),
-      new Token(TokenType.IDENTIFIER, 'b', 59),
-      new Token(TokenType.RIGHT_BRACKET, ')', 59),
-      new Token(TokenType.SEMICOLON, ';', 59),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'b', 60),
-      new Token(TokenType.DOT, '.', 60),
-      new Token(TokenType.IDENTIFIER, 'b', 60),
-      new Token(TokenType.EQUAL, '=', 60),
-      new Token(TokenType.STRING, '9', 60),
-      new Token(TokenType.SEMICOLON, ';', 60),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, '9'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 61),
-      new Token(TokenType.DOT, '.', 61),
-      new Token(TokenType.IDENTIFIER, 'log', 61),
-      new Token(TokenType.LEFT_BRACKET, '(', 61),
-      new Token(TokenType.IDENTIFIER, 'b', 61),
-      new Token(TokenType.DOT, '.', 61),
-      new Token(TokenType.IDENTIFIER, 'b', 61),
-      new Token(TokenType.RIGHT_BRACKET, ')', 61),
-      new Token(TokenType.SEMICOLON, ';', 61),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'b', 62),
-      new Token(TokenType.DOT, '.', 62),
-      new Token(TokenType.IDENTIFIER, 'print', 62),
-      new Token(TokenType.EQUAL, '=', 62),
-      new Token(TokenType.STRING, '1', 62),
-      new Token(TokenType.SEMICOLON, ';', 62),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'print'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.STRING, '1'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 63),
-      new Token(TokenType.DOT, '.', 63),
-      new Token(TokenType.IDENTIFIER, 'log', 63),
-      new Token(TokenType.LEFT_BRACKET, '(', 63),
-      new Token(TokenType.IDENTIFIER, 'b', 63),
-      new Token(TokenType.DOT, '.', 63),
-      new Token(TokenType.IDENTIFIER, 'print', 63),
-      new Token(TokenType.RIGHT_BRACKET, ')', 63),
-      new Token(TokenType.SEMICOLON, ';', 63),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'print'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.VAR, 'var', 64),
-      new Token(TokenType.IDENTIFIER, 'c', 64),
-      new Token(TokenType.EQUAL, '=', 64),
-      new Token(TokenType.NEW, 'new', 64),
-      new Token(TokenType.IDENTIFIER, 'Test', 64),
-      new Token(TokenType.LEFT_BRACKET, '(', 64),
-      new Token(TokenType.RIGHT_BRACKET, ')', 64),
-      new Token(TokenType.SEMICOLON, ';', 64),
+      getToken(TokenType.VAR, 'var'),
+      getToken(TokenType.IDENTIFIER, 'c'),
+      getToken(TokenType.EQUAL, '='),
+      getToken(TokenType.NEW, 'new'),
+      getToken(TokenType.IDENTIFIER, 'Test'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'console', 65),
-      new Token(TokenType.DOT, '.', 65),
-      new Token(TokenType.IDENTIFIER, 'log', 65),
-      new Token(TokenType.LEFT_BRACKET, '(', 65),
-      new Token(TokenType.IDENTIFIER, 'c', 65),
-      new Token(TokenType.DOT, '.', 65),
-      new Token(TokenType.IDENTIFIER, 'b', 65),
-      new Token(TokenType.RIGHT_BRACKET, ')', 65),
-      new Token(TokenType.SEMICOLON, ';', 65),
+      getToken(TokenType.IDENTIFIER, 'console'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'log'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.IDENTIFIER, 'c'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.IDENTIFIER, 'c', 66),
-      new Token(TokenType.DOT, '.', 66),
-      new Token(TokenType.IDENTIFIER, 'print', 66),
-      new Token(TokenType.LEFT_BRACKET, '(', 66),
-      new Token(TokenType.NUMBER, '4', 66),
-      new Token(TokenType.RIGHT_BRACKET, ')', 66),
-      new Token(TokenType.SEMICOLON, ';', 66),
+      getToken(TokenType.IDENTIFIER, 'c'),
+      getToken(TokenType.DOT, '.'),
+      getToken(TokenType.IDENTIFIER, 'print'),
+      getToken(TokenType.LEFT_BRACKET, '('),
+      getToken(TokenType.NUMBER, '4'),
+      getToken(TokenType.RIGHT_BRACKET, ')'),
+      getToken(TokenType.SEMICOLON, ';'),
 
-      new Token(TokenType.EOF, '', 67),
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.EQUAL_EQUAL, '=='),
+      getToken(TokenType.NUMBER, '2'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.EQUAL_EQUAL_EQUAL, '==='),
+      getToken(TokenType.NUMBER, '2'),
+
+      getToken(TokenType.IDENTIFIER, 'b'),
+      getToken(TokenType.NULLISH_COALESCING_EQUAL, '??='),
+      getToken(TokenType.NUMBER, '1'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.LESS_EQUAL, '<='),
+      getToken(TokenType.NUMBER, '2'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.LESS, '<'),
+      getToken(TokenType.NUMBER, '2'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.BIT_X_OR, '^'),
+      getToken(TokenType.NUMBER, '2.2'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.BIT_X_OR_EQUAL, '^='),
+      getToken(TokenType.NUMBER, '2.2'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.GREATER, '>'),
+      getToken(TokenType.NUMBER, '2'),
+
+      getToken(TokenType.NUMBER, '1'),
+      getToken(TokenType.GREATER_EQUAL, '>='),
+      getToken(TokenType.NUMBER, '2'),
+
+      getToken(TokenType.EOF, ''),
     ];
-
-    expect(new Scanner(inputData).scan()).toEqual(expectTokens);
+    const list = new Scanner(inputData).scan();
+    const actual: TokenItem[] = list.map((item) => ({
+      type: item.type,
+      lexeme: item.lexeme,
+    }));
+    expect(actual).toEqual(expectTokens);
   });
 });
