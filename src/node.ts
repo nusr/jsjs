@@ -1,9 +1,9 @@
 import path from 'path';
 import fs from 'fs';
 import readline from 'readline';
-import Jsjs from './jsjs';
-import Environment from './environment';
-import type { LiteralType, ObjectType } from './type';
+import { interpret } from './jsjs';
+import EnvironmentImpl from './environment';
+import { registerGlobal } from './native';
 
 export function init() {
   const args = process.argv;
@@ -17,19 +17,6 @@ export function init() {
   }
 }
 
-export function run(
-  data: string,
-  env: Environment,
-  log: ObjectType | null = null,
-): LiteralType {
-  const instance = new Jsjs(data, env);
-  if (log !== null) {
-    instance.register('console', log);
-  }
-  const result = instance.run();
-  return result;
-}
-
 function runFile(filePath: string) {
   let temp = filePath;
   if (!path.isAbsolute(filePath)) {
@@ -39,7 +26,9 @@ function runFile(filePath: string) {
     if (error) {
       return;
     }
-    run(data, new Environment(null));
+    const env = new EnvironmentImpl(null);
+    registerGlobal(env);
+    interpret(data, env);
   });
 }
 function runPrompt() {
@@ -49,10 +38,11 @@ function runPrompt() {
     prompt: '> ',
   });
   reader.prompt();
-  const env = new Environment(null);
+  const env = new EnvironmentImpl(null);
+  registerGlobal(env);
   reader
     .on('line', (line) => {
-      run(line, env);
+      interpret(line, env);
       reader.prompt();
     })
     .on('close', () => {

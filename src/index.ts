@@ -1,4 +1,4 @@
-import Jsjs from './jsjs';
-import Environment from './environment';
+import { interpret } from './jsjs';
+import EnvironmentImpl from './environment';
 import { getGlobalObject } from './native';
-export { Jsjs, Environment, getGlobalObject };
+export { EnvironmentImpl as Environment, getGlobalObject, interpret };

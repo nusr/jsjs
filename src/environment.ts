@@ -1,14 +1,13 @@
-import type { LiteralType } from './type';
-import type Token from './token';
-class Environment {
+import type { LiteralType, Environment } from './type';
+class EnvironmentImpl implements Environment {
   private readonly values = new Map<string, LiteralType>();
   private parent: Environment | null = null;
   constructor(parent: Environment | null) {
     this.parent = parent;
   }
-  get(name: Token): LiteralType {
-    if (this.values.has(name.lexeme)) {
-      return this.values.get(name.lexeme) as LiteralType;
+  get(name: string): LiteralType {
+    if (this.values.has(name)) {
+      return this.values.get(name) as LiteralType;
     }
     if (this.parent !== null) {
       return this.parent.get(name);
@@ -18,17 +17,17 @@ class Environment {
   define(name: string, value: LiteralType) {
     this.values.set(name, value);
   }
-  assign(name: Token, value: LiteralType) {
-    if (this.values.has(name.lexeme)) {
-      this.values.set(name.lexeme, value);
+  assign(name: string, value: LiteralType) {
+    if (this.values.has(name)) {
+      this.values.set(name, value);
       return;
     }
     if (this.parent !== null) {
       this.parent.assign(name, value);
       return;
     }
-    this.values.set(name.lexeme, value)
+    this.values.set(name, value)
   }
 }
 
-export default Environment;
+export default EnvironmentImpl;

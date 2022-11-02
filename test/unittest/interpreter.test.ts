@@ -1,4 +1,4 @@
-import { Environment, Jsjs, getGlobalObject } from '../../src/index';
+import { Environment, interpret, getGlobalObject } from '../../src/index';
 import * as fs from 'fs';
 import * as path from 'path';
 import { LiteralType } from '../../src/type';
@@ -12,15 +12,14 @@ describe('interpreter.test.ts', () => {
   test('interpreter', () => {
     let resultList: LiteralType[][] = [];
     const env = new Environment(null);
-    const jsjs = new Jsjs(inputData, env);
     const log = getGlobalObject({
       log(...result: LiteralType[]) {
         resultList.push(result);
       },
       error() {},
     });
-    jsjs.register('console', log.console);
-    jsjs.run();
+    env.define('console', log.console);
+    interpret(inputData, env);
     expect(resultList).toEqual([
       [7],
       ['b'],
@@ -473,16 +472,14 @@ describe('interpreter.test.ts', () => {
   for (const item of list) {
     test(item.name, () => {
       const env = new Environment(null);
-      const jsjs = new Jsjs(item.input, env);
-
       const log = getGlobalObject({
         log(...result: LiteralType[]) {
           expect(result[0]).toEqual(item.expect.shift());
         },
         error() {},
       });
-      jsjs.register('console', log.console);
-      jsjs.run();
+      env.define('console', log.console);
+      interpret(item.input, env);
     });
   }
 });

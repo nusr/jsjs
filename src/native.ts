@@ -3,6 +3,7 @@ import type {
   IBaseCallable,
   ObjectType,
   IGlobalConsole,
+  Environment,
 } from './type';
 import { isBaseCallable } from './util';
 
@@ -41,4 +42,14 @@ function getGlobalObject(consoleObject: IGlobalConsole) {
   };
 }
 
-export { getGlobalObject };
+function registerGlobal(environment: Environment) {
+  const temp = getGlobalObject(console);
+  const keyList = Object.keys(temp) as Array<
+    keyof ReturnType<typeof getGlobalObject>
+  >;
+  for (const key of keyList) {
+    environment.define(key, temp[key]);
+  }
+}
+
+export { getGlobalObject, registerGlobal };

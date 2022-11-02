@@ -1,8 +1,7 @@
-import type { LiteralType, IBaseCallable, ObjectType } from './type';
+import type { LiteralType, IBaseCallable, ObjectType, Interpreter } from './type';
 import { ClassStatement, FunctionStatement } from './statement';
-import type Interpreter from './interpreter';
 import { FunctionObject } from './function';
-import Environment from './environment';
+import EnvironmentImpl from './environment';
 import { ClassExpression } from './expression';
 
 export class ClassObject implements IBaseCallable {
@@ -13,7 +12,7 @@ export class ClassObject implements IBaseCallable {
   }
   call(interpreter: Interpreter, argumentList: LiteralType[]): LiteralType {
     const instance: ObjectType = {};
-    const env = new Environment(interpreter.environment);
+    const env = new EnvironmentImpl(interpreter.environment);
 
     if (
       this.statement instanceof ClassExpression &&

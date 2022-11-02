@@ -1,4 +1,4 @@
-import type { LiteralType, ObjectType } from './type';
+import type { LiteralType, ObjectType, Interpreter, Environment } from './type';
 
 import type {
   BinaryExpression,
@@ -11,7 +11,6 @@ import type {
   SetExpression,
   LogicalExpression,
   Expression,
-  ExpressionVisitor,
   NewExpression,
   FunctionExpression,
   ArrayLiteralExpression,
@@ -25,7 +24,6 @@ import { TokenType } from './tokenType';
 import type {
   IfStatement,
   ReturnStatement,
-  StatementVisitor,
   ExpressionStatement,
   Statement,
   BlockStatement,
@@ -34,13 +32,12 @@ import type {
   VariableStatement,
 } from './statement';
 import { FunctionStatement } from './statement';
-import type Environment from './environment';
 import { isBaseCallable, assert, isObject } from './util';
 import { FunctionObject } from './function';
 import { ReturnValue } from './return';
 import { ClassObject } from './class';
 
-class Interpreter implements ExpressionVisitor, StatementVisitor {
+class InterpreterImpl implements Interpreter {
   environment: Environment;
   private readonly statements: Statement[];
   private calleeKey: string = '';
@@ -198,7 +195,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
 
   visitAssignExpression = (expr: AssignExpression) => {
     const temp: LiteralType = this.evaluate(expr.right);
-    this.environment.assign(expr.left, temp);
+    this.environment.assign(expr.left.lexeme, temp);
     return temp;
   };
   visitBinaryExpression = (expr: BinaryExpression): LiteralType => {
@@ -306,7 +303,7 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
     return null;
   };
   visitVariableExpression = (expr: VariableExpression): LiteralType => {
-    return this.environment.get(expr.name);
+    return this.environment.get(expr.name.lexeme);
   };
   visitGroupingExpression = (expr: GroupingExpression): LiteralType => {
     return this.evaluate(expr.expression);
@@ -352,14 +349,14 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
         } else {
           result++;
         }
-        this.environment.assign(expr.right.name, result);
+        this.environment.assign(expr.right.name.lexeme, result);
         return result;
       }
     }
     return null;
   };
 
-  isTruthy(value: LiteralType) {
+  private isTruthy(value: LiteralType) {
     if (value === null) {
       return false;
     }
@@ -386,4 +383,4 @@ class Interpreter implements ExpressionVisitor, StatementVisitor {
   };
 }
 
-export default Interpreter;
+export default InterpreterImpl;

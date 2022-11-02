@@ -2,25 +2,23 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.main.js';
 
 type LiteralType = any;
 interface Environment {
-  new(env: Environment | null): this;
-}
-interface Jsjs {
-  new(text: string, env: Environment): this;
-  run(): LiteralType;
-  register(name: string, value: LiteralType): void;
+  new (env: Environment | null): this;
+  get(name: string): LiteralType;
+  define(name: string, value: LiteralType): LiteralType;
+  assign(name: string, value: LiteralType): LiteralType;
 }
 
 interface GlobalWindow {
   jsjs: {
     Environment: Environment;
-    Jsjs: Jsjs;
+    interpret(text: string, environment: Environment): LiteralType;
     getGlobalObject: (
       params: Pick<Console, 'log' | 'error'>,
     ) => Record<string, Record<LiteralType, LiteralType>>;
   };
   MonacoEnvironment: {
     getWorkerUrl: (moduleId: string, label: string) => string;
-  }
+  };
 }
 
 var logCount = 1;
@@ -30,10 +28,10 @@ function handleClick(text: string) {
   if (!text) {
     return;
   }
-  const { Jsjs, Environment, getGlobalObject } = (
+  const { interpret, Environment, getGlobalObject } = (
     window as unknown as GlobalWindow
   ).jsjs;
-  const interpreter = new Jsjs(text, new Environment(null));
+  const env = new Environment(null);
   const temp = getGlobalObject({
     log(...result: LiteralType[]) {
       console.log(...result);
@@ -45,12 +43,12 @@ function handleClick(text: string) {
         })
         .join('');
     },
-    error() { },
+    error() {},
   });
   for (const key of Object.keys(temp)) {
-    interpreter.register(key, temp[key]);
+    env.define(key, temp[key]);
   }
-  const result = interpreter.run();
+  const result = interpret(text, env);
   console.log(result);
 }
 
@@ -69,13 +67,15 @@ window.onload = function () {
   buttonDom!.addEventListener('click', () => {
     handleClick(editorContainer.getValue());
   });
-  fetch('./testData.js').then(data => data.text()).then(data => {
-    editorContainer = monaco.editor.create(
-      document.getElementById('container')!,
-      {
-        value: data,
-        language: 'javascript',
-      },
-    );
-  })
+  fetch('./testData.js')
+    .then((data) => data.text())
+    .then((data) => {
+      editorContainer = monaco.editor.create(
+        document.getElementById('container')!,
+        {
+          value: data,
+          language: 'javascript',
+        },
+      );
+    });
 };
