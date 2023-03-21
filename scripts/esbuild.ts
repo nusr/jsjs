@@ -1,4 +1,10 @@
-import { build, BuildOptions, BuildResult, analyzeMetafile } from 'esbuild';
+import {
+  build,
+  BuildOptions,
+  BuildResult,
+  context,
+} from 'esbuild';
+// @ts-ignore
 import packageJson from '../package.json';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -85,11 +91,10 @@ function buildNode(filePath: string) {
   });
 }
 
-async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
+function buildBrowserConfig(options: BuildOptions) {
   const minify = !!options.outfile?.includes('.min.');
   const realOptions: BuildOptions = {
     bundle: true,
-    watch: isDev,
     entryPoints: ['src/index.ts'],
     tsconfig: 'tsconfig.json',
     define: {
@@ -100,17 +105,12 @@ async function buildBrowserConfig(options: BuildOptions): Promise<BuildResult> {
       js: `/* \n${licenseText}\n*/`,
     },
     platform: 'browser',
-    sourcemap: isDev,
-    minify: !isDev,
+    sourcemap: true,
+    minify,
     metafile: minify,
   };
   Object.assign(realOptions, options);
-  const result = await build(realOptions);
-  if (result.metafile) {
-    const text = await analyzeMetafile(result.metafile, { verbose: true });
-    console.log(text);
-  }
-  return result;
+  return realOptions;
 }
 
 function buildEditor(minify: boolean) {
@@ -170,20 +170,44 @@ async function main() {
   if (isDev) {
     return buildUMD(startPath);
   }
-  const list = await Promise.all([
-    buildUMD(startPath),
-    buildESM(packageJson.module),
-    buildUMD(packageJson.main),
-    buildESM(packageJson.module.replace('.js', '.min.js')),
-    buildUMD(packageJson.main.replace('.js', '.min.js')),
-    buildNode(packageJson.main.replace('umd', 'node')),
-    buildNode(packageJson.main.replace('umd', 'node.min')),
-    buildEditor(true),
-  ]);
+  const list = await Promise.all(
+    [
+      buildUMD(startPath),
+      buildESM(packageJson.module),
+      buildUMD(packageJson.main),
+      buildESM(packageJson.module.replace('.js', '.min.js')),
+      buildUMD(packageJson.main.replace('.js', '.min.js')),
+      buildNode(packageJson.main.replace('umd', 'node')),
+      buildNode(packageJson.main.replace('umd', 'node.min')),
+    ].map((item) => build(item)),
+  );
+  await buildEditor(true);
   buildHtml();
   return list;
 }
 
-main().then(() => {
-  console.log('finished');
-});
+async function liveReload() {
+  const options = buildUMD('');
+  const ctx = await context({
+    ...options,
+    outdir: distDir,
+  });
+
+  await ctx.watch();
+
+  const { port } = await ctx.serve({
+    servedir: distDir,
+  });
+  const url = `http://localhost:${port}`;
+  buildHtml();
+  console.log(`running in: ${url}`);
+}
+
+function init() {
+  if (isDev) {
+    liveReload();
+  } else {
+    main();
+  }
+}
+init();
