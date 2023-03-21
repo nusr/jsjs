@@ -99,7 +99,7 @@ describe('parser.test.ts', () => {
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...env };
-    process.env.NODE_ENV = 'production';
+    process.env['NODE_ENV'] = 'production';
   });
 
   afterEach(() => {

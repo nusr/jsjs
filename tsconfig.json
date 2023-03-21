@@ -31,5 +31,6 @@
     "sourceMap": true,
     "moduleResolution": "NodeNext",
     "declaration": true
-  }
+  },
+  "include": ["src", "test/**/*.ts", "scripts"]
 }

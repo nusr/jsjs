@@ -1,5 +1,4 @@
 import Scanner from '../../src/scanner';
-import Token from '../../src/token';
 import { TokenType } from '../../src/tokenType';
 
 const inputData = `var a = 'a';

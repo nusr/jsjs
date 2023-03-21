@@ -21,7 +21,7 @@ describe('associativity.test.ts', () => {
     },
   ];
   for (let i = 0; i < list.length; i++) {
-    const item = list[i];
+    const item = list[i]!;
     test(`associativity ${i + 1}`, () => {
       const scanner = new Scanner(item.input);
       const tokens = scanner.scan();

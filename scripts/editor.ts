@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.main.js';
 
 type LiteralType = any;
@@ -53,7 +54,7 @@ function handleClick(text: string) {
 }
 
 (window as unknown as GlobalWindow).MonacoEnvironment = {
-  getWorkerUrl: function (moduleId: string, label: string) {
+  getWorkerUrl: function (_, label: string) {
     if (label === 'typescript' || label === 'javascript') {
       return './vs/language/typescript/ts.worker.js';
     }
