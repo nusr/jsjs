@@ -3,7 +3,7 @@
   "display": "Node 16 + Strictest",
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
-    "target": "ESNext",
+    "target": "ES6",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -29,6 +29,7 @@
     "outDir": "lib",
     "sourceMap": true,
     "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "declaration": true
   },
   "include": ["src", "test/**/*.ts", "scripts"]
