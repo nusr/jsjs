@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.main.js';
 
 type LiteralType = any;
@@ -143,4 +142,10 @@ window.onload = function () {
   buttonDom!.addEventListener('click', () => {
     handleClick(editorContainer.getValue());
   });
+
+  if (process.env['NODE_ENV'] === 'development') {
+    new EventSource('/esbuild').addEventListener('change', () =>
+      location.reload(),
+    );
+  }
 };

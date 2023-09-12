@@ -31,8 +31,7 @@ export function isBaseCallable(call: any): call is IBaseCallable {
 }
 
 export function getNodeEnv(): string {
-  // @ts-ignore
-  return process.env.NODE_ENV;
+  return process.env['NODE_ENV'] || '';
 }
 
 export function isTestEnv(): boolean {

@@ -1,10 +1,4 @@
-import {
-  build,
-  BuildOptions,
-  BuildResult,
-  context,
-} from 'esbuild';
-// @ts-ignore
+import { build, BuildOptions, BuildResult, context } from 'esbuild';
 import packageJson from '../package.json';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -120,11 +114,15 @@ function buildEditor(minify: boolean) {
   ];
   const commonOptions: BuildOptions = {
     tsconfig: 'tsconfig.json',
-    sourcemap: isDev,
+    sourcemap: true,
     bundle: true,
     format: 'iife',
     outdir: distDir,
     minify,
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+      'process.env.VERSION': JSON.stringify(packageJson.version),
+    },
   };
   const list: Promise<BuildResult>[] = [];
   const editorDir = path.join(process.cwd(), 'node_modules/monaco-editor/esm/');
@@ -163,16 +161,10 @@ function deleteDir(dir: string) {
   });
 }
 
-async function main() {
-  deleteDir('lib');
-  deleteDir('dist');
-  const startPath = path.join(distDir, 'jsjs.umd.js');
-  if (isDev) {
-    return buildUMD(startPath);
-  }
-  const list = await Promise.all(
+async function buildProd() {
+  await Promise.all(
     [
-      buildUMD(startPath),
+      buildUMD(path.join(distDir, 'jsjs.umd.js')),
       buildESM(packageJson.module),
       buildUMD(packageJson.main),
       buildESM(packageJson.module.replace('.js', '.min.js')),
@@ -181,16 +173,12 @@ async function main() {
       buildNode(packageJson.main.replace('umd', 'node.min')),
     ].map((item) => build(item)),
   );
-  await buildEditor(true);
-  buildHtml();
-  return list;
 }
 
-async function liveReload() {
-  const options = buildUMD('');
+async function buildDev() {
+  const options = buildUMD(path.join(distDir, 'jsjs.umd.js'));
   const ctx = await context({
     ...options,
-    outdir: distDir,
   });
 
   await ctx.watch();
@@ -199,15 +187,19 @@ async function liveReload() {
     servedir: distDir,
   });
   const url = `http://localhost:${port}`;
-  buildHtml();
+
   console.log(`running in: ${url}`);
 }
 
-function init() {
+async function init() {
+  deleteDir('lib');
+  deleteDir('dist');
   if (isDev) {
-    liveReload();
+    buildDev();
   } else {
-    main();
+    buildProd();
   }
+  await buildEditor(!isDev);
+  buildHtml();
 }
 init();

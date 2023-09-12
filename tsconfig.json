@@ -3,8 +3,7 @@
   "display": "Node 16 + Strictest",
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
-    "module": "UMD",
-    "target": "ES6",
+    "target": "ESNext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

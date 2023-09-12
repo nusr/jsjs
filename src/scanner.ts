@@ -11,7 +11,7 @@ class Scanner {
   private line = 1;
 
   constructor(text: string) {
-    // unicode split
+    // unicode
     this.source = [...text];
   }
   scan = () => {
