@@ -9,10 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: latest
       - name: Test
         run: |
           npm install
@@ -20,6 +20,8 @@ jobs:
           npm run coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+      - name: Build
+        run: npm run build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
