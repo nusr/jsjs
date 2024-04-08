@@ -2,6 +2,8 @@
 
 [![ci status](https://github.com/nusr/jsjs/actions/workflows/main.yml/badge.svg)](https://github.com/nusr/jsjs/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/nusr/jsjs/branch/main/graph/badge.svg?token=ZOC8RHD3Z1)](https://codecov.io/gh/nusr/jsjs)
+![GitHub](https://img.shields.io/github/license/nusr/jsjs.svg)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/nusr/jsjs.svg)
 
 Zero dependencies.
 
