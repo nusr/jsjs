@@ -47,8 +47,8 @@ var __export__ = (() => {
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
   // src/index.ts
-  var src_exports = {};
-  __export(src_exports, {
+  var index_exports = {};
+  __export(index_exports, {
     Environment: () => environment_default,
     getGlobalObject: () => getGlobalObject,
     interpret: () => interpret
@@ -1841,7 +1841,7 @@ var __export__ = (() => {
       console: consoleInstance
     };
   }
-  return __toCommonJS(src_exports);
+  return __toCommonJS(index_exports);
 })();
 
     for(var key in __export__) {
